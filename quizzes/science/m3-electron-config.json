@@ -1,0 +1,91 @@
+{
+  "generated": true,
+  "subject": "science",
+  "slug": "electron-configuration",
+  "id": "m3-electron-config",
+  "title": "M3 · Electron Configuration",
+  "source": "science/visualizations/electron-configuration/module.js",
+  "page": "science/visualizations/electron-configuration/?beta=1",
+  "gradeable": 6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mc",
+      "prompt": "How many electrons fit in the first shell?",
+      "choices": [
+        "2",
+        "8",
+        "18"
+      ],
+      "answer": 0,
+      "explain": "The first shell (n=1) holds 2."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "Valence electrons are the electrons in the…",
+      "choices": [
+        "innermost shell",
+        "outermost shell",
+        "nucleus"
+      ],
+      "answer": 1,
+      "explain": "Valence = outer-shell electrons."
+    },
+    {
+      "id": "q3",
+      "type": "numeric",
+      "prompt": "How many valence electrons does oxygen have?",
+      "answer": 6,
+      "tolerance": 0,
+      "explain": "Oxygen: 2s² 2p⁴ → 6 in the outer shell."
+    },
+    {
+      "id": "q4",
+      "type": "mc",
+      "prompt": "Which subshell fills first?",
+      "choices": [
+        "3d before 4s",
+        "4s before 3d",
+        "they fill together"
+      ],
+      "answer": 1,
+      "explain": "4s is lower energy, so it fills before 3d."
+    },
+    {
+      "id": "q5",
+      "type": "numeric",
+      "prompt": "How many electrons fit in a full p subshell?",
+      "answer": 6,
+      "tolerance": 0,
+      "explain": "p has 3 orbitals × 2 = 6."
+    },
+    {
+      "id": "q6",
+      "type": "tf",
+      "prompt": "Chromium follows the simple aufbau order exactly.",
+      "answer": false,
+      "explain": "Cr is an exception — a half-filled 3d is extra stable."
+    },
+    {
+      "id": "q7",
+      "type": "build",
+      "prompt": "Show fluorine (Z = 9).",
+      "check": {
+        "z": 9
+      },
+      "interactiveOnly": true,
+      "explain": "Fluorine has 9 electrons: 1s² 2s² 2p⁵."
+    },
+    {
+      "id": "q8",
+      "type": "build",
+      "prompt": "Show a noble gas — an element with a full outer shell of 8 electrons.",
+      "check": {
+        "valence": 8
+      },
+      "interactiveOnly": true,
+      "explain": "Neon, argon, krypton… all have 8 valence electrons."
+    }
+  ]
+}

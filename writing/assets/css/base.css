@@ -1,26 +1,22 @@
 /* ==========================================================================
-   Writing Lab — shared design system
-   Vanilla CSS, no build step. Import once per page:
-     <link rel="stylesheet" href="/assets/css/base.css">
+   Writing Lab — shared design system (writing subject of Fofa Learning Lab)
+   Vanilla CSS, no build step. Loaded once per page.
    Individual visualizations may add a <style> block for page-specific rules.
+   --------------------------------------------------------------------------
+   Palette + type now come from the lab-wide design system; this file only
+   aliases the legacy variable names the modules use, plus the writing-only
+   parts-of-speech colors. See /assets/css/fofa.css for the canonical tokens.
    ========================================================================== */
 
-:root {
-  /* --- Palette ------------------------------------------------------------ */
-  --bg:            #0f1220;
-  --bg-soft:       #171b2e;
-  --panel:         #1d2238;
-  --panel-2:       #262c47;
-  --line:          #333a5c;
-  --ink:           #eef1ff;
-  --ink-soft:      #b7bede;
-  --ink-mute:      #8891b4;
-  --accent:        #7c9cff;
-  --accent-warm:   #ffb86b;
-  --good:          #56d3a0;
-  --bad:           #ff7a90;
+@import url("../../../assets/css/fofa.css");
 
-  /* --- Parts-of-speech colors (used across every module) ------------------ */
+:root {
+  /* legacy aliases → canonical Fofa tokens */
+  --font:    var(--font-display);   /* writing sets headings/sentences in the serif */
+  --ui-font: var(--font-ui);
+  --maxw:    1080px;                 /* narrower, reading-optimized column */
+
+  /* --- Parts-of-speech colors (writing-only, the color code every module teaches) --- */
   --pos-noun:        #6fb3ff;   /* things / people / places */
   --pos-pronoun:     #4fd6c9;   /* stand-ins for nouns */
   --pos-verb:        #ff7a90;   /* actions / states */
@@ -30,14 +26,6 @@
   --pos-conjunction: #9ad07a;   /* joiners */
   --pos-article:     #8891b4;   /* a / an / the */
   --pos-interjection:#ff9ecb;   /* exclamations */
-
-  /* --- Type & spacing ----------------------------------------------------- */
-  --font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --ui-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --radius: 14px;
-  --radius-sm: 9px;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --maxw: 1080px;
 }
 
 * { box-sizing: border-box; }

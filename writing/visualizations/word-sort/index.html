@@ -139,6 +139,7 @@
   </footer>
 
   <script src="../../assets/data/grammar.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
   <script>
     const { PARTS, WORD_BANK } = WL_GRAMMAR;
 
@@ -257,6 +258,11 @@
     function win() {
       el.finalMsg.textContent = "You named ten in a row without a slip. That's real fluency.";
       el.overlay.classList.add("show");
+      // Report the completed streak to the lab's measurables engine.
+      if (window.Fofa) {
+        Fofa.report({ subject: "writing", module: "word-sort", activity: "streak-of-10",
+                      kind: "game", score: GOAL, max: GOAL, detail: { best: state.best } });
+      }
     }
 
     /* Keyboard 1–4. */

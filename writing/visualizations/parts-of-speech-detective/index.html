@@ -135,6 +135,7 @@
   </footer>
 
   <script src="../../assets/data/grammar.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
   <script>
     const { PARTS, POS_ORDER, DISGUISES } = WL_GRAMMAR;
 
@@ -261,6 +262,12 @@
       const allSolved = [...elSentences.children].every(c => c.classList.contains("solved"));
       if (!allSolved) return;
       solvedWords.add(wi);
+      // Report cumulative progress (words solved out of the full set) to the lab.
+      if (window.Fofa) {
+        Fofa.report({ subject: "writing", module: "parts-of-speech-detective",
+                      activity: "word-solved", kind: "game",
+                      score: solvedWords.size, max: DISGUISES.length });
+      }
       const jobs = [...new Set(d.uses.map(u => PARTS[u.pos].label.toLowerCase()))];
       const jobList = jobs.length === 2 ? `${jobs[0]} and ${jobs[1]}`
         : jobs.slice(0, -1).join(", ") + ", and " + jobs[jobs.length - 1];

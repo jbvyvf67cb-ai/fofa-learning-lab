@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings — Fofa Learning Lab</title>
+  <meta name="description" content="Connect Fofa Learning Lab to Home Assistant for measurables and AI grading.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3EF%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/fofa.css">
+</head>
+<body class="fofa-page">
+  <header class="fofa-bar">
+    <div class="fofa-wrap">
+      <a class="fofa-brand" href="./"><span class="fofa-glyph">F</span> Fofa&nbsp;Learning&nbsp;Lab</a>
+      <span class="fofa-crumb">/ <b>Settings</b></span>
+    </div>
+  </header>
+
+  <main class="fofa-wrap" style="max-width:760px">
+    <section class="fofa-hero" style="padding:44px 0 10px">
+      <div class="eyebrow">For grown-ups</div>
+      <h1 style="font-size:clamp(28px,5vw,42px)">Connect to Home Assistant</h1>
+      <p>
+        The lab runs entirely in the browser, so it never holds any API key. Instead it
+        <strong>sends results to a Home Assistant webhook</strong> — the webhook URL is the only
+        secret, and it lives on this device only. Home Assistant records the measurables and, for
+        open-ended work, uses its Claude key to grade and send feedback back.
+      </p>
+    </section>
+
+    <section class="fofa-panel" style="margin-top:22px">
+      <p style="margin-top:0"><span class="fofa-pill" id="statePill"><span class="dot"></span><span id="stateText">Not connected</span></span></p>
+
+      <label class="fofa-field" for="child">Child's name <span class="fofa-muted">(shown on the lab, sent with results)</span></label>
+      <input class="fofa-input" id="child" placeholder="e.g. Fofa" autocomplete="off">
+
+      <label class="fofa-field" for="webhook">Home Assistant webhook URL <span class="fofa-muted">(results are POSTed here)</span></label>
+      <input class="fofa-input" id="webhook" placeholder="https://your-ha.example/api/webhook/fofa_measurable_xxxxx" autocomplete="off" inputmode="url">
+      <p class="fofa-help">In Home Assistant, create an automation triggered by a <b>Webhook</b> and paste its URL here. The random webhook id keeps it private.</p>
+
+      <label class="fofa-field" for="grade">Grading webhook URL <span class="fofa-muted">(optional — returns a score for open-ended work)</span></label>
+      <input class="fofa-input" id="grade" placeholder="https://your-ha.example/api/webhook/fofa_grade_xxxxx" autocomplete="off" inputmode="url">
+      <p class="fofa-help">A second webhook, configured in HA to <b>respond</b> with JSON <code>{ "score", "max", "feedback" }</code> after Claude grades the response. Leave blank to skip AI grading.</p>
+
+      <div class="row" style="margin-top:22px">
+        <button class="fofa-btn primary" id="save">Save</button>
+        <button class="fofa-btn" id="test">Send test result</button>
+        <button class="fofa-btn" id="clear">Disconnect</button>
+      </div>
+      <p class="fofa-help" id="msg" aria-live="polite"></p>
+    </section>
+
+    <section class="fofa-panel" style="margin-top:18px">
+      <h2 style="margin:0 0 6px;font-size:20px;font-family:var(--font-display)">Progress on this device</h2>
+      <p class="fofa-muted" style="margin-top:0">Every result is also saved locally, so the lab works even when Home Assistant isn't connected.</p>
+      <pre id="progress" style="margin:0;overflow:auto;background:var(--bg-soft);border:1px solid var(--line);border-radius:10px;padding:14px;font:13px/1.5 var(--mono);color:var(--ink-soft)"></pre>
+      <div class="row" style="margin-top:12px">
+        <button class="fofa-btn" id="clearProgress">Clear local progress</button>
+      </div>
+    </section>
+
+    <p class="fofa-muted" style="margin-top:18px">
+      Setting up the Home Assistant side? The full contract (webhook payloads, grading API, and the
+      quiz manifest) is in <a href="MEASURABLES.md">MEASURABLES.md</a>.
+    </p>
+  </main>
+
+  <footer class="fofa-foot">
+    <div class="fofa-wrap"><a href="./">← Back to the lab</a></div>
+  </footer>
+
+  <script src="assets/js/fofa-measure.js"></script>
+  <script>
+    var $ = function (id) { return document.getElementById(id); };
+    var msg = $("msg");
+
+    function reflect() {
+      var c = Fofa.config;
+      $("child").value = c.child || "";
+      $("webhook").value = c.webhookUrl || "";
+      $("grade").value = c.gradeUrl || "";
+      var on = !!c.webhookUrl;
+      var pill = $("statePill");
+      pill.className = "fofa-pill " + (on ? "on" : "off");
+      $("stateText").textContent = on ? "Connected" : "Not connected";
+      renderProgress();
+    }
+
+    function renderProgress() {
+      var p = Fofa.progress();
+      var keys = Object.keys(p);
+      $("progress").textContent = keys.length
+        ? JSON.stringify(p, null, 2)
+        : "No results recorded yet.";
+    }
+
+    $("save").onclick = function () {
+      Fofa.setConfig({
+        child: $("child").value.trim(),
+        webhookUrl: $("webhook").value.trim(),
+        gradeUrl: $("grade").value.trim()
+      });
+      msg.textContent = "Saved.";
+      reflect();
+    };
+
+    $("test").onclick = function () {
+      msg.textContent = "Sending…";
+      Fofa.report({ subject: "settings", module: "connection-test", activity: "test", kind: "quiz", score: 1, max: 1, detail: { note: "Test from Settings page" } })
+        .then(function (r) {
+          msg.textContent = r.sent
+            ? "Test result sent to Home Assistant ✓ (and saved locally)."
+            : "Saved locally. " + (Fofa.config.webhookUrl ? ("Webhook did not accept it: " + r.error) : "No webhook configured yet.");
+          renderProgress();
+        });
+    };
+
+    $("clear").onclick = function () {
+      Fofa.setConfig({ child: "", webhookUrl: "", gradeUrl: "" });
+      msg.textContent = "Disconnected. The lab still works and saves locally.";
+      reflect();
+    };
+
+    $("clearProgress").onclick = function () {
+      if (confirm("Clear all locally-saved progress on this device?")) {
+        Fofa.clearProgress();
+        msg.textContent = "Local progress cleared.";
+        renderProgress();
+      }
+    };
+
+    reflect();
+  </script>
+</body>
+</html>

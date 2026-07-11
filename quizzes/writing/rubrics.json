@@ -1,0 +1,45 @@
+{
+  "generated": false,
+  "subject": "writing",
+  "note": "Rubrics for open-ended writing, graded by Claude on the Home Assistant side via the grading webhook (Fofa.grade). Each rubric is passed as `detail.rubric` in the grade-request payload; HA prompts Claude to score the student's `detail.response` against it and return { ok, score, max, feedback }. See MEASURABLES.md.",
+  "rubrics": [
+    {
+      "id": "show-dont-tell",
+      "title": "Show, don't tell",
+      "prompt": "Rewrite the sentence \"She was scared\" without using the word scared — show it through what she does, senses, or notices.",
+      "max": 4,
+      "criteria": [
+        "Avoids the stated feeling word and its obvious synonyms (1 pt)",
+        "Uses a concrete action, sensory detail, or physical reaction (1 pt)",
+        "The feeling is clearly inferable from the details (1 pt)",
+        "Reads smoothly as one grammatical sentence (1 pt)"
+      ],
+      "feedbackStyle": "Warm and specific; name one thing that worked and one concrete next step. Address the student by name if provided."
+    },
+    {
+      "id": "topic-sentence",
+      "title": "Topic sentence",
+      "prompt": "Write a topic sentence for a paragraph about why recess matters.",
+      "max": 3,
+      "criteria": [
+        "States a single clear main idea (1 pt)",
+        "Is a claim that a paragraph could support, not just a fact (1 pt)",
+        "Is complete and correctly punctuated (1 pt)"
+      ],
+      "feedbackStyle": "Encouraging; if it's a fact rather than a claim, show how to turn it into one."
+    },
+    {
+      "id": "sensory-detail",
+      "title": "Sensory detail",
+      "prompt": "Describe your favorite place using at least three of the five senses.",
+      "max": 5,
+      "criteria": [
+        "Names a specific place (1 pt)",
+        "Uses three or more distinct senses (2 pts)",
+        "Details are concrete rather than generic (1 pt)",
+        "Word choice fits the mood of the place (1 pt)"
+      ],
+      "feedbackStyle": "Celebrate vivid details by quoting one back; suggest one more sense to add if fewer than three."
+    }
+  ]
+}

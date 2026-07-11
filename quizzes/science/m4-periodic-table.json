@@ -1,0 +1,103 @@
+{
+  "generated": true,
+  "subject": "science",
+  "slug": "periodic-table",
+  "id": "m4-periodic-table",
+  "title": "M4 · Periodic Table",
+  "source": "science/visualizations/periodic-table/module.js",
+  "page": "science/visualizations/periodic-table/?beta=1",
+  "gradeable": 5,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mc",
+      "prompt": "An element's row (period) number tells you roughly its number of…",
+      "choices": [
+        "protons",
+        "electron shells",
+        "neutrons"
+      ],
+      "answer": 1,
+      "explain": "Period ≈ number of occupied electron shells."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "Elements in the same group (column) have the same number of…",
+      "choices": [
+        "valence electrons",
+        "neutrons",
+        "shells"
+      ],
+      "answer": 0,
+      "explain": "Same valence electrons → similar chemistry."
+    },
+    {
+      "id": "q3",
+      "type": "mc",
+      "prompt": "Why are the noble gases so unreactive?",
+      "choices": [
+        "They're too heavy",
+        "Their outer shell is already full",
+        "They have no electrons"
+      ],
+      "answer": 1,
+      "explain": "A full outer shell is very stable."
+    },
+    {
+      "id": "q4",
+      "type": "mc",
+      "prompt": "Across a period (left → right), atoms generally get…",
+      "choices": [
+        "bigger",
+        "smaller",
+        "stay the same"
+      ],
+      "answer": 1,
+      "explain": "More protons pull electrons in tighter."
+    },
+    {
+      "id": "q5",
+      "type": "mc",
+      "prompt": "The most electronegative elements are in the…",
+      "choices": [
+        "bottom-left",
+        "top-right (near fluorine)",
+        "middle"
+      ],
+      "answer": 1,
+      "explain": "Electronegativity peaks toward fluorine."
+    },
+    {
+      "id": "q6",
+      "type": "build",
+      "prompt": "Colour the table by electronegativity.",
+      "check": {
+        "colorMode": "electronegativity"
+      },
+      "interactiveOnly": true,
+      "explain": "Use the “Colour by” menu."
+    },
+    {
+      "id": "q7",
+      "type": "build",
+      "prompt": "Highlight group 1 (the alkali metals).",
+      "check": {
+        "highlightMode": "group",
+        "highlightValue": "1"
+      },
+      "interactiveOnly": true,
+      "explain": "Use the Highlight menu → A group → Group 1."
+    },
+    {
+      "id": "q8",
+      "type": "build",
+      "prompt": "Find iron (Fe) — search for it or click it.",
+      "check": {
+        "symbol": "Fe"
+      },
+      "interactiveOnly": true,
+      "explain": "Type Fe, Iron, or 26 in the Find box."
+    }
+  ]
+}

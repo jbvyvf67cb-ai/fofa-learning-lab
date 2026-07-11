@@ -1,0 +1,97 @@
+{
+  "generated": true,
+  "subject": "science",
+  "slug": "bonding",
+  "id": "m5-bonding",
+  "title": "M5 · Chemical Bonding",
+  "source": "science/visualizations/bonding/module.js",
+  "page": "science/visualizations/bonding/?beta=1",
+  "gradeable": 5,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mc",
+      "prompt": "In an ionic bond, electrons are…",
+      "choices": [
+        "transferred",
+        "shared",
+        "destroyed"
+      ],
+      "answer": 0,
+      "explain": "One atom gives electrons to the other."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "In a covalent bond, electrons are…",
+      "choices": [
+        "transferred",
+        "shared",
+        "removed"
+      ],
+      "answer": 1,
+      "explain": "Both atoms share the electron pair(s)."
+    },
+    {
+      "id": "q3",
+      "type": "mc",
+      "prompt": "What holds a metal together?",
+      "choices": [
+        "A sea of shared electrons",
+        "Transferred electrons",
+        "Neutrons"
+      ],
+      "answer": 0,
+      "explain": "Delocalized valence electrons — the electron sea."
+    },
+    {
+      "id": "q4",
+      "type": "mc",
+      "prompt": "Between two nonmetals, a bigger electronegativity gap makes the bond…",
+      "choices": [
+        "more polar",
+        "more metallic",
+        "nonpolar"
+      ],
+      "answer": 0,
+      "explain": "The shared pair shifts toward the stronger puller."
+    },
+    {
+      "id": "q5",
+      "type": "tf",
+      "prompt": "Noble gases bond eagerly with other atoms.",
+      "answer": false,
+      "explain": "Full outer shell → they barely react."
+    },
+    {
+      "id": "q6",
+      "type": "build",
+      "prompt": "Make an ionic bond (pick a metal and a nonmetal).",
+      "check": {
+        "bondType": "ionic"
+      },
+      "interactiveOnly": true,
+      "explain": "e.g. Na + Cl, or Mg + O."
+    },
+    {
+      "id": "q7",
+      "type": "build",
+      "prompt": "Make a nonpolar covalent bond.",
+      "check": {
+        "bondType": "nonpolar"
+      },
+      "interactiveOnly": true,
+      "explain": "Two identical nonmetals, e.g. O + O or Cl + Cl."
+    },
+    {
+      "id": "q8",
+      "type": "build",
+      "prompt": "Make a metallic bond (two metals).",
+      "check": {
+        "bondType": "metallic"
+      },
+      "interactiveOnly": true,
+      "explain": "e.g. Na + Mg."
+    }
+  ]
+}

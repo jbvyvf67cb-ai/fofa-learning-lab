@@ -1,0 +1,194 @@
+/* ============================================================================
+   Fofa Learning Lab — canonical design system (single source of truth)
+   ----------------------------------------------------------------------------
+   Every page in the lab consumes these tokens. The two subject sub-sites pull
+   this file in at the top of their own shared stylesheet:
+       science/assets/css/main.css   @import ".../assets/css/fofa.css"
+       writing/assets/css/base.css   @import ".../assets/css/fofa.css"
+   and then alias their legacy variable names to the tokens below, so all 24
+   modules inherit one palette + type system without being rewritten.
+
+   Fofa's OWN pages (index / settings / math / reading) load only THIS file and
+   use the .fofa-* components at the bottom.
+   ============================================================================ */
+
+:root {
+  /* --- Palette (merged from the two sibling sites) ----------------------- */
+  --bg:            #0f1220;
+  --bg-soft:       #171b2e;
+  --panel:         #1d2238;
+  --panel-2:       #262c47;
+  --line:          #333a5c;
+  --ink:           #eef1ff;
+  --ink-soft:      #b7bede;
+  --ink-mute:      #8891b4;
+  --accent:        #7c9cff;   /* primary blue */
+  --accent-2:      #4fd6c9;   /* teal */
+  --accent-warm:   #ffb86b;
+  --good:          #56d3a0;
+  --warn:          #ffc857;
+  --bad:           #ff7a90;
+
+  /* --- Per-subject accents (used by the landing + chrome) ---------------- */
+  --subj-science:  #4fd6c9;
+  --subj-writing:  #c792ea;
+  --subj-math:     #7c9cff;
+  --subj-reading:  #ffb86b;
+
+  /* --- Type: one display serif + one UI sans, shared everywhere ---------- */
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-ui:      ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono:         ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* --- Shape & spacing --------------------------------------------------- */
+  --radius:    14px;
+  --radius-sm: 9px;
+  --shadow:    0 10px 30px rgba(0, 0, 0, .35);
+  --maxw:      1180px;
+}
+
+/* One display face for the big headings, across every subject. Lower headings
+   and UI stay on the sans. (Sub-site stylesheets load after this import and can
+   still override where a module needs to.) */
+h1, h2,
+.hero h1, .hero h2,
+.brand, .fofa-brand {
+  font-family: var(--font-display);
+}
+
+/* ============================================================================
+   Fofa-only components (index.html / settings.html / math|reading placeholders)
+   These class names live only on Fofa's own pages, so they never collide with
+   the sub-sites' components.
+   ============================================================================ */
+
+* { box-sizing: border-box; }
+
+.fofa-page {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 700px at 12% -10%, #1a2340 0%, transparent 60%),
+    radial-gradient(1000px 700px at 112% 8%, #241a36 0%, transparent 55%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.fofa-page a { color: var(--accent); text-decoration: none; }
+.fofa-page a:hover { text-decoration: underline; }
+.fofa-wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+
+/* Top bar / breadcrumb — used on Fofa pages and prepended to the two subject
+   landing pages so there is always a way back up to the lab. */
+.fofa-bar {
+  position: sticky; top: 0; z-index: 30;
+  backdrop-filter: blur(8px);
+  background: rgba(15, 18, 32, .72);
+  border-bottom: 1px solid var(--line);
+}
+.fofa-bar .fofa-wrap { display: flex; align-items: center; gap: 14px; height: 56px; }
+.fofa-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; color: var(--ink); }
+.fofa-brand .fofa-glyph {
+  display: inline-grid; place-items: center; width: 30px; height: 30px;
+  border-radius: 9px; color: #10131f; font-weight: 900; font-family: var(--font-display);
+  background: linear-gradient(135deg, var(--accent), var(--subj-writing));
+}
+.fofa-bar nav { margin-left: auto; display: flex; gap: 18px; font-size: 14px; }
+.fofa-bar nav a { color: var(--ink-soft); }
+.fofa-crumb { color: var(--ink-mute); font-size: 14px; }
+.fofa-crumb b { color: var(--ink-soft); font-weight: 700; }
+
+/* Hero */
+.fofa-hero { padding: 60px 0 20px; }
+.fofa-hero .eyebrow {
+  text-transform: uppercase; letter-spacing: .16em; font-size: 12px;
+  font-weight: 700; color: var(--accent);
+}
+.fofa-hero h1 { font-size: clamp(34px, 6vw, 58px); line-height: 1.04; margin: 12px 0 14px; }
+.fofa-hero p { font-size: clamp(16px, 2.2vw, 20px); color: var(--ink-soft); max-width: 64ch; margin: 0; }
+
+/* Subject grid */
+.subj-grid {
+  display: grid; gap: 20px; margin: 30px 0 10px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+.subj-card {
+  display: flex; flex-direction: column; overflow: hidden;
+  background: linear-gradient(180deg, var(--panel), var(--bg-soft));
+  border: 1px solid var(--line); border-radius: var(--radius);
+  color: inherit; transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.subj-card.live:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
+.subj-card .thumb {
+  height: 116px; display: grid; place-items: center; font-size: 44px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--subj, var(--accent)) 22%, var(--panel));
+}
+.subj-card .body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+.subj-card h3 { margin: 0 0 6px; font-size: 20px; font-family: var(--font-display); }
+.subj-card p { margin: 0 0 12px; color: var(--ink-soft); font-size: 14px; flex: 1; }
+.subj-card .tag {
+  align-self: flex-start; font-size: 12px; letter-spacing: .04em;
+  border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; color: var(--ink-soft);
+}
+.subj-card.live .tag { color: var(--good); border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+.subj-card.soon { opacity: .62; }
+.subj-card.soon:hover { transform: none; }
+.subj-card.soon .thumb { filter: grayscale(.5); }
+
+/* Generic Fofa building blocks (settings + placeholder pages) */
+.fofa-panel {
+  background: linear-gradient(180deg, var(--panel), var(--bg-soft));
+  border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 22px;
+}
+.fofa-section-title { font-family: var(--font-display); font-size: 26px; margin: 42px 0 12px; }
+.fofa-muted { color: var(--ink-mute); }
+.fofa-eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: 12px; font-weight: 700; color: var(--accent); }
+.fofa-arc { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 10px; }
+.fofa-arc li {
+  display: flex; gap: 12px; align-items: baseline;
+  border-left: 2px solid var(--line); padding: 4px 0 4px 14px;
+}
+.fofa-arc li .n { color: var(--accent); font-weight: 800; font-variant-numeric: tabular-nums; }
+.fofa-arc li b { color: var(--ink); }
+.fofa-arc li span { color: var(--ink-soft); }
+
+.fofa-btn {
+  appearance: none; cursor: pointer; display: inline-block;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--ink);
+  font: 600 14px/1 var(--font-ui); padding: 11px 16px; border-radius: 10px;
+  transition: background .15s ease, border-color .15s ease, transform .06s ease;
+}
+.fofa-btn:hover { background: #2c3454; border-color: #45507e; text-decoration: none; }
+.fofa-btn:active { transform: translateY(1px); }
+.fofa-btn.primary { background: var(--accent); border-color: var(--accent); color: #10131f; }
+.fofa-btn.primary:hover { background: #93abff; }
+
+.fofa-field { display: block; margin: 16px 0 6px; font-size: 14px; color: var(--ink-soft); font-weight: 600; }
+.fofa-input {
+  width: 100%; padding: 11px 13px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--bg-soft); color: var(--ink);
+  font: 14px/1.4 var(--font-ui);
+}
+.fofa-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.fofa-help { font-size: 13px; color: var(--ink-mute); margin: 6px 0 0; }
+
+.fofa-foot {
+  margin-top: 56px; padding: 26px 0 44px;
+  border-top: 1px solid var(--line); color: var(--ink-mute); font-size: 14px;
+}
+
+/* Status pill for settings / measurables connection state */
+.fofa-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; border-radius: 999px; padding: 4px 12px;
+  border: 1px solid var(--line); background: var(--panel);
+}
+.fofa-pill .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-mute); }
+.fofa-pill.on   .dot { background: var(--good); }
+.fofa-pill.off  .dot { background: var(--warn); }
+
+@media (max-width: 640px) { .fofa-bar nav { display: none; } }

@@ -1,0 +1,87 @@
+{
+  "generated": true,
+  "subject": "science",
+  "slug": "laser-diamond",
+  "id": "adv-laser-diamond",
+  "title": "Laser on Diamond",
+  "source": "science/visualizations/laser-diamond/module.js",
+  "page": "science/visualizations/laser-diamond/?beta=1",
+  "gradeable": 5,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mc",
+      "prompt": "Why is diamond transparent to most laser light?",
+      "choices": [
+        "It reflects everything",
+        "Single sub-bandgap photons can't be absorbed",
+        "It has no electrons"
+      ],
+      "answer": 1,
+      "explain": "The 5.5 eV gap is bigger than a visible/IR photon's energy."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "Diamond's extreme thermal conductivity means a hot spot…",
+      "choices": [
+        "stays hot easily",
+        "is cooled almost as fast as it's heated",
+        "cannot form at all"
+      ],
+      "answer": 1,
+      "explain": "The lattice conducts heat away very fast."
+    },
+    {
+      "id": "q3",
+      "type": "mc",
+      "prompt": "In which case does 'infinite time' actually help cut the diamond?",
+      "choices": [
+        "Heat-sunk (isothermal)",
+        "Isolated (surface loss only)",
+        "It never helps"
+      ],
+      "answer": 1,
+      "explain": "An isolated stone slowly preheats until it cuts."
+    },
+    {
+      "id": "q4",
+      "type": "mc",
+      "prompt": "Graphitization runs away because graphite is…",
+      "choices": [
+        "transparent",
+        "black and strongly absorbing",
+        "a better conductor"
+      ],
+      "answer": 1,
+      "explain": "Black graphite absorbs more → hotter → more graphite."
+    },
+    {
+      "id": "q5",
+      "type": "tf",
+      "prompt": "A heat-sunk diamond can be cut by a very weak beam if you just wait long enough.",
+      "answer": false,
+      "explain": "Heat-sunk → steady state instantly; time doesn't help. You need ~40 W locally."
+    },
+    {
+      "id": "q6",
+      "type": "build",
+      "prompt": "Set it up so that infinite time DOES help (a weak beam that eventually cuts).",
+      "check": {
+        "timeHelps": true
+      },
+      "interactiveOnly": true,
+      "explain": "Use the Isolated boundary with a modest absorbed power (above the ~1 W surface-loss limit)."
+    },
+    {
+      "id": "q7",
+      "type": "build",
+      "prompt": "Put the diamond in the regime where it stays safe and NEVER cuts.",
+      "check": {
+        "cuts": false
+      },
+      "interactiveOnly": true,
+      "explain": "Heat-sink it, or drop the power/absorption so the steady spot stays below T_g."
+    }
+  ]
+}

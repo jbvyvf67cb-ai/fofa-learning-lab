@@ -1,0 +1,120 @@
+{
+  "generated": true,
+  "subjects": {
+    "science": {
+      "title": "Science",
+      "basePath": "science/visualizations",
+      "modules": [
+        {
+          "id": "m5-bonding",
+          "slug": "bonding",
+          "title": "M5 · Chemical Bonding",
+          "quiz": "quizzes/science/m5-bonding.json",
+          "count": 8,
+          "gradeable": 5,
+          "types": [
+            "mc",
+            "tf",
+            "build"
+          ]
+        },
+        {
+          "id": "m3-electron-config",
+          "slug": "electron-configuration",
+          "title": "M3 · Electron Configuration",
+          "quiz": "quizzes/science/m3-electron-config.json",
+          "count": 8,
+          "gradeable": 6,
+          "types": [
+            "mc",
+            "numeric",
+            "tf",
+            "build"
+          ]
+        },
+        {
+          "id": "m1-atomic-structure",
+          "slug": "element-explorer",
+          "title": "M1 · Atomic Structure",
+          "quiz": "quizzes/science/m1-atomic-structure.json",
+          "count": 11,
+          "gradeable": 7,
+          "types": [
+            "mc",
+            "numeric",
+            "tf",
+            "build"
+          ]
+        },
+        {
+          "id": "m2-isotopes",
+          "slug": "isotopes",
+          "title": "M2 · Isotopes & Atomic Mass",
+          "quiz": "quizzes/science/m2-isotopes.json",
+          "count": 8,
+          "gradeable": 6,
+          "types": [
+            "mc",
+            "numeric",
+            "tf",
+            "build"
+          ]
+        },
+        {
+          "id": "adv-laser-diamond",
+          "slug": "laser-diamond",
+          "title": "Laser on Diamond",
+          "quiz": "quizzes/science/adv-laser-diamond.json",
+          "count": 7,
+          "gradeable": 5,
+          "types": [
+            "mc",
+            "tf",
+            "build"
+          ]
+        },
+        {
+          "id": "m4-periodic-table",
+          "slug": "periodic-table",
+          "title": "M4 · Periodic Table",
+          "quiz": "quizzes/science/m4-periodic-table.json",
+          "count": 8,
+          "gradeable": 5,
+          "types": [
+            "mc",
+            "build"
+          ]
+        },
+        {
+          "id": "m6-vsepr",
+          "slug": "vsepr",
+          "title": "M6 · Molecular Shape",
+          "quiz": "quizzes/science/m6-vsepr.json",
+          "count": 7,
+          "gradeable": 4,
+          "types": [
+            "mc",
+            "build"
+          ]
+        }
+      ]
+    },
+    "writing": {
+      "title": "Writing",
+      "basePath": "writing/visualizations",
+      "note": "Interactive activities report an outcome via Fofa.report(); open-ended prompts are graded via Fofa.grade() + the HA grading webhook.",
+      "rubrics": "quizzes/writing/rubrics.json",
+      "modules": []
+    },
+    "math": {
+      "title": "Math",
+      "status": "coming-soon",
+      "modules": []
+    },
+    "reading": {
+      "title": "Reading",
+      "status": "coming-soon",
+      "modules": []
+    }
+  }
+}

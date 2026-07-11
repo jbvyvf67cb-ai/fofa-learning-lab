@@ -1,0 +1,93 @@
+{
+  "generated": true,
+  "subject": "science",
+  "slug": "vsepr",
+  "id": "m6-vsepr",
+  "title": "M6 · Molecular Shape",
+  "source": "science/visualizations/vsepr/module.js",
+  "page": "science/visualizations/vsepr/?beta=1",
+  "gradeable": 4,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mc",
+      "prompt": "What makes electron groups spread apart?",
+      "choices": [
+        "Gravity",
+        "They repel each other",
+        "The nucleus pushes them"
+      ],
+      "answer": 1,
+      "explain": "Like charges repel — that sets the geometry."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "CO₂ is linear and…",
+      "choices": [
+        "polar",
+        "nonpolar"
+      ],
+      "answer": 1,
+      "explain": "Its two bond dipoles point opposite and cancel."
+    },
+    {
+      "id": "q3",
+      "type": "mc",
+      "prompt": "Water is bent because of its…",
+      "choices": [
+        "extra protons",
+        "lone pairs",
+        "neutrons"
+      ],
+      "answer": 1,
+      "explain": "Two lone pairs push the O–H bonds into a bent shape."
+    },
+    {
+      "id": "q4",
+      "type": "mc",
+      "prompt": "A symmetric molecule with polar bonds is usually…",
+      "choices": [
+        "polar",
+        "nonpolar"
+      ],
+      "answer": 1,
+      "explain": "Symmetry cancels the bond dipoles."
+    },
+    {
+      "id": "q5",
+      "type": "build",
+      "prompt": "Build a water molecule: 2 bonding groups and 2 lone pairs.",
+      "check": {
+        "bonds": 2,
+        "lone": 2
+      },
+      "interactiveOnly": true,
+      "explain": "AX₂E₂ → bent, polar."
+    },
+    {
+      "id": "q6",
+      "type": "build",
+      "prompt": "Build a tetrahedral molecule: 4 bonds, 0 lone pairs.",
+      "check": {
+        "bonds": 4,
+        "lone": 0
+      },
+      "interactiveOnly": true,
+      "explain": "AX₄ → tetrahedral (like CH₄)."
+    },
+    {
+      "id": "q7",
+      "type": "build",
+      "prompt": "Build any nonpolar molecule (2 or more bonds, no net dipole).",
+      "check": {
+        "polar": false,
+        "bonds": {
+          "min": 2
+        }
+      },
+      "interactiveOnly": true,
+      "explain": "e.g. CO₂ (linear), BF₃ (trigonal planar), CH₄ (tetrahedral)."
+    }
+  ]
+}

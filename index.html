@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fofa Learning Lab — learn by changing things</title>
+  <meta name="description" content="Fofa Learning Lab: interactive, hands-on learning across Science, Writing, Math, and Reading. Explore, quiz, and track progress.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3EF%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/fofa.css">
+</head>
+<body class="fofa-page">
+  <header class="fofa-bar">
+    <div class="fofa-wrap">
+      <a class="fofa-brand" href="./"><span class="fofa-glyph">F</span> Fofa&nbsp;Learning&nbsp;Lab</a>
+      <nav>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="fofa-wrap">
+    <section class="fofa-hero">
+      <div class="eyebrow">A learning lab for curious kids</div>
+      <h1>Learn by changing things.</h1>
+      <p>
+        Every subject here is hands-on. You don't just read that something is true —
+        you build it, tweak it, and watch what happens. Pick a subject to start
+        exploring, take quizzes, and track how you're doing.
+      </p>
+      <p style="margin-top:14px">
+        <span class="fofa-pill" id="haPill"><span class="dot"></span><span id="haText">Progress saved on this device</span></span>
+      </p>
+    </section>
+
+    <h2 class="fofa-section-title" id="subjects">Subjects</h2>
+    <div class="subj-grid">
+      <a class="subj-card live" href="science/" style="--subj:var(--subj-science)">
+        <div class="thumb">⚛︎</div>
+        <div class="body">
+          <h3>Science</h3>
+          <p>Build atoms, bond elements, and run physics simulations. Learn chemistry and
+             physics by changing things and watching the numbers respond.</p>
+          <span class="tag">Ready · 7 explorations</span>
+        </div>
+      </a>
+
+      <a class="subj-card live" href="writing/" style="--subj:var(--subj-writing)">
+        <div class="thumb">✎</div>
+        <div class="body">
+          <h3>Writing</h3>
+          <p>Take sentences apart to see how language works — parts of speech, subjects and
+             predicates, phrases, clauses, and style.</p>
+          <span class="tag">Ready · Unit 1 live</span>
+        </div>
+      </a>
+
+      <a class="subj-card soon" href="math/" style="--subj:var(--subj-math)">
+        <div class="thumb">∑</div>
+        <div class="body">
+          <h3>Math</h3>
+          <p>Number sense, operations, fractions, and geometry — built to be moved, stretched,
+             and rearranged until the idea clicks.</p>
+          <span class="tag">Coming soon</span>
+        </div>
+      </a>
+
+      <a class="subj-card soon" href="reading/" style="--subj:var(--subj-reading)">
+        <div class="thumb">📖</div>
+        <div class="body">
+          <h3>Reading</h3>
+          <p>Comprehension, vocabulary, and story structure — read closely, then show what you
+             understood.</p>
+          <span class="tag">Coming soon</span>
+        </div>
+      </a>
+    </div>
+
+    <p class="fofa-muted" style="margin-top:18px">
+      Grown-ups: connect the lab to Home Assistant on the
+      <a href="settings.html">Settings</a> page to track measurables and grade open-ended work.
+    </p>
+  </main>
+
+  <footer class="fofa-foot">
+    <div class="fofa-wrap">
+      Fofa Learning Lab — a dependency-free, learn-by-doing learning site.
+      Built to be read: open the page source of any page to see how it works.
+    </div>
+  </footer>
+
+  <script src="assets/js/fofa-measure.js"></script>
+  <script>
+    // Reflect whether measurables are wired to Home Assistant yet.
+    (function () {
+      var pill = document.getElementById("haPill");
+      var text = document.getElementById("haText");
+      if (window.Fofa && Fofa.config && Fofa.config.webhookUrl) {
+        pill.classList.add("on");
+        text.textContent = Fofa.config.child
+          ? ("Connected to Home Assistant · " + Fofa.config.child)
+          : "Connected to Home Assistant";
+      } else {
+        pill.classList.add("off");
+        text.textContent = "Progress saved on this device — connect Home Assistant in Settings";
+      }
+    })();
+  </script>
+</body>
+</html>

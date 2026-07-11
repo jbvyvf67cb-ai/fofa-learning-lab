@@ -154,8 +154,15 @@
 
   function markScore() {
     const correct = Object.values(answered).filter(Boolean).length;
-    document.getElementById("quizScore").textContent = `${correct} / ${(MODULE.quiz || []).length}`;
+    const total = (MODULE.quiz || []).length;
+    document.getElementById("quizScore").textContent = `${correct} / ${total}`;
     if (correct > prog.quizBest) { prog.quizBest = correct; saveProg(prog); updateProgress(); }
+    // Report the quiz result to the lab's measurables engine (mirrors locally,
+    // pushes to Home Assistant if the parent has connected it in Settings).
+    if (window.Fofa && Object.keys(answered).length === total) {
+      Fofa.report({ subject: "science", module: MODULE.id, activity: "quiz",
+                    kind: "quiz", score: correct, max: total });
+    }
   }
 
   function feedback(card, ok, explain) {
