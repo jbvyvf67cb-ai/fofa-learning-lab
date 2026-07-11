@@ -1,0 +1,34 @@
+{
+  "note": "Ordered learning arcs with gating rules. BOTH the web app and the Home Assistant `fofa` integration read this file as the source of truth for lesson order and completion criteria. A lesson unlocks only when the previous lesson in its subject is `complete`; the first lesson in each subject is always unlocked. 'complete' is decided by the lesson's `gate`, evaluated against the student's recorded results (server-side, so it can't be bypassed by clearing the browser). Keys `subject`/`module` match exactly what the app reports via the progress API (science uses the module id, writing uses the folder slug).",
+  "gateTypes": {
+    "quiz":     "best score / max >= `min` (0..1). Meeting a grade to advance.",
+    "complete": "the activity was finished: recorded score == max (e.g. a streak of 10, all items solved).",
+    "grade":    "an AI-graded (free-form) result where score / max >= `min`.",
+    "visit":    "the lesson page was opened at least once (pure-exploration lessons with no score)."
+  },
+  "subjects": {
+    "science": {
+      "title": "Science",
+      "lessons": [
+        { "module": "m1-atomic-structure",  "slug": "element-explorer",        "title": "Atomic Structure",        "url": "science/visualizations/element-explorer/?beta=1",       "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m2-isotopes",           "slug": "isotopes",                "title": "Isotopes & Atomic Mass",  "url": "science/visualizations/isotopes/?beta=1",               "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m3-electron-config",    "slug": "electron-configuration",  "title": "Electron Configuration",  "url": "science/visualizations/electron-configuration/?beta=1", "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m4-periodic-table",     "slug": "periodic-table",          "title": "Periodic Table",          "url": "science/visualizations/periodic-table/?beta=1",         "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m5-bonding",            "slug": "bonding",                 "title": "Chemical Bonding",        "url": "science/visualizations/bonding/?beta=1",                "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m6-vsepr",              "slug": "vsepr",                   "title": "Molecular Shape (VSEPR)", "url": "science/visualizations/vsepr/?beta=1",                  "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "adv-laser-diamond",     "slug": "laser-diamond",           "title": "Laser on Diamond",        "url": "science/visualizations/laser-diamond/?beta=1",          "gate": { "type": "quiz", "min": 0.8 } }
+      ]
+    },
+    "writing": {
+      "title": "Writing",
+      "lessons": [
+        { "module": "sentence-anatomy",           "slug": "sentence-anatomy",           "title": "Sentence Anatomy",        "url": "writing/visualizations/sentence-anatomy/",           "gate": { "type": "visit" } },
+        { "module": "word-sort",                  "slug": "word-sort",                  "title": "Word Sort",               "url": "writing/visualizations/word-sort/",                  "gate": { "type": "complete" } },
+        { "module": "parts-of-speech-detective",  "slug": "parts-of-speech-detective",  "title": "Part-of-Speech Detective","url": "writing/visualizations/parts-of-speech-detective/",  "gate": { "type": "complete" } },
+        { "module": "word-shape-lab",             "slug": "word-shape-lab",             "title": "Word-Shape Lab",          "url": "writing/visualizations/word-shape-lab/",             "gate": { "type": "visit" } }
+      ]
+    },
+    "math":    { "title": "Math",    "status": "coming-soon", "lessons": [] },
+    "reading": { "title": "Reading", "status": "coming-soon", "lessons": [] }
+  }
+}
