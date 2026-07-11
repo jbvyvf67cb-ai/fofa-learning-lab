@@ -23,17 +23,20 @@ client and speaks exactly this contract.
                                                    └──────────────────────────────────────────┘
 ```
 
-- **Single student** for now, so a single account is enough — but model it as one row in an accounts
-  table so more can be added later. Credentials are checked **by the `fofa` integration** (own
-  accounts), so the student never gets a Home Assistant login / house access.
+- **Own accounts (confirmed).** Credentials are checked **by the `fofa` integration** — its own
+  accounts table (`username → hashed password → student id`), *not* Home Assistant users. So a
+  student never gets a Home Assistant login / house access, no matter how many accounts exist.
+- **Multi-user by construction (see §7).** Start with one student, but model it as one row in that
+  table and **namespace all stored data by student id** so more accounts can be added later with no
+  schema change.
 - Because the page is served cross-origin from HA, HA must allow it. In `configuration.yaml`:
   ```yaml
   http:
     cors_allowed_origins:
       - https://jbvyvf67cb-ai.github.io
   ```
-- **HA must be reachable over HTTPS from the student's devices** (Nabu Casa Cloud or a reverse
-  proxy). Passwords only ever travel over HTTPS. This is a hard prerequisite for cross-device use.
+- **Remote access = Nabu Casa Cloud (confirmed).** HA is reached over its Nabu Casa HTTPS URL, so
+  the lab works across devices out of the house. Passwords only ever travel over HTTPS.
 - The web app stores only a **short-lived session token** (never the password, never the Claude key)
   in `localStorage["fofa:session"]`, plus a read-only cache of the last `state` for offline display.
   The server is always the source of truth.
@@ -141,7 +144,27 @@ On failure: `{ "ok": false, "error": "…" }`.
 
 ---
 
-## 6. Versioning
+## 7. Multiple users (supported)
+
+The model is multi-user from day one; a single student is just N=1. To keep it that way:
+
+- **Accounts table:** each row is `{ username, password_hash, student_id, display_name, created }`.
+  Adding a child = inserting a row. Hash with bcrypt/argon2; never store plaintext.
+- **Per-student data:** key all progress/results storage by `student_id`. `GET /api/fofa/state`,
+  `POST /api/fofa/progress`, and `POST /api/fofa/grade` operate **only** on the student behind the
+  request's bearer token — a user can never see or affect another's data.
+- **Creating/resetting accounts:** expose a parent/admin path — simplest is an HA service call or a
+  small admin endpoint (e.g. `POST /api/fofa/admin/accounts`) guarded by your *Home Assistant* login
+  (admin only), so the parent adds a kid and sets a password from HA. Kids' Fofa accounts stay
+  separate from HA users.
+- **Optional per-student curriculum:** gating is computed per student from `curriculum/index.json`,
+  so you can later give different children different arcs or grade thresholds by allowing a
+  per-student override of the gate `min`/order. Not required now — noted so nothing precludes it.
+- **Frontend:** already per-user (login → token → scoped state; the user chip + log-out switch
+  users). No app change is needed to go from one child to several; a profile picker on the login
+  screen is a nice-to-have, not a requirement.
+
+## 8. Versioning
 
 `curriculum/index.json` carries the arc + gate rules; both sides read it so lesson order and grade
 thresholds stay in lockstep. When it changes, bump a date/version and have `GET /api/fofa/state`
