@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Periodic Table Explorer — STEM Visualizations</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+    .toolbar .group { display:flex; gap:6px; align-items:center; background:var(--panel); border:1px solid var(--line);
+                      border-radius:10px; padding:6px 10px; }
+    .toolbar label { margin:0; color:var(--ink-soft); font-size:.85rem; }
+    select, input[type=text] { background:var(--bg-soft); color:var(--ink); border:1px solid var(--line);
+             border-radius:8px; padding:7px; font-family:var(--font); }
+
+    /* periodic grid: 18 columns + label gutter */
+    .ptable-scroll { overflow-x:auto; padding-bottom:10px; }
+    .ptable {
+      display:grid;
+      grid-template-columns: repeat(18, minmax(46px, 1fr));
+      grid-auto-rows: minmax(46px, auto);
+      gap:4px; min-width:880px;
+    }
+    .cell {
+      position:relative; border-radius:7px; padding:3px 4px; cursor:pointer;
+      border:1px solid rgba(255,255,255,.08);
+      display:flex; flex-direction:column; justify-content:space-between;
+      min-height:46px; transition:transform .08s, box-shadow .08s, opacity .12s;
+      color:#0a0f24;
+    }
+    .cell:hover { transform:scale(1.12); z-index:5; box-shadow:0 6px 18px rgba(0,0,0,.5); }
+    .cell .z { font-size:.6rem; opacity:.8; line-height:1; }
+    .cell .sym { font-size:1.05rem; font-weight:800; line-height:1; }
+    .cell .val { font-size:.55rem; font-family:var(--mono); opacity:.85; line-height:1; }
+    .cell.dim { opacity:.16; }
+    .cell.sel-highlight { outline:3px solid #fff; z-index:4; }
+    .flabel { grid-column: 1 / 3; font-size:.7rem; color:var(--ink-dim); align-self:center; }
+
+    .legend2 { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .legend2 .chip { display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--ink-soft);
+                     cursor:pointer; padding:3px 8px; border-radius:999px; border:1px solid transparent; }
+    .legend2 .chip:hover { border-color:var(--line); }
+    .legend2 .sw { width:13px; height:13px; border-radius:3px; }
+
+    .gradient-legend { display:none; align-items:center; gap:10px; margin-top:14px; font-size:.8rem; color:var(--ink-soft); }
+    .gradient-bar { height:14px; width:240px; border-radius:7px;
+      background:linear-gradient(90deg,#2a3566,#5b8cff,#00d0c0,#ffd35c,#ff5d6c); }
+
+    .layout2 { display:grid; grid-template-columns: 1fr 320px; gap:20px; align-items:start; }
+    @media (max-width:1000px){ .layout2{ grid-template-columns:1fr; } }
+
+    .detail h2 { margin:0 0 2px; }
+    .detail .sub { color:var(--ink-soft); font-size:.9rem; margin-bottom:10px; }
+    .detail table { width:100%; border-collapse:collapse; }
+    .detail td { padding:6px 4px; border-bottom:1px solid var(--line); font-size:.85rem; }
+    .detail td:first-child { color:var(--ink-soft); }
+    .detail td:last-child { text-align:right; font-family:var(--mono); }
+    .callout { margin-top:14px; padding:12px; border-radius:10px; background:rgba(91,140,255,.1);
+               border:1px solid var(--accent); font-size:.88rem; color:var(--ink); }
+    .callout strong { color:var(--accent-2); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../index.html">← All visualizations</a></div>
+      <h1>Periodic Table Explorer</h1>
+      <div class="tag">A reference you can interrogate — color by trend, highlight a group or period, see the shared property.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="toolbar">
+      <div class="group">
+        <label for="colorMode">Colour by</label>
+        <select id="colorMode">
+          <option value="category">Category</option>
+          <option value="electronegativity">Electronegativity (trend)</option>
+          <option value="ionizationEnergy">1st ionization energy (trend)</option>
+          <option value="covalentRadius">Covalent radius (trend)</option>
+          <option value="mass">Atomic mass (trend)</option>
+          <option value="valence">Valence electrons (trend)</option>
+        </select>
+      </div>
+      <div class="group">
+        <label for="highlightMode">Highlight</label>
+        <select id="highlightMode">
+          <option value="none">Nothing</option>
+          <option value="group">A group (column)</option>
+          <option value="period">A period (row)</option>
+          <option value="block">A block (s/p/d/f)</option>
+        </select>
+        <select id="highlightValue" style="display:none"></select>
+      </div>
+      <div class="group">
+        <label for="search">Find</label>
+        <input type="text" id="search" placeholder="e.g. Fe, Iron, 26" size="12" />
+      </div>
+    </div>
+
+    <div class="layout2">
+      <section>
+        <div class="ptable-scroll">
+          <div class="ptable" id="ptable"></div>
+        </div>
+
+        <div class="legend2" id="legend"></div>
+        <div class="gradient-legend" id="gradientLegend">
+          <span id="gradMin">low</span>
+          <div class="gradient-bar"></div>
+          <span id="gradMax">high</span>
+          <span id="gradUnit" style="color:var(--ink-dim)"></span>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel detail" id="detail">
+          <h2 id="dName">Hover an element</h2>
+          <div class="sub" id="dSub">Click to pin · hover to preview</div>
+          <table id="dTable"></table>
+        </div>
+        <div class="callout" id="callout" style="display:none"></div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>All 118 elements. Data is shared from <code>assets/data/elements.js</code> — the
+         same source the electron-configuration and bonding visualizations use.</p>
+    </footer>
+  </main>
+
+  <script src="../../assets/data/elements.js"></script>
+  <script src="periodic-table.js"></script>
+  <script src="module.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+</body>
+</html>

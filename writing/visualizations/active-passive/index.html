@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Active ↔ Passive — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Flip a sentence between active and passive voice and watch the doer and receiver trade places.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .legend { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; margin: 16px 0 4px; }
+    .legend .item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-soft); }
+    .legend .swatch { width: 16px; height: 16px; border-radius: 5px; display: inline-block; }
+
+    .stage { margin-top: 22px; }
+
+    .voice-toggle {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin: 10px 0 26px;
+      border: 2px solid var(--line); border-radius: 999px;
+      background: var(--panel-2); padding: 4px; max-width: 360px;
+      margin-left: auto; margin-right: auto;
+    }
+    .voice-toggle button {
+      appearance: none; cursor: pointer; border: none; background: transparent;
+      color: var(--ink-soft); font: 700 15px/1 var(--ui-font);
+      padding: 12px 20px; border-radius: 999px; flex: 1;
+      transition: background .15s ease, color .15s ease;
+    }
+    .voice-toggle button[aria-pressed="true"] {
+      background: var(--accent); color: #10131f;
+    }
+    .voice-toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    .sentence-card { text-align: center; padding: 34px 20px; }
+    .sentence-card .voice-label {
+      text-transform: uppercase; letter-spacing: .14em; font-size: 12px;
+      font-weight: 700; color: var(--accent-warm); margin-bottom: 10px;
+    }
+    .sentence-card .sentence {
+      font-family: var(--font); font-size: clamp(22px, 4.4vw, 34px);
+      line-height: 1.3; margin: 0;
+    }
+    .sentence mark {
+      background: transparent; padding: 2px 6px; border-radius: 6px;
+      font-weight: 700; color: #10131f;
+    }
+    .action-word { color: var(--ink-mute); font-style: italic; }
+
+    .note {
+      margin: 20px auto 0; max-width: 62ch; font-size: 14px;
+      color: var(--ink-soft); text-align: center;
+    }
+
+    .controls {
+      display: flex; gap: 12px; align-items: center; justify-content: center;
+      margin-top: 24px; flex-wrap: wrap;
+    }
+    .step-count { font-size: 13px; color: var(--ink-mute); }
+
+    .compare {
+      margin-top: 28px; display: grid; gap: 10px;
+      grid-template-columns: 1fr; font-size: 14px;
+    }
+    @media (min-width: 640px) { .compare { grid-template-columns: 1fr 1fr; } }
+    .compare .col {
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 12px 14px; background: var(--panel-2);
+    }
+    .compare .col.active-col.is-current,
+    .compare .col.passive-col.is-current { border-color: var(--accent); }
+    .compare .col h3 {
+      margin: 0 0 6px; font-size: 12px; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--ink-mute);
+    }
+    .compare .col p { margin: 0; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="eyebrow">Style &amp; structure</div>
+    <h1 style="font-family:var(--font)">Active ↔ Passive</h1>
+    <p class="muted">
+      Every sentence has a doer and a receiver. Flip the switch to see the same
+      idea told in active voice and passive voice — and watch the doer and
+      receiver trade places.
+    </p>
+
+    <section class="panel pad">
+      <div class="legend" id="legend" aria-label="Color key"></div>
+
+      <div class="stage">
+        <div class="voice-toggle" role="group" aria-label="Choose voice">
+          <button type="button" id="btnActive" aria-pressed="true">Active</button>
+          <button type="button" id="btnPassive" aria-pressed="false">Passive</button>
+        </div>
+
+        <div class="sentence-card panel pad">
+          <div class="voice-label" id="voiceLabel">Active voice</div>
+          <p class="sentence" id="sentence"></p>
+        </div>
+
+        <p class="note" id="note"></p>
+
+        <div class="compare">
+          <div class="col active-col" id="colActive">
+            <h3>Active</h3>
+            <p id="activeText"></p>
+          </div>
+          <div class="col passive-col" id="colPassive">
+            <h3>Passive</h3>
+            <p id="passiveText"></p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn ghost" id="prevBtn" type="button">← Previous</button>
+          <span class="step-count" id="stepCount"></span>
+          <button class="btn ghost" id="nextBtn" type="button">Next →</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Sentences and colors come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARTS, ACTIVE_PASSIVE } = WL_GRAMMAR;
+    const DOER_COLOR = PARTS.noun.color;
+    const RECEIVER_COLOR = PARTS.verb.color;
+
+    const el = {
+      legend: document.getElementById("legend"),
+      btnActive: document.getElementById("btnActive"),
+      btnPassive: document.getElementById("btnPassive"),
+      voiceLabel: document.getElementById("voiceLabel"),
+      sentence: document.getElementById("sentence"),
+      note: document.getElementById("note"),
+      activeText: document.getElementById("activeText"),
+      passiveText: document.getElementById("passiveText"),
+      colActive: document.getElementById("colActive"),
+      colPassive: document.getElementById("colPassive"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      stepCount: document.getElementById("stepCount"),
+    };
+
+    let idx = 0;
+    let voice = "active"; // "active" | "passive"
+
+    /* Build the doer / receiver legend from the shared dataset colors. */
+    el.legend.innerHTML = `
+      <span class="item"><span class="swatch" style="background:${DOER_COLOR}"></span>doer — who or what performs the action</span>
+      <span class="item"><span class="swatch" style="background:${RECEIVER_COLOR}"></span>receiver — who or what the action happens to</span>`;
+
+    /* Escape a string for safe injection into innerHTML. */
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+      }[c]));
+    }
+
+    /* Case-insensitive first-match wrap of `needle` inside `text` with a
+       colored <mark>. Falls back to plain escaped text if no match. */
+    function highlightOne(text, needle, color) {
+      const lower = text.toLowerCase();
+      const at = lower.indexOf(needle.toLowerCase());
+      if (at === -1) return escapeHtml(text);
+      const before = text.slice(0, at);
+      const match = text.slice(at, at + needle.length);
+      const after = text.slice(at + needle.length);
+      return escapeHtml(before) +
+        `<mark style="background:${color}">${escapeHtml(match)}</mark>` +
+        escapeHtml(after);
+    }
+
+    /* Highlight both the doer and receiver inside a sentence, in whichever
+       order they occur, so overlapping wraps never collide. */
+    function highlightBoth(text, doer, receiver) {
+      const lower = text.toLowerCase();
+      const doerAt = lower.indexOf(doer.toLowerCase());
+      const receiverAt = lower.indexOf(receiver.toLowerCase());
+      const marks = [];
+      if (doerAt !== -1) marks.push({ start: doerAt, len: doer.length, color: DOER_COLOR });
+      if (receiverAt !== -1) marks.push({ start: receiverAt, len: receiver.length, color: RECEIVER_COLOR });
+      marks.sort((a, b) => a.start - b.start);
+
+      let out = "";
+      let cursor = 0;
+      marks.forEach((m) => {
+        if (m.start < cursor) return; // skip overlapping matches
+        out += escapeHtml(text.slice(cursor, m.start));
+        const match = text.slice(m.start, m.start + m.len);
+        out += `<mark style="background:${m.color}">${escapeHtml(match)}</mark>`;
+        cursor = m.start + m.len;
+      });
+      out += escapeHtml(text.slice(cursor));
+      return out;
+    }
+
+    function render() {
+      const item = ACTIVE_PASSIVE[idx];
+      const isActive = voice === "active";
+      const text = isActive ? item.active : item.passive;
+
+      el.voiceLabel.textContent = isActive ? "Active voice" : "Passive voice";
+      el.sentence.innerHTML = highlightBoth(text, item.doer, item.receiver);
+
+      el.note.textContent = isActive
+        ? "Active: the doer (" + item.doer + ") comes first, direct and punchy."
+        : "Passive: the receiver (" + item.receiver + ") comes first; the doer moves to the end — useful when the doer is unknown or unimportant.";
+
+      el.activeText.innerHTML = highlightBoth(item.active, item.doer, item.receiver);
+      el.passiveText.innerHTML = highlightBoth(item.passive, item.doer, item.receiver);
+
+      el.colActive.classList.toggle("is-current", isActive);
+      el.colPassive.classList.toggle("is-current", !isActive);
+
+      el.btnActive.setAttribute("aria-pressed", String(isActive));
+      el.btnPassive.setAttribute("aria-pressed", String(!isActive));
+
+      el.stepCount.textContent = `Sentence ${idx + 1} of ${ACTIVE_PASSIVE.length}`;
+      el.prevBtn.disabled = idx === 0;
+      el.nextBtn.disabled = idx === ACTIVE_PASSIVE.length - 1;
+    }
+
+    el.btnActive.addEventListener("click", () => { voice = "active"; render(); });
+    el.btnPassive.addEventListener("click", () => { voice = "passive"; render(); });
+
+    el.prevBtn.addEventListener("click", () => {
+      if (idx > 0) { idx--; render(); }
+    });
+    el.nextBtn.addEventListener("click", () => {
+      if (idx < ACTIVE_PASSIVE.length - 1) { idx++; render(); }
+    });
+
+    render();
+  </script>
+</body>
+</html>

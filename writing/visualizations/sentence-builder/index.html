@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sentence Builder — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Pick chips to build a sentence and see the subject and predicate come together.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    /* Live sentence preview */
+    .live-label {
+      font-size: 12px; text-transform: uppercase; letter-spacing: .1em;
+      color: var(--ink-mute); margin-bottom: 8px;
+    }
+    .live-sentence {
+      font-family: var(--font);
+      font-size: clamp(22px, 4vw, 32px);
+      line-height: 1.5; margin: 0; min-height: 1.6em;
+    }
+    .live-sentence .placeholder { color: var(--ink-mute); font-style: italic; }
+    .live-sentence .tint-subject,
+    .live-sentence .tint-predicate { font-weight: 700; }
+
+    .result-msg { margin-top: 14px; min-height: 1.4em; }
+    .result-msg p { margin: 0 0 6px; font-weight: 700; }
+    .result-msg.bad p { color: var(--bad); }
+    .result-msg.good p.headline { color: var(--good); }
+    .split { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 8px; }
+    .split-item { min-width: 160px; }
+    .split-label {
+      display: block; font-size: 12px; text-transform: uppercase;
+      letter-spacing: .08em; font-weight: 700; margin-bottom: 3px;
+    }
+    .split-value { font-family: var(--font); font-size: 18px; font-weight: 400; color: var(--ink); }
+
+    /* Chip columns */
+    .columns {
+      display: grid; gap: 20px; margin-top: 4px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (min-width: 860px) { .columns { grid-template-columns: repeat(4, 1fr); } }
+    .column {
+      border-left: 3px solid var(--line);
+      padding-left: 14px;
+    }
+    .col-title {
+      font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--ink-soft); margin: 0 0 10px; font-weight: 700;
+    }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip-btn {
+      appearance: none; cursor: pointer; text-align: left;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--panel);
+      color: var(--ink-soft); font: 600 13px/1.3 var(--ui-font);
+      transition: transform .06s ease, border-color .12s ease, background .12s ease, color .12s ease;
+    }
+    .chip-btn:hover { border-color: #4a5588; background: var(--panel-2); }
+    .chip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .chip-btn:active { transform: translateY(1px); }
+    .chip-btn.selected {
+      border-color: var(--accent); background: var(--panel-2); color: var(--ink);
+      box-shadow: 0 0 0 2px rgba(124, 156, 255, .28);
+    }
+    .chip-btn .mark { font-weight: 800; color: var(--accent); }
+
+    .toolbar { margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../sentence-anatomy/">Sentence Anatomy →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 2 · Subject &amp; predicate</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Sentence Builder</h1>
+      <p class="muted" style="margin-top:0; max-width:64ch">
+        Every grammatical sentence needs at least a <b>subject</b> (who or what) and a
+        <b>verb</b> (the action). Everything after the subject — the verb plus whatever
+        follows it — is the <b>predicate</b>. Pick one chip from each column below and
+        watch your sentence come together.
+      </p>
+
+      <section class="panel pad">
+        <div class="live-label">Your sentence</div>
+        <p class="live-sentence" id="liveSentence" aria-live="polite"></p>
+
+        <div class="row toolbar">
+          <button class="btn primary" id="checkBtn" type="button">Check sentence</button>
+          <button class="btn ghost" id="surpriseBtn" type="button">Surprise me</button>
+          <button class="btn ghost" id="clearBtn" type="button">Clear</button>
+        </div>
+
+        <div class="result-msg" id="resultMsg" aria-live="polite"></div>
+      </section>
+
+      <section class="panel pad" style="margin-top:18px">
+        <div class="columns" id="columns"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Phrases come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARTS, BUILDER } = WL_GRAMMAR;
+    const SUBJECT_COLOR = PARTS.noun.color;
+    const PREDICATE_COLOR = PARTS.verb.color;
+
+    /* Column definitions: which BUILDER list feeds each column, whether it's
+       optional, and which half of the sentence it tints. */
+    const COLUMNS = [
+      { key: "subject", label: "Subject (who/what)", data: BUILDER.subjects, optional: false, color: SUBJECT_COLOR },
+      { key: "verb",    label: "Verb (action)",       data: BUILDER.verbs,    optional: false, color: PREDICATE_COLOR },
+      { key: "object",  label: "Object (optional)",   data: BUILDER.objects,  optional: true,  color: PREDICATE_COLOR },
+      { key: "extra",   label: "Extra detail (optional)", data: BUILDER.extras, optional: true, color: PREDICATE_COLOR },
+    ];
+
+    const state = { subject: null, verb: null, object: null, extra: null };
+
+    const el = {
+      columns: document.getElementById("columns"),
+      live: document.getElementById("liveSentence"),
+      result: document.getElementById("resultMsg"),
+      check: document.getElementById("checkBtn"),
+      surprise: document.getElementById("surpriseBtn"),
+      clear: document.getElementById("clearBtn"),
+    };
+
+    function cap(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function randomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    /* Build the four chip columns once; re-rendered on every state change so
+       the "selected" look always matches current state. */
+    function renderColumns() {
+      el.columns.innerHTML = "";
+      COLUMNS.forEach((col) => {
+        const wrap = document.createElement("div");
+        wrap.className = "column";
+        wrap.style.borderLeftColor = col.color;
+
+        const title = document.createElement("h2");
+        title.className = "col-title";
+        title.textContent = col.label;
+        wrap.appendChild(title);
+
+        const row = document.createElement("div");
+        row.className = "chip-row";
+        row.setAttribute("role", "group");
+        row.setAttribute("aria-label", col.label + " choices");
+
+        col.data.forEach((phrase) => {
+          const selected = state[col.key] === phrase;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "chip-btn" + (selected ? " selected" : "");
+          btn.setAttribute("aria-pressed", selected ? "true" : "false");
+          btn.innerHTML = (selected ? '<span class="mark">&#10003;</span> ' : "") + phrase;
+          btn.addEventListener("click", () => selectChip(col.key, phrase, col.optional));
+          row.appendChild(btn);
+        });
+
+        wrap.appendChild(row);
+        el.columns.appendChild(wrap);
+      });
+    }
+
+    function selectChip(key, phrase, optional) {
+      if (state[key] === phrase) {
+        if (optional) state[key] = null; // click again to deselect an optional chip
+        // required chips (subject/verb) stay selected on a repeat click
+      } else {
+        state[key] = phrase;
+      }
+      renderColumns();
+      renderLive();
+      clearResult();
+    }
+
+    /* Live sentence: Subject + Verb + Object + Extra, capitalized, with a
+       trailing period. Subject half tinted noun color, predicate half tinted
+       verb color, so learners see the split as they build. */
+    function renderLive() {
+      const subject = state.subject;
+      const predicate = [state.verb, state.object, state.extra].filter(Boolean).join(" ");
+
+      if (!subject && !predicate) {
+        el.live.innerHTML = '<span class="placeholder">Pick chips below to start your sentence&hellip;</span>';
+        return;
+      }
+
+      let subjectText = subject || "";
+      let predicateText = predicate;
+      if (subjectText) {
+        subjectText = cap(subjectText);
+      } else if (predicateText) {
+        predicateText = cap(predicateText);
+      }
+
+      let html = "";
+      if (subjectText) {
+        html += `<span class="tint-subject" style="color:${SUBJECT_COLOR}">${subjectText}</span>`;
+      }
+      if (predicateText) {
+        html += (subjectText ? " " : "") +
+          `<span class="tint-predicate" style="color:${PREDICATE_COLOR}">${predicateText}</span>`;
+      }
+      html += ".";
+      el.live.innerHTML = html;
+    }
+
+    function clearResult() {
+      el.result.className = "result-msg";
+      el.result.innerHTML = "";
+    }
+
+    function checkSentence() {
+      if (!state.subject || !state.verb) {
+        el.result.className = "result-msg bad";
+        el.result.innerHTML = "<p>A sentence needs a subject AND a verb — that's a fragment without both.</p>";
+        return;
+      }
+      const subjectText = cap(state.subject);
+      const predicateText = [state.verb, state.object, state.extra].filter(Boolean).join(" ") + ".";
+
+      el.result.className = "result-msg good";
+      el.result.innerHTML = `
+        <p class="headline">That&rsquo;s a complete sentence! Subject + predicate = a full thought.</p>
+        <div class="split">
+          <div class="split-item">
+            <span class="split-label" style="color:${SUBJECT_COLOR}">Subject</span>
+            <span class="split-value">${subjectText}</span>
+          </div>
+          <div class="split-item">
+            <span class="split-label" style="color:${PREDICATE_COLOR}">Predicate</span>
+            <span class="split-value">${predicateText}</span>
+          </div>
+        </div>`;
+    }
+
+    function surpriseMe() {
+      state.subject = randomFrom(BUILDER.subjects);
+      state.verb = randomFrom(BUILDER.verbs);
+      state.object = Math.random() < 0.5 ? randomFrom(BUILDER.objects) : null;
+      state.extra = Math.random() < 0.5 ? randomFrom(BUILDER.extras) : null;
+      renderColumns();
+      renderLive();
+      clearResult();
+    }
+
+    function clearAll() {
+      state.subject = null;
+      state.verb = null;
+      state.object = null;
+      state.extra = null;
+      renderColumns();
+      renderLive();
+      clearResult();
+    }
+
+    el.check.addEventListener("click", checkSentence);
+    el.surprise.addEventListener("click", surpriseMe);
+    el.clear.addEventListener("click", clearAll);
+
+    renderColumns();
+    renderLive();
+  </script>
+</body>
+</html>

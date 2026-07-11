@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Word-Shape Lab — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Watch one root word morph its shape as its part of speech changes.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .lab { margin-top: 22px; }
+
+    /* Root word banner */
+    .root-banner { text-align: center; padding: 26px 18px 20px; }
+    .root-banner .prompt { color: var(--ink-mute); font-size: 13px; text-transform: uppercase; letter-spacing: .1em; }
+    .root-banner .root {
+      font-family: var(--font); font-size: clamp(28px, 6vw, 42px);
+      margin: 6px 0 2px; color: var(--ink-soft);
+    }
+    .root-banner .arrow { color: var(--ink-mute); font-size: 20px; margin: 2px 0; }
+
+    /* POS picker buttons */
+    .pos-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 18px 0; }
+    @media (min-width: 640px) { .pos-row { grid-template-columns: repeat(4, 1fr); } }
+    .pos-btn {
+      appearance: none; cursor: pointer; text-align: center;
+      border: 2px solid var(--line); border-radius: var(--radius-sm);
+      background: var(--panel); color: var(--ink);
+      padding: 12px 8px; font: 700 14px/1.2 var(--ui-font);
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+    }
+    .pos-btn:hover { transform: translateY(-2px); }
+    .pos-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .pos-btn .swatch {
+      display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+      margin-right: 7px; vertical-align: middle;
+    }
+    .pos-btn.active { background: var(--panel-2); }
+
+    /* Big morph stage */
+    .stage {
+      text-align: center; padding: 30px 18px;
+    }
+    .stage .word {
+      font-family: var(--font); font-size: clamp(38px, 9vw, 68px);
+      font-weight: 700; margin: 4px 0 6px;
+      transition: color .15s ease;
+    }
+    .stage .pos-label {
+      font-size: 13px; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--ink-mute); font-weight: 700;
+    }
+    .stage .sentence {
+      margin-top: 18px; font-size: clamp(17px, 2.6vw, 22px);
+      max-width: 52ch; margin-left: auto; margin-right: auto;
+      color: var(--ink-soft);
+    }
+    .stage .sentence b { font-weight: 800; }
+
+    /* Family row: all four forms */
+    .family {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+      margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line);
+    }
+    .family-item {
+      appearance: none; cursor: pointer;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: var(--panel); color: var(--ink-soft);
+      padding: 7px 14px; font: 600 13px/1 var(--ui-font);
+      display: inline-flex; align-items: center; gap: 7px;
+      transition: border-color .12s ease, background .12s ease, color .12s ease;
+    }
+    .family-item:hover { border-color: var(--accent); }
+    .family-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .family-item.active { background: var(--panel-2); color: var(--ink); }
+    .family-item .swatch {
+      width: 9px; height: 9px; border-radius: 50%; display: inline-block;
+    }
+    .family-arrow { color: var(--ink-mute); font-size: 12px; align-self: center; }
+
+    /* Root stepper */
+    .stepper { display: flex; gap: 12px; align-items: center; justify-content: center; margin-top: 22px; }
+    .stepper .count { color: var(--ink-mute); font-size: 13px; min-width: 5ch; text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../word-sort/">Word Sort →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="lab">
+      <div class="eyebrow">Unit 1 · Parts of speech</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Word-Shape Lab</h1>
+      <p class="muted" style="margin-top:0; max-width:60ch">
+        One root word, four different jobs. Pick a part of speech and watch the
+        word — and its sentence — change shape to fit.
+      </p>
+
+      <section class="panel pad">
+        <div class="root-banner">
+          <div class="prompt">Root word</div>
+          <div class="root" id="rootWord">beauty</div>
+        </div>
+
+        <div class="pos-row" id="posRow" role="group" aria-label="Choose a part of speech"></div>
+
+        <div class="stage panel pad" style="background:var(--bg-soft)">
+          <div class="pos-label" id="stagePosLabel">Noun</div>
+          <div class="word" id="stageWord">beauty</div>
+          <div class="sentence" id="stageSentence"></div>
+        </div>
+
+        <div class="family" id="familyRow" aria-label="All four forms of this root"></div>
+
+        <div class="stepper">
+          <button class="btn ghost" id="prevBtn" type="button">← Previous root</button>
+          <span class="count" id="rootCount">1 / 5</span>
+          <button class="btn ghost" id="nextBtn" type="button">Next root →</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Roots, forms, and colors come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARTS, WORD_FORMS } = WL_GRAMMAR;
+    const POS_KEYS = ["noun", "verb", "adjective", "adverb"];
+
+    const el = {
+      rootWord: document.getElementById("rootWord"),
+      posRow: document.getElementById("posRow"),
+      stagePosLabel: document.getElementById("stagePosLabel"),
+      stageWord: document.getElementById("stageWord"),
+      stageSentence: document.getElementById("stageSentence"),
+      familyRow: document.getElementById("familyRow"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      rootCount: document.getElementById("rootCount"),
+    };
+
+    let rootIndex = 0;
+    let posIndex = 0; // default to noun
+
+    /* Build the four big POS picker buttons once. */
+    POS_KEYS.forEach((key, i) => {
+      const p = PARTS[key];
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "pos-btn";
+      b.dataset.pos = key;
+      b.style.borderColor = "var(--line)";
+      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span>${p.label}`;
+      b.addEventListener("click", () => selectPos(i));
+      el.posRow.appendChild(b);
+    });
+
+    el.prevBtn.addEventListener("click", () => {
+      rootIndex = (rootIndex - 1 + WORD_FORMS.length) % WORD_FORMS.length;
+      posIndex = 0;
+      render();
+    });
+    el.nextBtn.addEventListener("click", () => {
+      rootIndex = (rootIndex + 1) % WORD_FORMS.length;
+      posIndex = 0;
+      render();
+    });
+
+    function selectPos(i) {
+      posIndex = i;
+      render();
+    }
+
+    function render() {
+      const entry = WORD_FORMS[rootIndex];
+      const posKey = POS_KEYS[posIndex];
+      const part = PARTS[posKey];
+      const formWord = entry.forms[posKey];
+      const sentence = entry.examples[posKey];
+
+      el.rootWord.textContent = entry.root;
+      el.rootCount.textContent = `${rootIndex + 1} / ${WORD_FORMS.length}`;
+
+      // POS picker buttons: highlight the active one, tint its border.
+      [...el.posRow.children].forEach((btn, i) => {
+        const active = i === posIndex;
+        btn.classList.toggle("active", active);
+        btn.style.borderColor = active ? PARTS[POS_KEYS[i]].color : "var(--line)";
+      });
+
+      // Big morph stage.
+      el.stagePosLabel.textContent = part.label;
+      el.stagePosLabel.style.color = part.color;
+      el.stageWord.textContent = formWord;
+      el.stageWord.style.color = part.color;
+      el.stageSentence.innerHTML = sentence.replace(
+        "___",
+        `<b style="color:${part.color}">${formWord}</b>`
+      );
+
+      // Family row: all four forms, colored, clickable.
+      el.familyRow.innerHTML = "";
+      POS_KEYS.forEach((key, i) => {
+        if (i > 0) {
+          const arrow = document.createElement("span");
+          arrow.className = "family-arrow";
+          arrow.textContent = "→";
+          arrow.setAttribute("aria-hidden", "true");
+          el.familyRow.appendChild(arrow);
+        }
+        const p = PARTS[key];
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "family-item" + (i === posIndex ? " active" : "");
+        item.innerHTML = `<span class="swatch" style="background:${p.color}"></span>${entry.forms[key]}`;
+        item.setAttribute("aria-label", `${p.label}: ${entry.forms[key]}`);
+        item.addEventListener("click", () => selectPos(i));
+        el.familyRow.appendChild(item);
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

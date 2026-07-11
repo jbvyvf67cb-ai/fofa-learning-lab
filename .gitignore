@@ -1,0 +1,16 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Local servers / logs
+*.log
+
+# Node is used only for dev tooling (science smoke test); never shipped
+node_modules/
+package-lock.json
+
+# Parent's local Home Assistant config is never committed (holds the webhook URL)
+config.local.js

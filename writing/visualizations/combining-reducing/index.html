@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Combining &amp; Reducing — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Merge choppy sentences into one smooth line, or trim a wordy sentence down to its lean, clear self.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    /* --- Mode toggle --------------------------------------------------- */
+    .mode-toggle {
+      display: inline-flex; gap: 4px; margin-top: 18px;
+      padding: 4px; border: 1px solid var(--line); border-radius: 999px;
+      background: var(--panel);
+    }
+    .mode-btn {
+      appearance: none; cursor: pointer; border: none;
+      background: transparent; color: var(--ink-soft);
+      font: 700 14px/1 var(--ui-font); padding: 10px 20px;
+      border-radius: 999px; transition: background .15s ease, color .15s ease;
+    }
+    .mode-btn:hover { color: var(--ink); }
+    .mode-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .mode-btn.active { background: var(--accent); color: #10131f; }
+
+    .exercise { margin-top: 22px; }
+
+    .progress-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .progress { color: var(--ink-mute); font-size: 13px; }
+    .count-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font: 700 14px/1 var(--ui-font); color: var(--accent-warm);
+      border: 1px solid var(--line); background: var(--panel-2);
+      padding: 7px 14px; border-radius: 999px;
+    }
+
+    /* --- Combine mode --------------------------------------------------- */
+    .choppy-stack { display: flex; flex-direction: column; gap: 8px; max-width: 56ch; }
+    .choppy-card {
+      background: var(--panel-2); border: 1px solid var(--line);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      font-family: var(--font); font-size: 17px; color: var(--ink-soft);
+    }
+    .choppy-card .n {
+      display: inline-block; min-width: 20px; margin-right: 8px;
+      font: 700 12px/1 var(--ui-font); color: var(--ink-mute);
+    }
+
+    .arrow-down {
+      text-align: center; font-size: 22px; color: var(--ink-mute);
+      margin: 10px 0;
+    }
+
+    .reveal-btn-row { margin: 6px 0 4px; }
+
+    .good-panel {
+      margin-top: 10px; padding: 20px;
+      border: 2px solid var(--good); border-radius: var(--radius-sm);
+      background: linear-gradient(180deg, rgba(86, 211, 160, .12), rgba(86, 211, 160, .04));
+      max-width: 60ch;
+    }
+    .good-panel .tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      font: 700 12px/1 var(--ui-font); text-transform: uppercase; letter-spacing: .08em;
+      color: var(--good); margin-bottom: 10px;
+    }
+    .good-panel .tag .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--good); }
+    .good-panel .sentence {
+      font-family: var(--font); font-size: 22px; line-height: 1.4; color: var(--ink);
+    }
+    .good-panel .note {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+      color: var(--ink-soft); font-size: 14px;
+    }
+    .good-panel .savings {
+      margin-top: 12px; font-weight: 700; color: var(--good); font-size: 15px;
+    }
+    .placeholder-note { color: var(--ink-mute); font-size: 14px; margin-top: 12px; }
+
+    /* --- Reduce mode ----------------------------------------------------- */
+    .bloated-card {
+      background: var(--panel-2); border: 1px solid var(--line);
+      border-radius: var(--radius-sm); padding: 18px 20px; max-width: 60ch;
+    }
+    .bloated-card .sentence {
+      font-family: var(--font); font-size: 20px; line-height: 1.5; color: var(--ink-soft);
+    }
+    .word-count-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 10px; font: 700 12px/1 var(--ui-font); color: var(--ink-mute);
+      border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px;
+    }
+    .good-panel .word-count-chip { color: var(--good); border-color: var(--good); }
+
+    .stepper {
+      display: flex; align-items: center; gap: 14px; margin-top: 26px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../clause-combiner/">Clause Combiner →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="eyebrow">Style &amp; structure</div>
+    <h1 style="font-family:var(--font); margin:.2em 0 .1em">Combining &amp; Reducing</h1>
+    <p class="muted" style="margin-top:0; max-width:60ch">
+      Good writers do two opposite things on purpose: they <b>combine</b> choppy little
+      sentences into one smooth one, and they <b>reduce</b> wordy sentences down to
+      their lean, clear core. Pick a mode, then reveal the improved version.
+    </p>
+
+    <div class="mode-toggle" role="group" aria-label="Choose exercise mode">
+      <button class="mode-btn active" id="modeCombineBtn" type="button" aria-pressed="true">Combine</button>
+      <button class="mode-btn" id="modeReduceBtn" type="button" aria-pressed="false">Reduce</button>
+    </div>
+
+    <section class="panel pad exercise">
+      <!-- COMBINE MODE -->
+      <div id="combineView">
+        <div class="progress-row">
+          <span class="progress" id="combineProgress"></span>
+          <span class="count-badge" id="combineCount"></span>
+        </div>
+
+        <div class="choppy-stack" id="choppyStack"></div>
+        <div class="arrow-down">↓</div>
+
+        <div class="reveal-btn-row">
+          <button class="btn primary" id="combineBtn" type="button">Combine them</button>
+        </div>
+
+        <p class="placeholder-note" id="combinePlaceholder">
+          Click <b>Combine them</b> to see how these sentences fold into one.
+        </p>
+
+        <div class="good-panel" id="combineResult" hidden>
+          <div class="tag"><span class="dot"></span>Combined</div>
+          <p class="sentence" id="combinedSentence"></p>
+          <p class="note" id="combinedNote"></p>
+        </div>
+      </div>
+
+      <!-- REDUCE MODE -->
+      <div id="reduceView" hidden>
+        <div class="progress-row">
+          <span class="progress" id="reduceProgress"></span>
+        </div>
+
+        <div class="bloated-card">
+          <p class="sentence" id="bloatedSentence"></p>
+          <span class="word-count-chip" id="bloatedCount"></span>
+        </div>
+        <div class="arrow-down">↓</div>
+
+        <div class="reveal-btn-row">
+          <button class="btn primary" id="reduceBtn" type="button">Trim it</button>
+        </div>
+
+        <p class="placeholder-note" id="reducePlaceholder">
+          Click <b>Trim it</b> to see the lean, clear rewrite.
+        </p>
+
+        <div class="good-panel" id="reduceResult" hidden>
+          <div class="tag"><span class="dot"></span>Trimmed</div>
+          <p class="sentence" id="trimmedSentence"></p>
+          <span class="word-count-chip" id="trimmedCount"></span>
+          <p class="savings" id="savingsLine"></p>
+        </div>
+      </div>
+
+      <div class="stepper">
+        <button class="btn ghost" id="prevBtn" type="button">← Previous</button>
+        <button class="btn primary" id="nextBtn" type="button">Next →</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Sentences come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { COMBINE, REDUCE } = WL_GRAMMAR;
+
+    const el = {
+      modeCombineBtn: document.getElementById("modeCombineBtn"),
+      modeReduceBtn: document.getElementById("modeReduceBtn"),
+      combineView: document.getElementById("combineView"),
+      reduceView: document.getElementById("reduceView"),
+
+      combineProgress: document.getElementById("combineProgress"),
+      combineCount: document.getElementById("combineCount"),
+      choppyStack: document.getElementById("choppyStack"),
+      combineBtn: document.getElementById("combineBtn"),
+      combinePlaceholder: document.getElementById("combinePlaceholder"),
+      combineResult: document.getElementById("combineResult"),
+      combinedSentence: document.getElementById("combinedSentence"),
+      combinedNote: document.getElementById("combinedNote"),
+
+      reduceProgress: document.getElementById("reduceProgress"),
+      bloatedSentence: document.getElementById("bloatedSentence"),
+      bloatedCount: document.getElementById("bloatedCount"),
+      reduceBtn: document.getElementById("reduceBtn"),
+      reducePlaceholder: document.getElementById("reducePlaceholder"),
+      reduceResult: document.getElementById("reduceResult"),
+      trimmedSentence: document.getElementById("trimmedSentence"),
+      trimmedCount: document.getElementById("trimmedCount"),
+      savingsLine: document.getElementById("savingsLine"),
+
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+    };
+
+    /* word count helper, per spec: split on whitespace */
+    function wordCount(str) {
+      return str.trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    let mode = "combine";     // "combine" | "reduce"
+    let combineIndex = 0;
+    let reduceIndex = 0;
+    let combineRevealed = false;
+    let reduceRevealed = false;
+
+    function currentList() {
+      return mode === "combine" ? COMBINE : REDUCE;
+    }
+    function currentIndex() {
+      return mode === "combine" ? combineIndex : reduceIndex;
+    }
+
+    function setMode(next) {
+      if (mode === next) return;
+      mode = next;
+      el.modeCombineBtn.classList.toggle("active", mode === "combine");
+      el.modeCombineBtn.setAttribute("aria-pressed", mode === "combine" ? "true" : "false");
+      el.modeReduceBtn.classList.toggle("active", mode === "reduce");
+      el.modeReduceBtn.setAttribute("aria-pressed", mode === "reduce" ? "true" : "false");
+      el.combineView.hidden = mode !== "combine";
+      el.reduceView.hidden = mode !== "reduce";
+      // Reset to that mode's first item, per spec.
+      if (mode === "combine") { combineIndex = 0; combineRevealed = false; }
+      else { reduceIndex = 0; reduceRevealed = false; }
+      render();
+    }
+
+    function renderCombine() {
+      const item = COMBINE[combineIndex];
+      el.combineProgress.textContent = `Item ${combineIndex + 1} of ${COMBINE.length}`;
+      el.combineCount.textContent = `${item.choppy.length} sentences → 1`;
+
+      el.choppyStack.innerHTML = "";
+      item.choppy.forEach((s, i) => {
+        const card = document.createElement("div");
+        card.className = "choppy-card";
+        card.innerHTML = `<span class="n">${i + 1}.</span>${s}`;
+        el.choppyStack.appendChild(card);
+      });
+
+      const revealed = combineRevealed;
+      el.combineBtn.hidden = revealed;
+      el.combinePlaceholder.hidden = revealed;
+      el.combineResult.hidden = !revealed;
+      if (revealed) {
+        el.combinedSentence.textContent = item.combined;
+        el.combinedNote.textContent = item.note;
+      }
+    }
+
+    function renderReduce() {
+      const item = REDUCE[reduceIndex];
+      el.reduceProgress.textContent = `Item ${reduceIndex + 1} of ${REDUCE.length}`;
+      el.bloatedSentence.textContent = item.bloated;
+      const bloatedWords = wordCount(item.bloated);
+      el.bloatedCount.textContent = `${bloatedWords} words`;
+
+      const revealed = reduceRevealed;
+      el.reduceBtn.hidden = revealed;
+      el.reducePlaceholder.hidden = revealed;
+      el.reduceResult.hidden = !revealed;
+      if (revealed) {
+        const trimmedWords = wordCount(item.trimmed);
+        el.trimmedSentence.textContent = item.trimmed;
+        el.trimmedCount.textContent = `${trimmedWords} words`;
+        const saved = bloatedWords - trimmedWords;
+        const pct = Math.round((saved / bloatedWords) * 100);
+        el.savingsLine.textContent =
+          `${bloatedWords} words → ${trimmedWords} words` +
+          (saved > 0 ? ` (${saved} word${saved === 1 ? "" : "s"} shorter, ${pct}% trimmed)` : "");
+      }
+    }
+
+    function render() {
+      if (mode === "combine") renderCombine(); else renderReduce();
+      el.prevBtn.disabled = currentIndex() === 0;
+      el.nextBtn.disabled = currentIndex() === currentList().length - 1;
+    }
+
+    el.modeCombineBtn.addEventListener("click", () => setMode("combine"));
+    el.modeReduceBtn.addEventListener("click", () => setMode("reduce"));
+
+    el.combineBtn.addEventListener("click", () => {
+      combineRevealed = true;
+      renderCombine();
+    });
+    el.reduceBtn.addEventListener("click", () => {
+      reduceRevealed = true;
+      renderReduce();
+    });
+
+    el.prevBtn.addEventListener("click", () => {
+      if (currentIndex() === 0) return;
+      if (mode === "combine") { combineIndex--; combineRevealed = false; }
+      else { reduceIndex--; reduceRevealed = false; }
+      render();
+    });
+    el.nextBtn.addEventListener("click", () => {
+      if (currentIndex() === currentList().length - 1) return;
+      if (mode === "combine") { combineIndex++; combineRevealed = false; }
+      else { reduceIndex++; reduceRevealed = false; }
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Punctuation Playground — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23ffb86b%27/%3E%3Ctext x=%2716%27 y=%2725%27 font-size=%2726%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E,%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="See how one comma changes everything — pick a punctuated reading and watch the meaning flip.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    /* Base phrase */
+    .base-block { text-align: center; padding: 8px 0 4px; }
+    .base-block .tag {
+      font-size: 12px; text-transform: uppercase; letter-spacing: .14em;
+      color: var(--ink-mute); font-weight: 700;
+    }
+    .base-phrase {
+      font-family: var(--font); font-size: clamp(24px, 5vw, 38px);
+      color: var(--ink-soft); margin: 8px 0 2px;
+      border: 2px dashed var(--line); border-radius: var(--radius-sm);
+      display: inline-block; padding: 10px 22px;
+    }
+    .base-note { font-size: 13px; color: var(--ink-mute); margin-top: 6px; }
+
+    /* Variant picker cards */
+    .variants-grid {
+      display: grid; grid-template-columns: 1fr; gap: 14px;
+      margin: 22px 0;
+    }
+    @media (min-width: 680px) { .variants-grid { grid-template-columns: 1fr 1fr; } }
+
+    .variant-card {
+      appearance: none; cursor: pointer; text-align: left;
+      background: var(--panel-2);
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      color: var(--ink);
+      font: inherit;
+      transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .variant-card:hover { transform: translateY(-2px); background: #2c3454; }
+    .variant-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .variant-card .label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+      color: var(--ink-mute); margin-bottom: 8px;
+    }
+    .variant-card .label .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .variant-card .text { font-family: var(--font); font-size: 19px; line-height: 1.4; }
+    .variant-card .comma { color: var(--accent-warm); font-weight: 800; }
+
+    .variant-card.a { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+    .variant-card.a .label { color: var(--accent); }
+    .variant-card.b { border-color: color-mix(in srgb, var(--accent-warm) 55%, var(--line)); }
+    .variant-card.b .label { color: var(--accent-warm); }
+
+    .variant-card.active.a { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); background: #232a4a; }
+    .variant-card.active.b { border-color: var(--accent-warm); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-warm) 30%, transparent); background: #2a2740; }
+    .variant-card.dim { opacity: .5; transform: scale(.98); }
+
+    /* Reveal stage */
+    .reveal {
+      border-top: 1px solid var(--line);
+      margin-top: 6px; padding-top: 22px;
+      min-height: 150px;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      gap: 10px;
+    }
+    .reveal .placeholder { color: var(--ink-mute); font-size: 15px; padding: 30px 0; }
+    .reveal .big-text {
+      font-family: var(--font); font-size: clamp(26px, 6vw, 46px);
+      line-height: 1.2; max-width: 22ch;
+      animation: revealIn .32s ease;
+    }
+    .reveal .big-text .comma {
+      color: var(--accent-warm);
+      display: inline-block;
+      animation: pop-comma .4s ease;
+    }
+    .reveal .meaning {
+      font-size: 17px; color: var(--ink-soft);
+      max-width: 46ch;
+      background: var(--panel-2); border: 1px solid var(--line);
+      border-radius: var(--radius-sm); padding: 10px 16px;
+    }
+    .reveal .meaning b { color: var(--ink); }
+    @keyframes revealIn {
+      0% { opacity: 0; transform: translateY(8px) scale(.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes pop-comma {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.6); }
+      100% { transform: scale(1); }
+    }
+    .flip-hint { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+
+    /* Controls */
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 20px; }
+    .progress { font-size: 13px; color: var(--ink-mute); }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../sentence-type-sorter/">Sentence Type Sorter →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 4 · Sentence types &amp; punctuation</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Punctuation Playground</h1>
+      <p class="muted" style="margin-top:0; max-width:60ch">
+        Same words, same order — one tiny comma decides whether it's a dinner
+        invitation or a horror movie. Pick a reading below and watch the
+        meaning flip.
+      </p>
+
+      <section class="panel pad">
+        <div class="base-block">
+          <div class="tag">Raw material — no punctuation</div>
+          <div class="base-phrase" id="basePhrase"></div>
+          <div class="base-note">Same letters. Add punctuation and everything changes.</div>
+        </div>
+
+        <div class="variants-grid" id="variantsGrid" role="group" aria-label="Choose a punctuated reading"></div>
+
+        <div class="reveal" id="reveal">
+          <div class="placeholder" id="revealPlaceholder">Pick a reading above to see what it actually means…</div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="prevBtn" type="button">← Previous</button>
+          <button class="btn primary" id="nextBtn" type="button">Next example →</button>
+          <span class="progress" id="progress"></span>
+          <div class="spacer"></div>
+          <button class="btn ghost" id="flipBtn" type="button" disabled>Flip to the other reading</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Phrases and meanings come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PUNCTUATION_PAIRS } = WL_GRAMMAR;
+
+    const el = {
+      base: document.getElementById("basePhrase"),
+      grid: document.getElementById("variantsGrid"),
+      reveal: document.getElementById("reveal"),
+      prev: document.getElementById("prevBtn"),
+      next: document.getElementById("nextBtn"),
+      flip: document.getElementById("flipBtn"),
+      progress: document.getElementById("progress"),
+    };
+
+    const LETTERS = ["A", "B"];
+
+    let pairIndex = 0;
+    let selected = null; // null, 0, or 1
+
+    /* Wrap every comma in a highlighted span so it visually "pops". */
+    function highlightCommas(text) {
+      return text.replace(/,/g, '<span class="comma">,</span>');
+    }
+
+    function renderPair() {
+      const pair = PUNCTUATION_PAIRS[pairIndex];
+      selected = null;
+      el.base.textContent = pair.base;
+      el.progress.textContent = `Example ${pairIndex + 1} of ${PUNCTUATION_PAIRS.length}`;
+
+      el.grid.innerHTML = "";
+      pair.variants.forEach((variant, i) => {
+        const letter = LETTERS[i] || String(i + 1);
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "variant-card " + (i === 0 ? "a" : "b");
+        card.setAttribute("aria-pressed", "false");
+        card.innerHTML = `
+          <div class="label"><span class="dot" style="background:${i === 0 ? "var(--accent)" : "var(--accent-warm)"}"></span>Reading ${letter}</div>
+          <div class="text">${highlightCommas(variant.text)}</div>`;
+        card.addEventListener("click", () => selectVariant(i));
+        el.grid.appendChild(card);
+      });
+
+      renderReveal();
+    }
+
+    function selectVariant(i) {
+      selected = i;
+      renderReveal();
+    }
+
+    function renderReveal() {
+      const pair = PUNCTUATION_PAIRS[pairIndex];
+
+      // Sync card active/dim states.
+      Array.from(el.grid.children).forEach((card, i) => {
+        card.classList.toggle("active", selected === i);
+        card.classList.toggle("dim", selected !== null && selected !== i);
+        card.setAttribute("aria-pressed", selected === i ? "true" : "false");
+      });
+
+      if (selected === null) {
+        el.reveal.innerHTML = `<div class="placeholder" id="revealPlaceholder">Pick a reading above to see what it actually means…</div>`;
+        el.flip.disabled = true;
+        return;
+      }
+
+      const variant = pair.variants[selected];
+      const otherLetter = LETTERS[1 - selected] || String(2 - selected);
+      el.reveal.innerHTML = `
+        <div class="big-text">${highlightCommas(variant.text)}</div>
+        <div class="meaning"><b>Meaning:</b> ${variant.meaning}</div>
+        <div class="flip-hint muted">Curious about Reading ${otherLetter}? Flip it →</div>`;
+      el.flip.disabled = false;
+    }
+
+    function step(delta) {
+      pairIndex = (pairIndex + delta + PUNCTUATION_PAIRS.length) % PUNCTUATION_PAIRS.length;
+      renderPair();
+    }
+
+    el.prev.addEventListener("click", () => step(-1));
+    el.next.addEventListener("click", () => step(1));
+    el.flip.addEventListener("click", () => {
+      if (selected === null) return;
+      selectVariant(1 - selected);
+    });
+
+    renderPair();
+  </script>
+</body>
+</html>

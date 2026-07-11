@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Word Sort — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Sort words into their part-of-speech buckets. Build a streak of 10 in a row.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    .scorebar { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+    .stat { display: flex; flex-direction: column; line-height: 1.1; }
+    .stat b { font-family: var(--font); font-size: 26px; }
+    .stat span { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .08em; }
+    .stat.sep { width: 1px; height: 34px; background: var(--line); }
+
+    /* Progress toward the goal: ten pips that fill as the streak grows */
+    .pips { display: flex; gap: 7px; }
+    .pip {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid var(--line); background: transparent;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+    .pip.on { background: var(--good); border-color: var(--good); transform: translateY(-2px); }
+    .goal-label { font-size: 13px; color: var(--ink-mute); }
+
+    .arena { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    .now { text-align: center; padding: 26px 18px; }
+    .now .prompt { color: var(--ink-mute); font-size: 14px; }
+    .now .word {
+      font-family: var(--font); font-size: clamp(34px, 8vw, 64px);
+      margin: 8px 0 4px; display: inline-block;
+      cursor: grab; padding: 4px 16px; border-radius: 12px;
+      border: 2px dashed var(--line);
+    }
+    .now .word.dragging { opacity: .5; cursor: grabbing; }
+    .now .hint { font-size: 13px; color: var(--ink-mute); }
+
+    .buckets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (min-width: 720px) { .buckets { grid-template-columns: repeat(4, 1fr); } }
+    .bucket {
+      border: 2px solid var(--line); border-radius: var(--radius-sm);
+      background: var(--panel); padding: 14px 10px; text-align: center;
+      cursor: pointer; transition: transform .08s ease, border-color .12s ease, background .12s ease;
+      min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    }
+    .bucket:hover, .bucket.over { border-color: var(--accent); background: var(--panel-2); transform: translateY(-2px); }
+    .bucket:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .bucket .name { font-weight: 700; }
+    .bucket .swatch { width: 26px; height: 26px; border-radius: 8px; }
+    .bucket .count { font-size: 12px; color: var(--ink-mute); }
+    .bucket.correct { animation: pop .3s ease; }
+    .bucket.wrong   { animation: shake .3s ease; }
+    @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.06)} 100%{transform:scale(1)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+    .flash { text-align: center; min-height: 24px; font-weight: 700; margin-top: 6px; }
+    .flash.good { color: var(--good); }
+    .flash.bad  { color: var(--bad); }
+
+    .overlay {
+      position: fixed; inset: 0; background: rgba(10,12,22,.72);
+      display: none; place-items: center; padding: 20px; z-index: 50;
+    }
+    .overlay.show { display: grid; }
+    .result { max-width: 420px; text-align: center; }
+    .result h2 { font-family: var(--font); font-size: 30px; margin: 0 0 6px; }
+    .result .big { font-family: var(--font); font-size: 56px; color: var(--good); }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../sentence-anatomy/">Sentence Anatomy →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 1 · Parts of speech</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Word Sort</h1>
+      <p class="muted" style="margin-top:0; max-width:62ch">
+        A word appears. Send it to the bucket that names its part of speech —
+        <b>drag it, tap a bucket, or press keys 1–4</b>. No timer, no rush. Your
+        goal: <b>10 correct in a row</b>. One wrong answer resets the streak, so
+        take your time and get it right.
+      </p>
+
+      <div class="scorebar panel pad">
+        <div class="stat"><b id="streak">0</b><span>Streak</span></div>
+        <div class="stat sep"></div>
+        <div class="stat"><b id="best">0</b><span>Best</span></div>
+        <div class="stat sep"></div>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <div class="pips" id="pips" aria-label="Progress toward a streak of 10"></div>
+          <span class="goal-label" id="goalLabel">0 of 10 in a row</span>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn ghost" id="resetBtn">Reset</button>
+      </div>
+
+      <div class="arena">
+        <section class="panel pad now">
+          <div class="prompt">This word is a…</div>
+          <div class="word" id="word" draggable="true" aria-live="polite">…</div>
+          <div class="hint">drag me &nbsp;·&nbsp; or tap a bucket &nbsp;·&nbsp; or press 1–4</div>
+        </section>
+
+        <div class="flash" id="flash">&nbsp;</div>
+
+        <section class="buckets" id="buckets" aria-label="Part-of-speech buckets"></section>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay" id="overlay">
+    <div class="panel pad result">
+      <h2>Streak of 10! 🎉</h2>
+      <div class="big" id="finalBig">10</div>
+      <p class="muted" id="finalMsg"></p>
+      <div class="row" style="justify-content:center; margin-top:14px">
+        <button class="btn primary" id="againBtn">Go again</button>
+        <a class="btn ghost" href="../sentence-anatomy/">Try Sentence Anatomy</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Words and colors come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARTS, WORD_BANK } = WL_GRAMMAR;
+
+    // The four categories this game tests. Kept to four so buckets fit 1–4 keys.
+    const CATEGORIES = ["noun", "verb", "adjective", "adverb"];
+    const GOAL = 10;
+
+    const el = {
+      streak: document.getElementById("streak"),
+      best: document.getElementById("best"),
+      pips: document.getElementById("pips"),
+      goalLabel: document.getElementById("goalLabel"),
+      word: document.getElementById("word"),
+      flash: document.getElementById("flash"),
+      buckets: document.getElementById("buckets"),
+      reset: document.getElementById("resetBtn"),
+      overlay: document.getElementById("overlay"),
+      finalBig: document.getElementById("finalBig"),
+      finalMsg: document.getElementById("finalMsg"),
+      again: document.getElementById("againBtn"),
+    };
+
+    let state = null;
+
+    /* Ten goal pips, built once. */
+    for (let i = 0; i < GOAL; i++) {
+      const pip = document.createElement("span");
+      pip.className = "pip";
+      el.pips.appendChild(pip);
+    }
+
+    /* Build the four buckets once. */
+    CATEGORIES.forEach((key, idx) => {
+      const p = PARTS[key];
+      const b = document.createElement("button");
+      b.className = "bucket";
+      b.type = "button";
+      b.dataset.pos = key;
+      b.innerHTML = `
+        <span class="swatch" style="background:${p.color}"></span>
+        <span class="name">${p.label}</span>
+        <span class="count">key ${idx + 1}</span>`;
+      b.addEventListener("click", () => attempt(key, b));
+      b.addEventListener("dragover", (e) => { e.preventDefault(); b.classList.add("over"); });
+      b.addEventListener("dragleave", () => b.classList.remove("over"));
+      b.addEventListener("drop", (e) => { e.preventDefault(); b.classList.remove("over"); attempt(key, b); });
+      el.buckets.appendChild(b);
+    });
+
+    el.word.addEventListener("dragstart", () => el.word.classList.add("dragging"));
+    el.word.addEventListener("dragend", () => el.word.classList.remove("dragging"));
+
+    /* Fisher–Yates over the eligible words (nouns/verbs/adjectives/adverbs). */
+    function shuffledQueue() {
+      const pool = WORD_BANK.filter(x => CATEGORIES.includes(x.pos)).slice();
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      return pool;
+    }
+
+    function startGame() {
+      state = { queue: shuffledQueue(), qi: 0, streak: 0, best: 0, current: null };
+      el.overlay.classList.remove("show");
+      flash("&nbsp;", null);
+      nextWord();
+      render();
+    }
+
+    function nextWord() {
+      if (state.qi >= state.queue.length) { state.queue = shuffledQueue(); state.qi = 0; }
+      state.current = state.queue[state.qi++];
+      el.word.textContent = state.current.w;
+    }
+
+    function attempt(pos, bucketEl) {
+      if (!state || !state.current) return;
+      const correct = pos === state.current.pos;
+      if (correct) {
+        state.streak++;
+        state.best = Math.max(state.best, state.streak);
+        flash(`✓ ${state.current.w} is ${PARTS[pos].label.toLowerCase()}`, "good");
+        bump(bucketEl, "correct");
+        render();
+        if (state.streak >= GOAL) { win(); return; }
+        nextWord();
+      } else {
+        // Reset the streak; show the right answer so it stays a learning moment.
+        state.streak = 0;
+        flash(`✗ ${state.current.w} is a ${PARTS[state.current.pos].label.toLowerCase()} — streak reset`, "bad");
+        bump(bucketEl, "wrong");
+        render();
+        // Keep the same word so they can place it correctly and move on.
+      }
+    }
+
+    function bump(bucketEl, cls) {
+      bucketEl.classList.remove("correct", "wrong");
+      void bucketEl.offsetWidth;
+      bucketEl.classList.add(cls);
+    }
+
+    function flash(msg, kind) {
+      el.flash.innerHTML = msg;
+      el.flash.className = "flash " + (kind === "good" ? "good" : kind === "bad" ? "bad" : "");
+    }
+
+    function render() {
+      el.streak.textContent = state.streak;
+      el.best.textContent = state.best;
+      el.goalLabel.textContent = `${state.streak} of ${GOAL} in a row`;
+      [...el.pips.children].forEach((pip, i) => pip.classList.toggle("on", i < state.streak));
+    }
+
+    function win() {
+      el.finalMsg.textContent = "You named ten in a row without a slip. That's real fluency.";
+      el.overlay.classList.add("show");
+    }
+
+    /* Keyboard 1–4. */
+    document.addEventListener("keydown", (e) => {
+      const idx = ["1", "2", "3", "4"].indexOf(e.key);
+      if (idx === -1 || !state) return;
+      attempt(CATEGORIES[idx], el.buckets.children[idx]);
+    });
+
+    el.reset.addEventListener("click", startGame);
+    el.again.addEventListener("click", startGame);
+    startGame();
+  </script>
+</body>
+</html>

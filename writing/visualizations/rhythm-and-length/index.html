@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rhythm &amp; Length — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="See how varying sentence length creates rhythm — compare a monotone paragraph to a varied one, bar by bar.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .toggle-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 18px 0 6px; }
+    .toggle-row .btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #10131f; }
+
+    .score-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 4px 0 22px; }
+    .score { display: flex; flex-direction: column; line-height: 1.1; }
+    .score b { font-family: var(--font); font-size: 28px; }
+    .score span { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .08em; }
+    .score.sep { width: 1px; height: 34px; background: var(--line); }
+
+    .bars { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; }
+    .bar-row { display: flex; align-items: center; gap: 12px; }
+    .bar-row .idx { width: 1.6em; flex: none; color: var(--ink-mute); font-size: 13px; text-align: right; }
+    .bar-track {
+      flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+      overflow: hidden; height: 34px; position: relative;
+    }
+    .bar-fill {
+      appearance: none; cursor: pointer; border: none; height: 100%;
+      background: var(--accent); color: #10131f;
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 0 10px; font: 700 13px/1 var(--ui-font);
+      border-radius: 8px 0 0 8px;
+      transition: width .35s ease, background .15s ease;
+      min-width: 34px;
+    }
+    .bar-fill:hover, .bar-fill:focus-visible { background: var(--accent-warm); outline: none; }
+    .bar-fill.selected { background: var(--accent-warm); box-shadow: 0 0 0 2px var(--accent-warm) inset; }
+    .bar-fill:focus-visible { box-shadow: 0 0 0 2px var(--ink) inset; }
+
+    .caption {
+      margin-top: 14px; min-height: 64px;
+      font-family: var(--font); font-size: 17px; line-height: 1.5;
+    }
+    .caption .hint { color: var(--ink-mute); font-family: var(--ui-font); font-size: 14px; }
+
+    .takeaway {
+      margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);
+      color: var(--ink-soft); font-size: 15px;
+    }
+    .takeaway b { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="eyebrow">Style &amp; structure</div>
+    <h1 style="font-family:var(--font)">Rhythm &amp; Length</h1>
+    <p class="muted">
+      Every sentence has a length, and a paragraph's lengths make a rhythm. Line them
+      up as bars and the pattern jumps out: same-length sentences read flat, while a
+      mix of short and long ones reads with punch and flow. Toggle the two paragraphs
+      below to feel the difference.
+    </p>
+
+    <section class="panel pad">
+      <div class="toggle-row" role="group" aria-label="Choose a paragraph">
+        <button class="btn" id="btnMonotone" type="button" aria-pressed="false"></button>
+        <button class="btn" id="btnVaried" type="button" aria-pressed="false"></button>
+      </div>
+
+      <div class="score-row">
+        <div class="score"><b id="scoreValue">0</b><span>Variety score</span></div>
+        <div class="score sep"></div>
+        <div class="score"><b id="scoreRange">0–0</b><span>Word range</span></div>
+        <div class="score sep"></div>
+        <div class="score"><b id="scoreCount">0</b><span>Sentences</span></div>
+      </div>
+
+      <div class="bars" id="bars" aria-live="polite"></div>
+
+      <div class="caption panel pad" id="caption">
+        <span class="hint">Click any bar to read its full sentence here.</span>
+      </div>
+
+      <p class="takeaway">
+        <b>Why it works:</b> short sentences punch — they land hard and give the reader
+        a breath. Long sentences flow — they carry momentum and connect ideas. A
+        paragraph that mixes both has rhythm; a paragraph where every sentence is the
+        same length reads like a metronome, and metronomes get monotonous fast.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Paragraphs come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { RHYTHM } = WL_GRAMMAR;
+
+    const byId = id => RHYTHM.find(p => p.id === id);
+    const monotone = byId("monotone");
+    const varied = byId("varied");
+
+    function wordCount(sentence) {
+      return sentence.trim().split(/\s+/).length;
+    }
+
+    // Precompute word counts for both paragraphs so bar widths are comparable
+    // against a single shared maximum.
+    const counted = {};
+    RHYTHM.forEach(p => { counted[p.id] = p.sentences.map(s => ({ text: s, n: wordCount(s) })); });
+    const globalMax = Math.max(...RHYTHM.flatMap(p => counted[p.id].map(x => x.n)));
+
+    const el = {
+      btnMonotone: document.getElementById("btnMonotone"),
+      btnVaried: document.getElementById("btnVaried"),
+      bars: document.getElementById("bars"),
+      caption: document.getElementById("caption"),
+      scoreValue: document.getElementById("scoreValue"),
+      scoreRange: document.getElementById("scoreRange"),
+      scoreCount: document.getElementById("scoreCount"),
+    };
+
+    el.btnMonotone.textContent = monotone.label;
+    el.btnVaried.textContent = varied.label;
+
+    let currentId = monotone.id;
+    let selectedIdx = null;
+
+    function varietyScore(nums) {
+      // Spread of sentence lengths: max - min word count.
+      return Math.max(...nums) - Math.min(...nums);
+    }
+
+    function render() {
+      const paragraph = byId(currentId);
+      const items = counted[currentId];
+      const nums = items.map(x => x.n);
+
+      el.btnMonotone.setAttribute("aria-pressed", String(currentId === "monotone"));
+      el.btnVaried.setAttribute("aria-pressed", String(currentId === "varied"));
+
+      el.scoreValue.textContent = varietyScore(nums);
+      el.scoreRange.textContent = `${Math.min(...nums)}–${Math.max(...nums)}`;
+      el.scoreCount.textContent = items.length;
+
+      el.bars.innerHTML = "";
+      items.forEach((item, i) => {
+        const pct = Math.max(6, Math.round((item.n / globalMax) * 100));
+        const row = document.createElement("div");
+        row.className = "bar-row";
+
+        const idx = document.createElement("div");
+        idx.className = "idx";
+        idx.textContent = i + 1 + ".";
+
+        const track = document.createElement("div");
+        track.className = "bar-track";
+
+        const fill = document.createElement("button");
+        fill.type = "button";
+        fill.className = "bar-fill";
+        fill.style.width = pct + "%";
+        fill.textContent = item.n + (item.n === 1 ? " word" : " words");
+        fill.setAttribute("aria-label", `Sentence ${i + 1}, ${item.n} words. Show full text.`);
+        fill.addEventListener("click", () => selectSentence(i, item, fill));
+
+        track.appendChild(fill);
+        row.appendChild(idx);
+        row.appendChild(track);
+        el.bars.appendChild(row);
+      });
+
+      selectedIdx = null;
+      el.caption.innerHTML = '<span class="hint">Click any bar to read its full sentence here.</span>';
+    }
+
+    function selectSentence(i, item, fillEl) {
+      selectedIdx = i;
+      document.querySelectorAll(".bar-fill").forEach(b => b.classList.remove("selected"));
+      fillEl.classList.add("selected");
+      el.caption.textContent = `“${item.text}” — ${item.n} words.`;
+    }
+
+    el.btnMonotone.addEventListener("click", () => { currentId = "monotone"; render(); });
+    el.btnVaried.addEventListener("click", () => { currentId = "varied"; render(); });
+
+    render();
+  </script>
+</body>
+</html>

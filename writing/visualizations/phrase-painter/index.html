@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phrase Painter — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Toggle phrase types to see how groups of words chunk together into prepositional, noun, and verb phrases.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    /* Type toggle buttons */
+    .type-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .type-toggle {
+      appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: 9px;
+      border: 1px solid var(--line); background: var(--panel-2); color: var(--ink);
+      font: 600 14px/1 var(--ui-font); padding: 10px 15px; border-radius: 10px;
+      transition: background .15s ease, border-color .15s ease, transform .06s ease;
+    }
+    .type-toggle:hover { transform: translateY(-1px); }
+    .type-toggle:active { transform: translateY(0); }
+    .type-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .type-toggle .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; flex: none; }
+    .type-toggle .state { color: var(--ink-mute); font-size: 12px; margin-left: 2px; }
+    .type-toggle[aria-pressed="true"] .state { color: inherit; }
+
+    /* The painter stage: a CSS grid — row 1 is the words, rows below are
+       stacked phrase-span bars so overlapping phrases stay readable. */
+    .painter {
+      margin-top: 24px; padding: 30px 14px 22px;
+      background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);
+      overflow-x: auto;
+    }
+    .sentence-grid {
+      display: grid;
+      grid-template-rows: auto;
+      grid-auto-rows: 16px;
+      row-gap: 10px; column-gap: 4px;
+      align-items: start;
+      justify-content: center;
+      width: max-content; margin: 0 auto;
+    }
+    .word {
+      grid-row: 1;
+      font-family: var(--font);
+      font-size: clamp(19px, 3vw, 30px);
+      white-space: nowrap; text-align: center;
+      padding: 2px 7px 8px;
+      color: var(--ink);
+    }
+    .span-bar {
+      appearance: none; cursor: pointer; padding: 0; width: 100%; height: 10px;
+      align-self: start; border-radius: 0 0 8px 8px;
+      border: none; border-left: 3px solid; border-right: 3px solid; border-bottom: 3px solid;
+      transition: filter .12s ease, transform .1s ease;
+    }
+    .span-bar:hover, .span-bar:focus-visible { filter: brightness(1.35); transform: translateY(1px); }
+    .span-bar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* Caption */
+    .caption {
+      margin-top: 18px; min-height: 46px; display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line);
+      color: var(--ink-soft); font-size: 14.5px;
+    }
+    .caption .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+    .caption b { color: var(--ink); }
+    .caption.empty { color: var(--ink-mute); }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .legend .chip { cursor: default; }
+
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 22px; }
+    .counter { color: var(--ink-mute); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../object-tracker/">Object Tracker →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 3 · Phrases &amp; clauses</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Phrase Painter</h1>
+      <p class="muted" style="margin-top:0; max-width:62ch">
+        A phrase is a group of words that acts as <b>one unit</b> inside a sentence.
+        Toggle a phrase type on to paint colored brackets under the words that belong
+        to it. Phrases can overlap and nest — a noun phrase can contain a prepositional
+        phrase inside it — so each active span gets its own row underneath the sentence.
+      </p>
+
+      <section class="panel pad">
+        <div class="type-row" id="typeToggles" role="group" aria-label="Toggle phrase types"></div>
+
+        <div class="painter">
+          <div class="sentence-grid" id="grid" role="group" aria-label="Sentence with phrase highlights"></div>
+        </div>
+
+        <p class="caption empty" id="caption">
+          Turn on a phrase type above, then click or hover a colored bracket to read what it does.
+        </p>
+
+        <div class="legend" id="legend" aria-label="Phrase type color key"></div>
+
+        <div class="controls">
+          <button class="btn" id="prevBtn">‹ Previous</button>
+          <button class="btn" id="nextBtn">Next sentence ›</button>
+          <span class="spacer"></span>
+          <span class="counter" id="counter"></span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Colors and sentences come from the shared dataset in
+      <code>assets/data/grammar.js</code>, so they mean the same thing in every module.
+      &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PHRASE_TYPES, PHRASES } = WL_GRAMMAR;
+    const TYPE_KEYS = Object.keys(PHRASE_TYPES);
+
+    const elToggles = document.getElementById("typeToggles");
+    const elGrid    = document.getElementById("grid");
+    const elCaption = document.getElementById("caption");
+    const elLegend  = document.getElementById("legend");
+    const elCounter = document.getElementById("counter");
+
+    let pIndex = 0;
+    const active = {};       // type -> boolean, preserved across sentences
+    TYPE_KEYS.forEach(k => { active[k] = false; });
+    let pinned = null;       // the last clicked span entry, or null
+
+    function hexToRgba(hex, alpha) {
+      const h = hex.replace("#", "");
+      const full = h.length === 3 ? h.split("").map(c => c + c).join("") : h;
+      const n = parseInt(full, 16);
+      const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    /* ---- Toggle buttons (built once) -------------------------------------- */
+    TYPE_KEYS.forEach(key => {
+      const t = PHRASE_TYPES[key];
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "type-toggle";
+      btn.setAttribute("aria-pressed", "false");
+      btn.dataset.type = key;
+      btn.innerHTML = `<span class="dot" style="background:${t.color}"></span>${t.label}<span class="state">off</span>`;
+      btn.addEventListener("click", () => {
+        active[key] = !active[key];
+        btn.setAttribute("aria-pressed", String(active[key]));
+        btn.querySelector(".state").textContent = active[key] ? "on" : "off";
+        btn.style.background = active[key] ? hexToRgba(t.color, 0.22) : "";
+        btn.style.borderColor = active[key] ? t.color : "";
+        btn.style.color = active[key] ? t.color : "";
+        renderGrid();
+      });
+      elToggles.appendChild(btn);
+    });
+
+    /* ---- Legend (built once, non-interactive) ------------------------------ */
+    TYPE_KEYS.forEach(key => {
+      const t = PHRASE_TYPES[key];
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.innerHTML = `<span class="dot" style="background:${t.color}"></span>${t.label}`;
+      elLegend.appendChild(chip);
+    });
+
+    /* ---- Row packing: give every active span its own non-overlapping row -- */
+    function packRows(spans) {
+      // Smaller phrases first, so inner phrases sit closer to the words and
+      // larger phrases that contain them stack further below.
+      const ordered = spans
+        .map((s, i) => ({ ...s, i }))
+        .sort((a, b) => (a.end - a.start) - (b.end - b.start) || a.start - b.start);
+      const rowEnds = []; // rowEnds[r] = last "end" placed in row r
+      ordered.forEach(s => {
+        let row = rowEnds.findIndex(end => end < s.start);
+        if (row === -1) { row = rowEnds.length; rowEnds.push(s.end); }
+        else { rowEnds[row] = s.end; }
+        s.row = row;
+      });
+      return ordered;
+    }
+
+    /* ---- Caption -------------------------------------------------------- */
+    function showCaption(entry) {
+      if (!entry) {
+        elCaption.classList.add("empty");
+        elCaption.innerHTML = "Turn on a phrase type above, then click or hover a colored bracket to read what it does.";
+        return;
+      }
+      const t = PHRASE_TYPES[entry.type];
+      elCaption.classList.remove("empty");
+      elCaption.innerHTML = `<span class="dot" style="background:${t.color}"></span><span><b>${t.label}</b> — ${entry.note}</span>`;
+    }
+
+    /* ---- Render the current sentence -------------------------------------- */
+    function renderGrid() {
+      const phrase = PHRASES[pIndex];
+      elGrid.innerHTML = "";
+      elGrid.style.gridTemplateColumns = `repeat(${phrase.words.length}, max-content)`;
+
+      phrase.words.forEach((w, i) => {
+        const span = document.createElement("span");
+        span.className = "word";
+        span.style.gridColumn = String(i + 1);
+        span.textContent = w;
+        elGrid.appendChild(span);
+      });
+
+      const activeSpans = phrase.spans.filter(s => active[s.type]);
+      const packed = packRows(activeSpans);
+
+      packed.forEach(entry => {
+        const t = PHRASE_TYPES[entry.type];
+        const bar = document.createElement("button");
+        bar.type = "button";
+        bar.className = "span-bar";
+        bar.style.gridColumn = `${entry.start + 1} / ${entry.end + 2}`;
+        bar.style.gridRow = String(entry.row + 2);
+        bar.style.background = hexToRgba(t.color, 0.35);
+        bar.style.borderColor = t.color;
+        const words = phrase.words.slice(entry.start, entry.end + 1).join(" ");
+        bar.setAttribute("aria-label", `${t.label}: "${words}" — ${entry.note}`);
+        bar.addEventListener("mouseenter", () => showCaption(entry));
+        bar.addEventListener("focus", () => showCaption(entry));
+        bar.addEventListener("mouseleave", () => showCaption(pinned));
+        bar.addEventListener("blur", () => showCaption(pinned));
+        bar.addEventListener("click", () => { pinned = entry; showCaption(entry); });
+        elGrid.appendChild(bar);
+      });
+
+      pinned = null;
+      showCaption(null);
+      elCounter.textContent = `Sentence ${pIndex + 1} of ${PHRASES.length}`;
+    }
+
+    /* ---- Controls ---------------------------------------------------------- */
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      pIndex = (pIndex + 1) % PHRASES.length; renderGrid();
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      pIndex = (pIndex - 1 + PHRASES.length) % PHRASES.length; renderGrid();
+    });
+
+    renderGrid();
+  </script>
+</body>
+</html>

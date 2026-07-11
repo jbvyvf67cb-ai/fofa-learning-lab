@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sentence-Type Sorter — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Sort sentences into simple, compound, complex, and compound-complex.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .layout { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 18px; }
+    @media (min-width: 880px) { .layout { grid-template-columns: 1fr 320px; align-items: start; } }
+
+    /* Scorebar */
+    .scorebar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+    .stat { display: flex; flex-direction: column; line-height: 1.1; }
+    .stat b { font-family: var(--font); font-size: 26px; }
+    .stat span { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .08em; }
+    .stat.sep { width: 1px; height: 34px; background: var(--line); }
+
+    /* Question card */
+    .prompt { color: var(--ink-mute); font-size: 14px; }
+    .sentence {
+      font-family: var(--font); font-size: clamp(24px, 4.2vw, 34px);
+      line-height: 1.3; margin: 10px 0 20px; min-height: 2.6em;
+      display: flex; align-items: center;
+    }
+
+    .answers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (max-width: 480px) { .answers { grid-template-columns: 1fr; } }
+    .ans {
+      text-align: left; padding: 14px 16px; border-radius: var(--radius-sm);
+      border: 2px solid var(--line); background: var(--panel);
+    }
+    .ans .lbl { font-weight: 700; display: block; }
+    .ans .blurb { font-size: 12px; color: var(--ink-mute); display: block; margin-top: 2px; }
+    .ans:hover:not(:disabled) { border-color: var(--accent); background: var(--panel-2); transform: translateY(-1px); }
+    .ans:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .ans:disabled { cursor: default; }
+    .ans.correct { border-color: var(--good); background: rgba(86, 211, 160, .14); }
+    .ans.incorrect { border-color: var(--bad); background: rgba(255, 122, 144, .14); }
+
+    .flash {
+      min-height: 26px; margin-top: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;
+    }
+    .flash.good { color: var(--good); }
+    .flash.bad { color: var(--bad); }
+    .why { margin-top: 8px; color: var(--ink-soft); font-size: 15px; min-height: 1.4em; }
+
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+
+    /* Reference panel */
+    .ref h2 { font-family: var(--font); font-size: 18px; margin: 0 0 10px; }
+    .ref-item { padding: 10px 0; border-top: 1px solid var(--line); }
+    .ref-item:first-of-type { border-top: none; padding-top: 0; }
+    .ref-item .lbl { font-weight: 700; color: var(--ink); }
+    .ref-item .blurb { color: var(--ink-mute); font-size: 13px; margin-top: 2px; }
+    .ref-item.active .lbl { color: var(--accent); }
+    .ref-item.active { position: relative; }
+    .ref-item.active::before {
+      content: ""; position: absolute; left: -20px; top: 12px; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--accent);
+    }
+
+    /* End screen */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(10,12,22,.72);
+      display: none; place-items: center; padding: 20px; z-index: 50;
+    }
+    .overlay.show { display: grid; }
+    .result { max-width: 420px; text-align: center; }
+    .result h2 { font-family: var(--font); font-size: 30px; margin: 0 0 6px; }
+    .result .big { font-family: var(--font); font-size: 56px; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="eyebrow">Unit 4 · Sentence types &amp; punctuation</div>
+    <h1 style="font-family:var(--font); margin:.2em 0 .1em">Sentence-Type Sorter</h1>
+    <p class="muted" style="margin-top:0; max-width:60ch">
+      Read the sentence, then decide how its clauses fit together — simple,
+      compound, complex, or compound-complex. Pick an answer to reveal why it's
+      right (or wrong), then hit <b>Next</b> to keep your streak going.
+    </p>
+
+    <div class="scorebar panel pad">
+      <div class="stat"><b id="score">0</b><span>Score</span></div>
+      <div class="stat sep"></div>
+      <div class="stat"><b id="streak">0</b><span>Streak</span></div>
+      <div class="stat sep"></div>
+      <div class="stat"><b id="progress">0 / 0</b><span>Sentence</span></div>
+      <div class="spacer"></div>
+      <button class="btn primary" id="startBtn">Start</button>
+    </div>
+
+    <div class="layout">
+      <section class="panel pad">
+        <div class="prompt">What kind of sentence is this?</div>
+        <div class="sentence" id="sentence">Press Start to begin.</div>
+
+        <div class="answers" id="answers" aria-label="Sentence type choices"></div>
+
+        <div class="flash" id="flash">&nbsp;</div>
+        <div class="why" id="why"></div>
+
+        <div class="controls">
+          <button class="btn" id="nextBtn" disabled>Next →</button>
+        </div>
+      </section>
+
+      <aside class="panel pad ref" id="ref" aria-label="Sentence type reference">
+        <h2>The four types</h2>
+        <div id="refList"></div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="overlay" id="overlay">
+    <div class="panel pad result">
+      <h2>Deck complete!</h2>
+      <div class="big" id="finalScore">0</div>
+      <p class="muted" id="finalMsg"></p>
+      <div class="row" style="justify-content:center; margin-top:14px">
+        <button class="btn primary" id="againBtn">Play again</button>
+        <a class="btn ghost" href="../../#modules">Back to Experiences</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Sentences and explanations come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { SENTENCE_TYPES, SENTENCE_TYPE_INFO } = WL_GRAMMAR;
+    const TYPES = ["simple", "compound", "complex", "compound-complex"];
+
+    const el = {
+      score: document.getElementById("score"),
+      streak: document.getElementById("streak"),
+      progress: document.getElementById("progress"),
+      sentence: document.getElementById("sentence"),
+      answers: document.getElementById("answers"),
+      flash: document.getElementById("flash"),
+      why: document.getElementById("why"),
+      next: document.getElementById("nextBtn"),
+      start: document.getElementById("startBtn"),
+      overlay: document.getElementById("overlay"),
+      finalScore: document.getElementById("finalScore"),
+      finalMsg: document.getElementById("finalMsg"),
+      again: document.getElementById("againBtn"),
+      refList: document.getElementById("refList"),
+    };
+
+    let state = null; // null until game starts
+
+    /* Build the always-visible reference panel once. */
+    TYPES.forEach((key) => {
+      const info = SENTENCE_TYPE_INFO[key];
+      const row = document.createElement("div");
+      row.className = "ref-item";
+      row.dataset.type = key;
+      row.innerHTML = `<div class="lbl">${info.label}</div><div class="blurb">${info.blurb}</div>`;
+      el.refList.appendChild(row);
+    });
+
+    /* Build the four answer buttons once. */
+    TYPES.forEach((key) => {
+      const info = SENTENCE_TYPE_INFO[key];
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ans";
+      b.dataset.type = key;
+      b.innerHTML = `<span class="lbl">${info.label}</span><span class="blurb">${info.blurb}</span>`;
+      b.addEventListener("click", () => attempt(key, b));
+      el.answers.appendChild(b);
+    });
+
+    /* Fisher–Yates shuffle over a copy of the sentence deck. */
+    function shuffledDeck() {
+      const deck = SENTENCE_TYPES.slice();
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    function startGame() {
+      state = {
+        deck: shuffledDeck(),
+        qi: 0,
+        score: 0,
+        streak: 0,
+        best: 0,
+        answered: false,
+      };
+      el.overlay.classList.remove("show");
+      el.start.textContent = "Restart";
+      updateHud();
+      showQuestion();
+    }
+
+    function showQuestion() {
+      state.answered = false;
+      state.current = state.deck[state.qi];
+      el.sentence.textContent = state.current.text;
+      el.flash.innerHTML = "&nbsp;";
+      el.flash.className = "flash";
+      el.why.textContent = "";
+      el.next.disabled = true;
+      setRefActive(null);
+      [...el.answers.children].forEach((b) => {
+        b.disabled = false;
+        b.classList.remove("correct", "incorrect");
+      });
+      updateHud();
+    }
+
+    function setRefActive(type) {
+      [...el.refList.children].forEach((row) => {
+        row.classList.toggle("active", row.dataset.type === type);
+      });
+    }
+
+    function attempt(type, btnEl) {
+      if (!state || state.answered || !state.current) return;
+      state.answered = true;
+      const correct = type === state.current.type;
+
+      [...el.answers.children].forEach((b) => { b.disabled = true; });
+
+      if (correct) {
+        state.streak++;
+        state.best = Math.max(state.best, state.streak);
+        state.score += 10 + Math.min(state.streak - 1, 5) * 2;
+        btnEl.classList.add("correct");
+        flash(`✓ Correct — that's ${SENTENCE_TYPE_INFO[type].label.toLowerCase()}.`, "good");
+      } else {
+        state.streak = 0;
+        btnEl.classList.add("incorrect");
+        const rightBtn = [...el.answers.children].find((b) => b.dataset.type === state.current.type);
+        if (rightBtn) rightBtn.classList.add("correct");
+        flash(`✗ Not quite — that's ${SENTENCE_TYPE_INFO[state.current.type].label.toLowerCase()}.`, "bad");
+      }
+
+      el.why.textContent = state.current.why;
+      setRefActive(state.current.type);
+      el.next.disabled = false;
+      updateHud();
+    }
+
+    function flash(msg, kind) {
+      el.flash.textContent = msg;
+      el.flash.className = "flash " + (kind === "good" ? "good" : "bad");
+    }
+
+    function updateHud() {
+      el.score.textContent = state.score;
+      el.streak.textContent = state.streak;
+      el.progress.textContent = `${Math.min(state.qi + 1, state.deck.length)} / ${state.deck.length}`;
+    }
+
+    function nextQuestion() {
+      if (!state || !state.answered) return;
+      state.qi++;
+      if (state.qi >= state.deck.length) { endGame(); return; }
+      showQuestion();
+    }
+
+    function endGame() {
+      el.finalScore.textContent = state.score;
+      el.finalMsg.textContent =
+        `Best streak: ${state.best} of ${state.deck.length}. ` +
+        (state.best === state.deck.length ? "Perfect run! 🎉"
+         : state.score >= 100 ? "Sharp eye — keep going!"
+         : "Nice start. Try again to beat it.");
+      el.overlay.classList.add("show");
+    }
+
+    el.next.addEventListener("click", nextQuestion);
+    el.start.addEventListener("click", startGame);
+    el.again.addEventListener("click", startGame);
+
+    /* Enter/Space advances once a question is answered, matching the Next button. */
+    document.addEventListener("keydown", (e) => {
+      if ((e.key === "Enter") && state && state.answered && !el.overlay.classList.contains("show")) {
+        if (document.activeElement && document.activeElement.classList.contains("ans")) return;
+        nextQuestion();
+      }
+    });
+  </script>
+</body>
+</html>

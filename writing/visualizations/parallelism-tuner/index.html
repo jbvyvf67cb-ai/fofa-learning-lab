@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parallelism Tuner — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Spot the sentence whose list items don't match in form, then tune it into parallel structure.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .exercise { margin-top: 22px; }
+
+    .progress-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .progress { color: var(--ink-mute); font-size: 13px; }
+
+    .tune-panel {
+      padding: 20px; border-radius: var(--radius-sm); max-width: 64ch;
+      border: 2px solid var(--line); background: var(--panel-2);
+    }
+    .bad-panel {
+      border-color: var(--bad);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--bad) 14%, var(--panel-2)), var(--panel-2));
+    }
+    .good-panel {
+      margin-top: 14px;
+      border-color: var(--good);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--good) 14%, var(--panel-2)), var(--panel-2));
+    }
+    .tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      font: 700 12px/1 var(--ui-font); text-transform: uppercase; letter-spacing: .08em;
+      margin-bottom: 10px;
+    }
+    .tag .dot { width: 9px; height: 9px; border-radius: 50%; }
+    .bad-panel .tag { color: var(--bad); }
+    .bad-panel .tag .dot { background: var(--bad); }
+    .good-panel .tag { color: var(--good); }
+    .good-panel .tag .dot { background: var(--good); }
+
+    .sentence { font-family: var(--font); font-size: 21px; line-height: 1.45; color: var(--ink); margin: 0; }
+    .note {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+      color: var(--ink-soft); font-size: 14px;
+    }
+    .note b { color: var(--ink); }
+
+    .arrow-down { text-align: center; font-size: 22px; color: var(--ink-mute); margin: 10px 0; }
+    .reveal-btn-row { margin: 6px 0 4px; }
+    .placeholder-note { color: var(--ink-mute); font-size: 14px; margin-top: 12px; }
+
+    /* --- Item-by-item comparison (bonus) --------------------------------- */
+    .items-compare { margin-top: 26px; max-width: 64ch; }
+    .items-compare h2 {
+      font-family: var(--font); font-size: 16px; margin: 0 0 12px;
+      color: var(--ink-soft); font-weight: 700;
+    }
+    .items-head {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      font: 700 11px/1 var(--ui-font); text-transform: uppercase; letter-spacing: .07em;
+      margin-bottom: 8px;
+    }
+    .items-head span:first-child { color: var(--bad); }
+    .items-head span:last-child { color: var(--good); }
+    .item-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+    .item-cell {
+      border-radius: 8px; padding: 10px 14px;
+      font-family: var(--font); font-size: 16px; color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .item-cell.bad { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 16%, var(--panel-2)); }
+    .item-cell.good { border-color: var(--good); background: color-mix(in srgb, var(--good) 16%, var(--panel-2)); }
+    .item-cell .item-n {
+      display: block; font: 700 11px/1 var(--ui-font); color: var(--ink-mute); margin-bottom: 4px;
+    }
+
+    .stepper { display: flex; align-items: center; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+
+    .takeaway {
+      margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);
+      color: var(--ink-soft); font-size: 15px; max-width: 64ch;
+    }
+    .takeaway b { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../rhythm-and-length/">Rhythm &amp; Length →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="eyebrow">Style &amp; structure</div>
+    <h1 style="font-family:var(--font); margin:.2em 0 .1em">Parallelism Tuner</h1>
+    <p class="muted" style="margin-top:0; max-width:60ch">
+      When items appear in a series — joined by commas and "and" — they should all
+      share the same grammatical form. Mix an <b>-ing</b> with a <b>to&nbsp;___</b>
+      with a plain verb and the sentence stumbles. Read the sentence below, spot
+      what's out of tune, then reveal the fix.
+    </p>
+
+    <section class="panel pad exercise">
+      <div class="progress-row">
+        <span class="progress" id="progress"></span>
+        <span class="chip"><span class="dot" style="background:var(--bad)"></span> Out of tune until fixed</span>
+      </div>
+
+      <div class="tune-panel bad-panel">
+        <div class="tag"><span class="dot"></span>Out of tune</div>
+        <p class="sentence" id="brokenSentence"></p>
+      </div>
+
+      <div class="arrow-down">↓</div>
+
+      <div class="reveal-btn-row">
+        <button class="btn primary" id="tuneBtn" type="button">Tune it</button>
+      </div>
+
+      <p class="placeholder-note" id="placeholder">
+        Click <b>Tune it</b> to see the list items lined up in matching form.
+      </p>
+
+      <div class="good-panel tune-panel" id="fixedPanel" hidden>
+        <div class="tag"><span class="dot"></span>In parallel</div>
+        <p class="sentence" id="fixedSentence"></p>
+        <p class="note" id="noteText"></p>
+      </div>
+
+      <div class="items-compare" id="itemsCompare" hidden>
+        <h2>The series items, lined up</h2>
+        <div class="items-head"><span>Out of tune</span><span>In parallel</span></div>
+        <div id="itemRows"></div>
+      </div>
+
+      <div class="stepper">
+        <button class="btn ghost" id="prevBtn" type="button">← Previous</button>
+        <button class="btn primary" id="nextBtn" type="button">Next →</button>
+      </div>
+
+      <p class="takeaway">
+        <b>The idea:</b> find the items in the series, then make all of them match —
+        all gerunds (-ing), all infinitives (to&nbsp;___), all plain verbs, all nouns.
+        Parallel form lets a reader glide through a list instead of tripping over it.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Sentence pairs come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARALLELISM } = WL_GRAMMAR;
+
+    const el = {
+      progress: document.getElementById("progress"),
+      brokenSentence: document.getElementById("brokenSentence"),
+      tuneBtn: document.getElementById("tuneBtn"),
+      placeholder: document.getElementById("placeholder"),
+      fixedPanel: document.getElementById("fixedPanel"),
+      fixedSentence: document.getElementById("fixedSentence"),
+      noteText: document.getElementById("noteText"),
+      itemsCompare: document.getElementById("itemsCompare"),
+      itemRows: document.getElementById("itemRows"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+    };
+
+    let index = 0;
+    let revealed = false;
+
+    /**
+     * Best-effort split of a series sentence into its list items.
+     * Series in this dataset are written with an Oxford comma:
+     *   "<lead-in item-1>, <item-2>, and <item-3>."
+     * Splitting on commas gives exactly three chunks in that shape; the third
+     * chunk still carries a leading "and" and the trailing period, which we
+     * strip off. If a sentence doesn't split into exactly three chunks, the
+     * caller should fall back to showing the whole sentence — no item row.
+     */
+    function splitItems(sentence) {
+      const parts = sentence.trim().replace(/\.+$/, "").split(",");
+      if (parts.length !== 3) return null;
+      const items = parts.map(p => p.trim());
+      items[2] = items[2].replace(/^and\s+/i, "").trim();
+      if (items.some(x => !x)) return null;
+      return items;
+    }
+
+    function render() {
+      const item = PARALLELISM[index];
+      el.progress.textContent = `Sentence ${index + 1} of ${PARALLELISM.length}`;
+      el.brokenSentence.textContent = item.broken;
+
+      el.tuneBtn.hidden = revealed;
+      el.placeholder.hidden = revealed;
+      el.fixedPanel.hidden = !revealed;
+
+      if (revealed) {
+        el.fixedSentence.textContent = item.fixed;
+        el.noteText.innerHTML = `<b>Why it works:</b> ${item.note}`;
+      }
+
+      // Bonus: line up the three series items, broken vs. fixed, if the
+      // sentence shape lets us pull them apart cleanly.
+      const brokenItems = splitItems(item.broken);
+      const fixedItems = splitItems(item.fixed);
+      el.itemRows.innerHTML = "";
+      if (revealed && brokenItems && fixedItems && brokenItems.length === fixedItems.length) {
+        brokenItems.forEach((b, i) => {
+          const row = document.createElement("div");
+          row.className = "item-row";
+          row.innerHTML = `
+            <span class="item-cell bad"><span class="item-n">Item ${i + 1}</span>${escapeHtml(b)}</span>
+            <span class="item-cell good"><span class="item-n">Item ${i + 1}</span>${escapeHtml(fixedItems[i])}</span>`;
+          el.itemRows.appendChild(row);
+        });
+        el.itemsCompare.hidden = false;
+      } else {
+        el.itemsCompare.hidden = true;
+      }
+
+      el.prevBtn.disabled = index === 0;
+      el.nextBtn.disabled = index === PARALLELISM.length - 1;
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement("div");
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    el.tuneBtn.addEventListener("click", () => {
+      revealed = true;
+      render();
+    });
+
+    el.prevBtn.addEventListener("click", () => {
+      if (index === 0) return;
+      index--;
+      revealed = false;
+      render();
+    });
+    el.nextBtn.addEventListener("click", () => {
+      if (index === PARALLELISM.length - 1) return;
+      index++;
+      revealed = false;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

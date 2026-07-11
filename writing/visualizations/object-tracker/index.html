@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Object Tracker — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23ffd166%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27 font-weight=%27bold%27%3EOb%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Click the direct and indirect objects in a sentence, then reveal every word's role.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    /* The sentence itself */
+    .sentence {
+      font-family: var(--font);
+      font-size: clamp(22px, 4vw, 36px);
+      line-height: 2.1; text-align: center;
+      padding: 26px 18px; user-select: none;
+    }
+    .word {
+      position: relative; cursor: pointer;
+      padding: 2px 8px; margin: 0 1px; border-radius: 8px;
+      border-bottom: 4px solid transparent;
+      transition: background .12s ease, transform .08s ease, color .15s ease, border-color .15s ease;
+      background: transparent; color: var(--ink); font: inherit;
+    }
+    .word:hover { transform: translateY(-2px); background: rgba(255,255,255,.06); }
+    .word:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .word.solved { font-weight: 700; }
+    .word.wrong-flash { animation: flash .4s ease; }
+    @keyframes flash {
+      0%, 100% { background: transparent; }
+      40% { background: rgba(255,122,144,.28); }
+    }
+
+    .prompt {
+      font-size: 18px; font-weight: 700; text-align: center;
+      margin: 0 0 6px;
+    }
+    .prompt .role-tag {
+      display: inline-block; padding: 2px 10px; border-radius: 999px;
+      font-size: 13px; letter-spacing: .04em; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .helper {
+      text-align: center; color: var(--ink-mute); font-size: 13px; margin: 0 0 4px;
+    }
+    .feedback {
+      min-height: 26px; text-align: center; font-size: 14px; font-weight: 600;
+      margin-top: 10px;
+    }
+    .feedback.good { color: var(--good); }
+    .feedback.bad { color: var(--bad); }
+    .feedback.info { color: var(--accent); }
+
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 18px; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; justify-content: center; }
+    .legend .chip { cursor: default; }
+    .note {
+      margin-top: 16px; padding: 12px 16px; border-radius: 10px;
+      background: var(--panel-2); border: 1px solid var(--line);
+      color: var(--ink-soft); font-size: 14px; text-align: center;
+      display: none;
+    }
+    .note.show { display: block; }
+
+    .progress { text-align: center; color: var(--ink-mute); font-size: 13px; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../sentence-anatomy/">Sentence Anatomy →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 3 · Phrases &amp; clauses</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Object Tracker</h1>
+      <p class="muted" style="margin-top:0; max-width:60ch">
+        A verb's action often lands somewhere. The <b>direct object</b> is the
+        thing being acted on; the <b>indirect object</b> is who or what
+        receives it. Click the words to find them, then reveal every role.
+      </p>
+
+      <section class="panel pad">
+        <p class="prompt" id="prompt"></p>
+        <p class="helper">Not every sentence has both — some sentences have only a direct object.</p>
+
+        <div class="sentence" id="sentence" role="group" aria-label="Interactive sentence. Click a word to answer the prompt."></div>
+
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+
+        <p class="note" id="note"></p>
+
+        <div class="legend" id="legend" aria-label="Sentence-role color key"></div>
+
+        <div class="controls">
+          <button class="btn" id="prevBtn">‹ Previous</button>
+          <button class="btn ghost" id="revealBtn">Reveal all roles</button>
+          <button class="btn" id="nextBtn">Next sentence ›</button>
+        </div>
+        <p class="progress" id="progress"></p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Colors and sentences come from the shared dataset in
+      <code>assets/data/grammar.js</code>, so they mean the same thing in every module.
+      &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { OBJECTS, OBJECT_ROLES } = WL_GRAMMAR;
+    const ROLE_ORDER = ["subject", "verb", "direct", "indirect"];
+
+    const elSentence = document.getElementById("sentence");
+    const elPrompt   = document.getElementById("prompt");
+    const elFeedback = document.getElementById("feedback");
+    const elNote     = document.getElementById("note");
+    const elLegend   = document.getElementById("legend");
+    const elProgress = document.getElementById("progress");
+
+    let sIndex = 0;
+    let phase = "direct"; // "direct" | "indirect" | "done"
+
+    function currentSentence() { return OBJECTS[sIndex]; }
+    function hasIndirect(s) { return s.tokens.some(t => t.role === "indirect"); }
+
+    /* ---- Legend (built once; role set is fixed across the dataset) ------- */
+    ROLE_ORDER.forEach(key => {
+      const r = OBJECT_ROLES[key];
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.innerHTML = `<span class="dot" style="background:${r.color}"></span>${r.label}`;
+      elLegend.appendChild(chip);
+    });
+    elLegend.style.visibility = "hidden";
+
+    /* ---- Render a sentence in challenge phase ----------------------------- */
+    function render() {
+      const s = currentSentence();
+      phase = "direct";
+      elFeedback.textContent = "";
+      elFeedback.className = "feedback";
+      elNote.classList.remove("show");
+      elNote.textContent = "";
+      elLegend.style.visibility = "hidden";
+
+      elSentence.innerHTML = "";
+      s.tokens.forEach((t, i) => {
+        const b = document.createElement("button");
+        b.className = "word";
+        b.type = "button";
+        b.textContent = t.w;
+        b.setAttribute("aria-label", t.w);
+        b.addEventListener("click", () => handleClick(i));
+        elSentence.appendChild(b);
+        elSentence.appendChild(document.createTextNode(" "));
+      });
+
+      elProgress.textContent = `Sentence ${sIndex + 1} of ${OBJECTS.length}`;
+      updatePrompt();
+    }
+
+    function updatePrompt() {
+      const s = currentSentence();
+      if (phase === "direct") {
+        elPrompt.innerHTML = `Click the <span class="role-tag" style="background:${OBJECT_ROLES.direct.color};color:#10131f">DIRECT OBJECT</span> — the thing being acted on.`;
+      } else if (phase === "indirect") {
+        elPrompt.innerHTML = `Now click the <span class="role-tag" style="background:${OBJECT_ROLES.indirect.color};color:#10131f">INDIRECT OBJECT</span> — who receives it.`;
+      } else {
+        elPrompt.innerHTML = `All roles revealed for: <em>${s.text}</em>`;
+      }
+    }
+
+    /* ---- Click handling ---------------------------------------------------- */
+    function handleClick(i) {
+      const s = currentSentence();
+      const token = s.tokens[i];
+      const words = [...elSentence.querySelectorAll(".word")];
+
+      if (phase === "done") return;
+
+      const targetRole = phase; // "direct" or "indirect"
+
+      if (token.role === targetRole) {
+        colorRole(targetRole);
+
+        if (targetRole === "direct" && hasIndirect(s)) {
+          setFeedback(`Yes — "${wordsOfRole(s, "direct")}" is the direct object.`, "good");
+          phase = "indirect";
+          updatePrompt();
+        } else if (targetRole === "direct") {
+          setFeedback(`Yes — "${wordsOfRole(s, "direct")}" is the direct object. This sentence has no indirect object.`, "good");
+          reveal();
+        } else {
+          setFeedback(`Yes — "${wordsOfRole(s, "indirect")}" is the indirect object.`, "good");
+          reveal();
+        }
+      } else {
+        words[i].classList.remove("wrong-flash");
+        // force reflow so the animation can replay
+        void words[i].offsetWidth;
+        words[i].classList.add("wrong-flash");
+        setFeedback(wrongMessage(token.role, targetRole), "bad");
+      }
+    }
+
+    function wrongMessage(actualRole, targetRole) {
+      const labels = {
+        subject: "the subject — who or what is doing the action",
+        verb: "the verb — the action itself",
+        direct: "the direct object — already found",
+        indirect: "the indirect object — the receiver",
+      };
+      if (targetRole === "direct") {
+        return `Not quite — that word is ${labels[actualRole]}. Look for what is directly acted on.`;
+      }
+      return `Not quite — that word is ${labels[actualRole]}. Look for who or what receives the direct object.`;
+    }
+
+    function setFeedback(text, kind) {
+      elFeedback.textContent = text;
+      elFeedback.className = `feedback ${kind}`;
+    }
+
+    function wordsOfRole(s, role) {
+      return s.tokens.filter(t => t.role === role).map(t => t.w).join(" ");
+    }
+
+    /* ---- Coloring ------------------------------------------------------- */
+    function colorRole(role) {
+      const s = currentSentence();
+      const words = [...elSentence.querySelectorAll(".word")];
+      s.tokens.forEach((t, i) => {
+        if (t.role === role) {
+          words[i].classList.add("solved");
+          words[i].style.color = OBJECT_ROLES[role].color;
+          words[i].style.borderBottomColor = OBJECT_ROLES[role].color;
+        }
+      });
+    }
+
+    function colorAll() {
+      const s = currentSentence();
+      const words = [...elSentence.querySelectorAll(".word")];
+      s.tokens.forEach((t, i) => {
+        const r = OBJECT_ROLES[t.role];
+        words[i].classList.add("solved");
+        words[i].style.color = r.color;
+        words[i].style.borderBottomColor = r.color;
+      });
+    }
+
+    /* ---- Reveal phase ------------------------------------------------------ */
+    function reveal() {
+      phase = "done";
+      colorAll();
+      elLegend.style.visibility = "visible";
+      elNote.textContent = currentSentence().note;
+      elNote.classList.add("show");
+      updatePrompt();
+    }
+
+    /* ---- Controls ---------------------------------------------------------- */
+    document.getElementById("revealBtn").addEventListener("click", () => {
+      if (phase !== "done") {
+        setFeedback("", "");
+        reveal();
+      }
+    });
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      sIndex = (sIndex + 1) % OBJECTS.length;
+      render();
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      sIndex = (sIndex - 1 + OBJECTS.length) % OBJECTS.length;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Writing Lab — learn language by changing things</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Interactive experiences for learning to write: parts of speech, sentence structure, style, and beyond.">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <style>
+    /* Landing-specific flourishes */
+    .legend { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .legend .chip .dot { box-shadow: 0 0 0 3px rgba(255,255,255,.05); }
+    .hero .demo {
+      margin-top: 26px; font-family: var(--font);
+      font-size: clamp(20px, 3.4vw, 30px); line-height: 1.7;
+    }
+    .hero .demo .tok {
+      padding: 1px 4px; border-radius: 6px; border-bottom: 3px solid transparent;
+    }
+    .unit-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 44px 0 6px; }
+    .unit-head h2 { font-family: var(--font); font-size: 26px; margin: 0; }
+    .unit-head .u-num {
+      display: inline-grid; place-items: center; width: 30px; height: 30px;
+      border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line);
+      font-weight: 800; color: var(--accent); font-family: var(--ui-font); font-size: 15px;
+      align-self: center;
+    }
+    .unit-head .u-sub { color: var(--ink-mute); font-size: 14px; }
+    .unit-head.branch .u-num { background: linear-gradient(135deg, var(--good), var(--accent)); color: #10131f; }
+    .fork-rule { border: none; border-top: 1px dashed var(--line); margin: 40px 0 0; }
+    .card .thumb { font-size: 34px; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <span class="brand"><span class="glyph">¶</span> Writing&nbsp;Lab</span>
+      <nav>
+        <a href="#modules">Experiences</a>
+        <a href="ROADMAP.md">Roadmap</a>
+        <a href="https://github.com/jbvyvf67cb-ai/stem-viz">STEM&nbsp;Lab ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Language arts, made interactive</div>
+      <h1>Learn to write by taking sentences apart.</h1>
+      <p class="lead">
+        Start with the smallest unit of writing — the sentence — and work
+        outward: parts of speech, how they lock into subjects and predicates,
+        phrases and clauses, sentence types, and on into style. Click any word
+        to see its job, drag it somewhere new, and watch the meaning move. The
+        language-arts companion to our
+        <a href="https://github.com/jbvyvf67cb-ai/stem-viz">STEM visualizations</a>.
+      </p>
+
+      <!-- A live, color-coded taste of the part-of-speech system -->
+      <div class="demo" id="demo" aria-label="A color-coded example sentence."></div>
+      <div class="legend" id="legend" aria-hidden="true"></div>
+    </section>
+
+    <h2 class="section-title" id="modules">Experiences</h2>
+    <p class="muted" style="margin-top:-6px">
+      We’re starting at the very beginning: <b>Unit 1 — the parts of speech</b>,
+      the building blocks every later lesson is made of.
+    </p>
+
+    <!-- UNIT 1 -->
+    <div class="unit-head">
+      <span class="u-num">1</span>
+      <h2>Parts of speech</h2>
+      <span class="u-sub">The atoms of language</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="visualizations/sentence-anatomy/">
+        <div class="thumb" style="background:linear-gradient(135deg,#6fb3ff,#c792ea)">✎</div>
+        <div class="body"><h3>Sentence Anatomy</h3>
+          <p>Click any word to reveal its part of speech and its job. Toggle the subject / predicate split.</p>
+          <span class="tag">Unit 1 · Parts of speech</span></div>
+      </a>
+      <a class="card" href="visualizations/word-sort/">
+        <div class="thumb" style="background:linear-gradient(135deg,#ff7a90,#ffd166)">⇄</div>
+        <div class="body"><h3>Word Sort</h3>
+          <p>Drop each word into the right part-of-speech bucket. No timer — just get 10 correct in a row.</p>
+          <span class="tag">Unit 1 · Parts of speech</span></div>
+      </a>
+      <a class="card" href="visualizations/parts-of-speech-detective/">
+        <div class="thumb" style="background:linear-gradient(135deg,#4fd6c9,#6fb3ff)">🔍</div>
+        <div class="body"><h3>Part-of-Speech Detective</h3>
+          <p>One spelling, many disguises. Spot how the same word changes job from sentence to sentence.</p>
+          <span class="tag">Unit 1 · Parts of speech</span></div>
+      </a>
+      <a class="card" href="visualizations/word-shape-lab/">
+        <div class="thumb" style="background:linear-gradient(135deg,#ffd166,#f0883e)">⚗️</div>
+        <div class="body"><h3>Word-Shape Lab</h3>
+          <p>Morph one root across parts of speech: beauty → beautify → beautiful → beautifully.</p>
+          <span class="tag">Unit 1 · Parts of speech</span></div>
+      </a>
+    </div>
+
+    <!-- Everything past Unit 1 is preview-only: hidden unless the page is
+         opened with ?beta=1, so the public page stays focused on Unit 1.
+         The modules still work by direct URL. -->
+    <div id="beta" hidden>
+    <p class="muted" style="margin-top:34px">
+      <b>Preview —</b> later units are in progress and not part of the main path yet.
+    </p>
+
+    <!-- UNIT 2 -->
+    <div class="unit-head">
+      <span class="u-num">2</span>
+      <h2>Subject &amp; predicate</h2>
+      <span class="u-sub">The two-part core of every sentence</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="visualizations/subject-predicate/">
+        <div class="thumb" style="background:linear-gradient(135deg,#6fb3ff,#ff7a90)">⇥</div>
+        <div class="body"><h3>Subject &amp; Predicate Splitter</h3>
+          <p>Drag the dividing line and split any sentence into its who/what and its what-about-it.</p>
+          <span class="tag">Unit 2 · Subject &amp; predicate</span></div>
+      </a>
+      <a class="card" href="visualizations/sentence-builder/">
+        <div class="thumb" style="background:linear-gradient(135deg,#9ad07a,#6fb3ff)">＋</div>
+        <div class="body"><h3>Sentence Builder</h3>
+          <p>Compose a sentence from a word bank. The tool refuses fragments and tells you why.</p>
+          <span class="tag">Unit 2 · Subject &amp; predicate</span></div>
+      </a>
+      <a class="card" href="visualizations/complete-or-fragment/">
+        <div class="thumb" style="background:linear-gradient(135deg,#ffd166,#56d3a0)">⚖️</div>
+        <div class="body"><h3>Complete or Fragment?</h3>
+          <p>A fast judgment game: is it a complete thought or a fragment? Learn the tell each time.</p>
+          <span class="tag">Unit 2 · Subject &amp; predicate</span></div>
+      </a>
+    </div>
+
+    <!-- UNIT 3 -->
+    <div class="unit-head">
+      <span class="u-num">3</span>
+      <h2>Phrases &amp; clauses</h2>
+      <span class="u-sub">Building the sentence out</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="visualizations/object-tracker/">
+        <div class="thumb" style="background:linear-gradient(135deg,#4fd6c9,#ffd166)">⊙</div>
+        <div class="body"><h3>Object Tracker</h3>
+          <p>Find the direct and indirect objects, then reveal the whole color-coded structure.</p>
+          <span class="tag">Unit 3 · Phrases &amp; clauses</span></div>
+      </a>
+      <a class="card" href="visualizations/phrase-painter/">
+        <div class="thumb" style="background:linear-gradient(135deg,#c792ea,#6fb3ff)">🖌️</div>
+        <div class="body"><h3>Phrase Painter</h3>
+          <p>Paint the prepositional, noun, and verb phrases and watch words chunk into units.</p>
+          <span class="tag">Unit 3 · Phrases &amp; clauses</span></div>
+      </a>
+      <a class="card" href="visualizations/clause-combiner/">
+        <div class="thumb" style="background:linear-gradient(135deg,#9ad07a,#c792ea)">⛓️</div>
+        <div class="body"><h3>Clause Combiner</h3>
+          <p>Join two clauses with different connectors and see compound vs. complex sentences form.</p>
+          <span class="tag">Unit 3 · Phrases &amp; clauses</span></div>
+      </a>
+    </div>
+
+    <!-- UNIT 4 -->
+    <div class="unit-head">
+      <span class="u-num">4</span>
+      <h2>Sentence types &amp; punctuation</h2>
+      <span class="u-sub">Correctness and clarity</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="visualizations/sentence-type-sorter/">
+        <div class="thumb" style="background:linear-gradient(135deg,#6fb3ff,#9ad07a)">▦</div>
+        <div class="body"><h3>Sentence-Type Sorter</h3>
+          <p>Simple, compound, complex, or compound-complex? Sort them and learn the difference.</p>
+          <span class="tag">Unit 4 · Types &amp; punctuation</span></div>
+      </a>
+      <a class="card" href="visualizations/punctuation-playground/">
+        <div class="thumb" style="background:linear-gradient(135deg,#ffb86b,#ff7a90)">，</div>
+        <div class="body"><h3>Punctuation Playground</h3>
+          <p>Move one comma, change the meaning. “Let’s eat, Grandma” vs. “Let’s eat Grandma.”</p>
+          <span class="tag">Unit 4 · Types &amp; punctuation</span></div>
+      </a>
+      <a class="card" href="visualizations/run-on-repair/">
+        <div class="thumb" style="background:linear-gradient(135deg,#ff7a90,#f0883e)">🔧</div>
+        <div class="body"><h3>Run-on Repair</h3>
+          <p>Diagnose a run-on, then fix it three valid ways: period, semicolon, or conjunction.</p>
+          <span class="tag">Unit 4 · Types &amp; punctuation</span></div>
+      </a>
+    </div>
+
+    <hr class="fork-rule">
+
+    <!-- BRANCH POINT -->
+    <div class="unit-head branch">
+      <span class="u-num">↗</span>
+      <h2>Style &amp; structure</h2>
+      <span class="u-sub">The branch point — from correct to effective</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="visualizations/rhythm-and-length/">
+        <div class="thumb" style="background:linear-gradient(135deg,#7c9cff,#4fd6c9)">▃▅▂</div>
+        <div class="body"><h3>Rhythm &amp; Length</h3>
+          <p>See sentence lengths as bars. Flat and uniform reads dull; varied reads alive.</p>
+          <span class="tag">Style &amp; structure</span></div>
+      </a>
+      <a class="card" href="visualizations/active-passive/">
+        <div class="thumb" style="background:linear-gradient(135deg,#6fb3ff,#ff7a90)">⇋</div>
+        <div class="body"><h3>Active ↔ Passive</h3>
+          <p>Flip voice and watch the doer and receiver trade places. Feel the change in emphasis.</p>
+          <span class="tag">Style &amp; structure</span></div>
+      </a>
+      <a class="card" href="visualizations/combining-reducing/">
+        <div class="thumb" style="background:linear-gradient(135deg,#56d3a0,#7c9cff)">⨝</div>
+        <div class="body"><h3>Combining &amp; Reducing</h3>
+          <p>Merge choppy sentences into one; trim bloated ones down. Watch the word count drop.</p>
+          <span class="tag">Style &amp; structure</span></div>
+      </a>
+      <a class="card" href="visualizations/parallelism-tuner/">
+        <div class="thumb" style="background:linear-gradient(135deg,#ffd166,#9ad07a)">∥</div>
+        <div class="body"><h3>Parallelism Tuner</h3>
+          <p>Tune a mismatched list until every item shares the same grammatical shape.</p>
+          <span class="tag">Style &amp; structure</span></div>
+      </a>
+    </div>
+
+    <!-- BRANCHES AHEAD -->
+    <h2 class="section-title">The branches ahead</h2>
+    <div class="panel pad">
+      <p class="muted" style="margin-top:0">
+        Past the branch point, the trunk forks into writing modes — each reusing
+        the same primitives you built here.
+      </p>
+      <div class="row">
+        <span class="chip">🌿 Descriptive</span>
+        <span class="chip">🌿 Persuasive</span>
+        <span class="chip">🌿 Narrative &amp; creative</span>
+        <span class="chip">🌿 Expository</span>
+      </div>
+      <p class="muted">Read the full arc in <a href="ROADMAP.md">ROADMAP.md</a>.</p>
+    </div>
+    </div><!-- /#beta -->
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Writing Lab — a dependency-free, learn-by-doing language-arts project.
+      Sibling to <a href="https://github.com/jbvyvf67cb-ai/stem-viz">stem-viz</a>.
+    </div>
+  </footer>
+
+  <script>
+    // Preview gate: reveal the later units only when opened with ?beta=1.
+    if (new URLSearchParams(location.search).get("beta") === "1") {
+      const beta = document.getElementById("beta");
+      if (beta) beta.hidden = false;
+    }
+  </script>
+  <script src="assets/data/grammar.js"></script>
+  <script>
+    // Render the hero's live example sentence straight from the shared dataset,
+    // so the colors here are literally the same ones every module teaches.
+    const { PARTS, SENTENCES, POS_ORDER } = WL_GRAMMAR;
+    const sentence = SENTENCES[0];
+    const demo = document.getElementById("demo");
+    sentence.tokens.forEach((t, i) => {
+      const span = document.createElement("span");
+      span.className = "tok";
+      span.textContent = t.w;
+      span.style.borderBottomColor = PARTS[t.pos].color;
+      span.title = PARTS[t.pos].label;
+      demo.appendChild(span);
+      if (i < sentence.tokens.length - 1) demo.appendChild(document.createTextNode(" "));
+    });
+    demo.appendChild(document.createTextNode("."));
+
+    // Legend of every part of speech, in canonical order.
+    const legend = document.getElementById("legend");
+    POS_ORDER.forEach(key => {
+      const p = PARTS[key];
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.innerHTML = `<span class="dot" style="background:${p.color}"></span>${p.label}`;
+      legend.appendChild(chip);
+    });
+  </script>
+</body>
+</html>

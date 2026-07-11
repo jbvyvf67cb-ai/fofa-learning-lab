@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Part-of-Speech Detective — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="The same word plays different jobs in different sentences. Drag each part of speech under the sentence where it fits.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+    .topline { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .theword {
+      font-family: var(--font); font-size: clamp(30px, 6vw, 52px);
+      padding: 2px 14px; border-radius: 12px; background: var(--panel-2);
+      border: 1px solid var(--line);
+    }
+    .progress { color: var(--ink-mute); font-size: 14px; }
+
+    /* Sentence cards side by side */
+    .sentences { display: grid; gap: 16px; margin-top: 18px;
+      grid-template-columns: 1fr; }
+    @media (min-width: 760px) { .sentences { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } }
+    .scard {
+      border: 2px solid var(--line); border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--bg-soft));
+      padding: 18px; display: flex; flex-direction: column; gap: 14px;
+      transition: border-color .15s ease;
+    }
+    .scard.solved { border-color: var(--good); }
+    .scard.over { border-color: var(--accent); }
+    .scard .sent { font-family: var(--font); font-size: clamp(19px, 2.6vw, 24px); line-height: 1.5; }
+    .scard .target {
+      font-weight: 700; padding: 1px 6px; border-radius: 6px;
+      background: rgba(255,255,255,.09); border-bottom: 3px solid var(--accent-warm);
+    }
+
+    /* The drop slot beneath each sentence */
+    .slot {
+      border: 2px dashed var(--line); border-radius: 10px;
+      min-height: 58px; display: flex; align-items: center; justify-content: center;
+      gap: 8px; color: var(--ink-mute); font-size: 14px; text-align: center; padding: 8px;
+      transition: background .15s ease, border-color .15s ease;
+    }
+    .scard.over .slot { border-color: var(--accent); background: var(--panel-2); }
+    .slot.filled { border-style: solid; }
+    .slot .filledchip {
+      display: inline-flex; align-items: center; gap: 8px; font-weight: 700;
+      color: #10131f; padding: 8px 14px; border-radius: 999px; font-size: 16px;
+    }
+    .slot.wrong { animation: shake .3s ease; border-color: var(--bad); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+    /* Palette of ALL parts of speech */
+    .palette-wrap { margin-top: 22px; }
+    .palette-wrap h2 { font-family: var(--font); font-size: 18px; margin: 0 0 4px; }
+    .palette { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .poschip {
+      display: inline-flex; align-items: center; gap: 8px; cursor: grab;
+      padding: 9px 14px; border-radius: 999px; font-weight: 700; font-size: 15px;
+      border: 2px solid var(--line); background: var(--panel-2); color: var(--ink);
+      transition: transform .08s ease, border-color .12s ease, box-shadow .12s ease;
+    }
+    .poschip:hover { transform: translateY(-2px); }
+    .poschip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .poschip.picked { box-shadow: 0 0 0 3px var(--accent) inset; border-color: var(--accent); }
+    .poschip .dot { width: 13px; height: 13px; border-radius: 50%; }
+    .poschip.dragging { opacity: .5; }
+
+    .feedback { margin-top: 16px; min-height: 22px; font-weight: 600; }
+    .feedback.bad { color: var(--bad); }
+    .reveal {
+      margin-top: 16px; border: 1px solid var(--good); border-radius: var(--radius);
+      background: rgba(86,211,160,.08); padding: 16px 18px; display: none;
+    }
+    .reveal.show { display: block; }
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+    .hintline { font-size: 13px; color: var(--ink-mute); margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../sentence-anatomy/">Sentence Anatomy →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 1 · Parts of speech</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Part-of-Speech Detective</h1>
+      <p class="muted" style="margin-top:0; max-width:64ch">
+        The <b>same word</b> can do different jobs in different sentences. Read
+        both sentences, then <b>drag the correct part of speech under each one</b>
+        — or tap a part of speech, then tap a sentence. Watch the highlighted word.
+      </p>
+
+      <section class="panel pad">
+        <div class="topline">
+          <span class="theword" id="theword">word</span>
+          <span class="progress" id="progress"></span>
+        </div>
+
+        <div class="sentences" id="sentences"></div>
+
+        <div class="feedback" id="feedback">&nbsp;</div>
+
+        <div class="reveal" id="reveal"></div>
+
+        <div class="palette-wrap">
+          <h2>Parts of speech</h2>
+          <p class="muted" style="margin:0; font-size:14px">Only some of these fit — pick the right one for each sentence.</p>
+          <div class="palette" id="palette" aria-label="All parts of speech"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="prevBtn">‹ Previous word</button>
+          <button class="btn primary" id="nextBtn">Next word ›</button>
+          <button class="btn ghost" id="resetBtn">Clear this word</button>
+        </div>
+        <p class="hintline">Tip: a word’s part of speech depends on how it’s used — not on the spelling alone.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Words and colors come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARTS, POS_ORDER, DISGUISES } = WL_GRAMMAR;
+
+    const elWord = document.getElementById("theword");
+    const elProgress = document.getElementById("progress");
+    const elSentences = document.getElementById("sentences");
+    const elPalette = document.getElementById("palette");
+    const elFeedback = document.getElementById("feedback");
+    const elReveal = document.getElementById("reveal");
+
+    let wi = 0;                 // current disguise index
+    let picked = null;          // pos currently "picked up" via click
+    const solvedWords = new Set();
+
+    /* ---- Palette of ALL parts of speech (built once) --------------------- */
+    POS_ORDER.forEach(pos => {
+      const p = PARTS[pos];
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "poschip";
+      chip.dataset.pos = pos;
+      chip.draggable = true;
+      chip.innerHTML = `<span class="dot" style="background:${p.color}"></span>${p.label}`;
+      chip.addEventListener("click", () => pick(pos, chip));
+      chip.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", pos);
+        chip.classList.add("dragging");
+      });
+      chip.addEventListener("dragend", () => chip.classList.remove("dragging"));
+      elPalette.appendChild(chip);
+    });
+
+    function pick(pos, chip) {
+      if (picked === pos) { picked = null; chip.classList.remove("picked"); return; }
+      picked = pos;
+      [...elPalette.children].forEach(c => c.classList.toggle("picked", c.dataset.pos === pos));
+    }
+    function clearPick() {
+      picked = null;
+      [...elPalette.children].forEach(c => c.classList.remove("picked"));
+    }
+
+    /* ---- Render the current word's sentence cards ------------------------ */
+    function render() {
+      const d = DISGUISES[wi];
+      elWord.textContent = d.word;
+      elProgress.textContent = `Word ${wi + 1} of ${DISGUISES.length} · solved ${solvedWords.size}/${DISGUISES.length}`;
+      elFeedback.innerHTML = "&nbsp;";
+      elFeedback.className = "feedback";
+      elReveal.classList.remove("show");
+      clearPick();
+      elSentences.innerHTML = "";
+
+      d.uses.forEach((use, i) => {
+        const card = document.createElement("div");
+        card.className = "scard";
+        card.dataset.idx = i;
+
+        // Sentence with the target word highlighted.
+        const words = use.text.split(" ");
+        const sent = document.createElement("div");
+        sent.className = "sent";
+        words.forEach((w, j) => {
+          if (j === use.idx) {
+            const s = document.createElement("span");
+            s.className = "target";
+            s.textContent = w;
+            sent.appendChild(s);
+          } else {
+            sent.appendChild(document.createTextNode(w));
+          }
+          if (j < words.length - 1) sent.appendChild(document.createTextNode(" "));
+        });
+
+        const slot = document.createElement("div");
+        slot.className = "slot";
+        slot.textContent = "drop a part of speech here";
+
+        card.appendChild(sent);
+        card.appendChild(slot);
+
+        // Drag-and-drop target
+        card.addEventListener("dragover", (e) => { e.preventDefault(); card.classList.add("over"); });
+        card.addEventListener("dragleave", () => card.classList.remove("over"));
+        card.addEventListener("drop", (e) => {
+          e.preventDefault(); card.classList.remove("over");
+          const pos = e.dataTransfer.getData("text/plain");
+          place(i, pos, card, slot);
+        });
+        // Click flow: pick a chip, then click the card
+        card.addEventListener("click", () => {
+          if (picked) place(i, picked, card, slot);
+        });
+
+        elSentences.appendChild(card);
+      });
+    }
+
+    /* ---- Place a part of speech on a sentence ---------------------------- */
+    function place(useIdx, pos, card, slot) {
+      const d = DISGUISES[wi];
+      if (card.classList.contains("solved")) return;
+      const correctPos = d.uses[useIdx].pos;
+      if (pos === correctPos) {
+        const p = PARTS[pos];
+        slot.className = "slot filled";
+        slot.innerHTML = `<span class="filledchip" style="background:${p.color}">✓ ${p.label}</span>`;
+        card.classList.add("solved");
+        clearPick();
+        elFeedback.className = "feedback";
+        elFeedback.innerHTML = `Right — here <b>${d.word}</b> is a <b>${p.label.toLowerCase()}</b>.`;
+        checkComplete();
+      } else {
+        slot.classList.add("wrong");
+        void slot.offsetWidth;
+        setTimeout(() => slot.classList.remove("wrong"), 320);
+        elFeedback.className = "feedback bad";
+        elFeedback.innerHTML = `Not <b>${PARTS[pos].label.toLowerCase()}</b> here — look at what <b>${d.word}</b> is doing in that sentence.`;
+      }
+    }
+
+    function checkComplete() {
+      const d = DISGUISES[wi];
+      const allSolved = [...elSentences.children].every(c => c.classList.contains("solved"));
+      if (!allSolved) return;
+      solvedWords.add(wi);
+      const jobs = [...new Set(d.uses.map(u => PARTS[u.pos].label.toLowerCase()))];
+      const jobList = jobs.length === 2 ? `${jobs[0]} and ${jobs[1]}`
+        : jobs.slice(0, -1).join(", ") + ", and " + jobs[jobs.length - 1];
+      elReveal.innerHTML =
+        `<b>Case closed.</b> The single spelling <b>“${d.word}”</b> works as ${jobList} — ` +
+        `its part of speech is decided by its <b>job in the sentence</b>, not by the letters.`;
+      elReveal.classList.add("show");
+      elProgress.textContent = `Word ${wi + 1} of ${DISGUISES.length} · solved ${solvedWords.size}/${DISGUISES.length}`;
+    }
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      wi = (wi + 1) % DISGUISES.length; render();
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      wi = (wi - 1 + DISGUISES.length) % DISGUISES.length; render();
+    });
+    document.getElementById("resetBtn").addEventListener("click", render);
+
+    render();
+  </script>
+</body>
+</html>

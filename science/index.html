@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STEM Visualizations — Learn by Changing Things</title>
+  <meta name="description" content="Interactive, feature-rich visualizations for learning chemistry and physics — atomic structure, bonding, stoichiometry, gas laws, and solid-state physics." />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <style>
+    /* beta-only content is hidden unless the page is opened with ?beta=1 */
+    .beta-only { display: none; }
+    body.beta .beta-only { display: block; }
+    .beta-banner { display:none; }
+    body.beta .beta-banner { display:flex; align-items:center; gap:10px; margin-bottom:20px;
+      padding:10px 14px; border-radius:10px; background:rgba(255,200,87,.12); border:1px solid var(--warn);
+      color:var(--ink); font-size:.88rem; }
+    .beta-banner .tagpill { background:var(--warn); color:#06122e; font-weight:700; border-radius:999px; padding:2px 10px; font-size:.75rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1>⚛︎ STEM Visualizations</h1>
+      <div class="tag">Learn science by <em>changing things</em> — not by memorizing facts.</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="beta-banner">
+      <span class="tagpill">BETA</span>
+      <span>You're viewing in-progress visualizations. Remove <code>?beta=1</code> from the URL for the public view.</span>
+    </div>
+
+    <section class="hero">
+      <h2>Build intuition, then optimize it.</h2>
+      <p>
+        Every visualization here is interactive and hands-on. You won't just read
+        that carbon has six protons — you'll <strong>build</strong> the atom, turn it
+        into an ion, make an isotope, and watch the numbers (charge, mass, shells)
+        respond. The goal is to learn how systems work well enough to change them.
+      </p>
+    </section>
+
+    <!-- ===================== PUBLIC ===================== -->
+    <div class="grid">
+      <a class="card live" href="visualizations/element-explorer/index.html">
+        <span class="num">01</span>
+        <h3>Element Explorer</h3>
+        <p>Build any atom from protons, neutrons, and electrons. See the element, isotope,
+           ion, charge, and electron shells update live — and whether what you built
+           occurs in nature, only in the lab, in theory, or not at all.</p>
+        <span class="badge ready">Ready</span>
+      </a>
+    </div>
+
+    <!-- ===================== BETA: FOUNDATIONS ===================== -->
+    <div class="beta-only">
+      <div class="section-title">Foundations (beta)</div>
+      <div class="grid">
+        <a class="card live" href="visualizations/electron-configuration/index.html">
+          <span class="num">02</span>
+          <h3>Electron Configuration &amp; Shells</h3>
+          <p>Fill orbitals one electron at a time (s/p/d/f, spin, Hund's rule), watch
+             shells and valence emerge, and meet the elements that break the aufbau rule.</p>
+          <span class="badge ready">Ready</span>
+        </a>
+
+        <a class="card live" href="visualizations/periodic-table/index.html">
+          <span class="num">03</span>
+          <h3>Periodic Table Explorer</h3>
+          <p>All 118 elements. Colour by a trend, highlight a row, period, or group, and
+             watch the shared property light up — radius, electronegativity, ionization energy.</p>
+          <span class="badge ready">Ready</span>
+        </a>
+
+        <a class="card live" href="visualizations/bonding/index.html">
+          <span class="num">04</span>
+          <h3>Chemical Bonding <span style="color:var(--accent-2)">★</span></h3>
+          <p>Pick two atoms; predict ionic / covalent / metallic from electronegativity, then
+             watch electrons transfer or share. Covalent focus: single/double/triple bonds,
+             octets, polarity, and a molecule gallery.</p>
+          <span class="badge ready">Ready</span>
+        </a>
+
+        <a class="card live" href="visualizations/isotopes/index.html">
+          <span class="num">1b</span>
+          <h3>Isotopes &amp; Average Atomic Mass</h3>
+          <p>Mix an element's isotopes and watch the weighted-average mass move. See why
+             chlorine is 35.45 — and meet the number that becomes molar mass in stoichiometry.</p>
+          <span class="badge ready">Ready</span>
+        </a>
+
+        <a class="card live" href="visualizations/vsepr/index.html">
+          <span class="num">4b</span>
+          <h3>VSEPR Molecular Geometry <span style="color:var(--accent-2)">★</span></h3>
+          <p>Set bonds and lone pairs, drag to rotate the 3D shape, and see how geometry
+             decides polarity — why CO₂ is nonpolar but H₂O isn't.</p>
+          <span class="badge ready">Ready</span>
+        </a>
+      </div>
+
+      <!-- ===================== BETA: FORK A ===================== -->
+      <div class="section-title">Fork A — Stoichiometry &amp; Gas Laws (quantitative)</div>
+      <div class="grid">
+        <div class="card soon">
+          <span class="num">05</span><h3>The Mole &amp; Avogadro</h3>
+          <p>Why 6.022 × 10²³? Scale a sample up from atoms to grams and feel the
+             bridge between the atomic and human scale.</p>
+          <span class="badge fork-a">Fork A</span>
+        </div>
+        <div class="card soon">
+          <span class="num">06</span><h3>Molar Mass &amp; Conversions</h3>
+          <p>Convert grams ↔ moles ↔ particles for any formula and see each step.</p>
+          <span class="badge fork-a">Fork A</span>
+        </div>
+        <div class="card soon">
+          <span class="num">07</span><h3>Balancing &amp; Stoichiometry</h3>
+          <p>Balance reactions atom-by-atom, then compute limiting reagents and yields.</p>
+          <span class="badge fork-a">Fork A</span>
+        </div>
+        <div class="card soon">
+          <span class="num">08</span><h3>Gas Laws — PV = nRT</h3>
+          <p>An ideal-gas sandbox: change P, V, n, T and watch particles respond.</p>
+          <span class="badge fork-a">Fork A</span>
+        </div>
+      </div>
+
+      <!-- ===================== BETA: FORK B ===================== -->
+      <div class="section-title">Fork B — Solid-State Physics (qualitative)</div>
+      <div class="grid">
+        <div class="card soon">
+          <span class="num">09</span><h3>Crystal Lattices &amp; Packing</h3>
+          <p>From bonds to ordered solids: stack atoms into lattices and compare
+             packing efficiency.</p>
+          <span class="badge fork-b">Fork B</span>
+        </div>
+        <div class="card soon">
+          <span class="num">10</span><h3>Band Theory (Qualitative)</h3>
+          <p>Why some materials conduct: build band gaps and turn a material into a
+             conductor, insulator, or semiconductor.</p>
+          <span class="badge fork-b">Fork B</span>
+        </div>
+      </div>
+
+      <!-- ===================== BETA: ADVANCED ===================== -->
+      <div class="section-title">Advanced (physics + materials)</div>
+      <div class="grid">
+        <a class="card live" href="visualizations/laser-diamond/index.html">
+          <span class="num">★</span>
+          <h3>Laser on Diamond</h3>
+          <p>Can a laser cut a diamond? Adjust power, spot size, and how the stone sheds heat —
+             and discover that whether <em>infinite time</em> helps depends entirely on the boundary.</p>
+          <span class="badge ready">Ready</span>
+        </a>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Built to be read — open the page source of any visualization to see how it works.</p>
+    </footer>
+  </main>
+
+  <script>
+    // Reveal beta content when the page is opened with ?beta=1
+    if (new URLSearchParams(location.search).get("beta") === "1") {
+      document.body.classList.add("beta");
+    }
+  </script>
+</body>
+</html>

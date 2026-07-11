@@ -1,0 +1,89 @@
+# Writing Lab — Roadmap
+
+The curriculum is a **trunk** (grammar and sentence mechanics) that everyone
+walks, followed by **branches** (writing modes) that reuse the same primitives.
+Each unit is an interactive experience, not a reading. Items marked ✅ exist
+today; the rest are the build sequence.
+
+> Status: the entire grammar trunk — Units 1–4 plus the Style &amp; Structure
+> branch point (17 interactive modules) — is built and live. The writing-mode
+> branches below are next.
+
+---
+
+## Trunk — Grammar & the Sentence
+
+### Unit 1 · Words and their jobs (parts of speech)
+The atoms of language. Every later module inherits the fixed color code
+established here.
+
+- ✅ **Sentence Anatomy** — click words to reveal part of speech + sentence role.
+- ✅ **Word Sort** — drop words into part-of-speech buckets against the clock.
+- ✅ **Part-of-Speech Detective** — one word, many disguises ("*book* a room" vs
+  "read a *book*"); learn that a word's job depends on its use.
+- ✅ **Word-Shape Lab** — turn a noun into a verb into an adjective
+  (*beauty → beautify → beautiful*) and watch the sentence adapt.
+
+### Unit 2 · The core of a sentence (subject + predicate)
+- ✅ **Subject & Predicate Splitter** — drag the dividing line; every sentence
+  has a *who/what* and a *what-about-it*.
+- ✅ **Sentence Builder** — compose a grammatical sentence from a word bank;
+  the tool refuses fragments and explains why.
+- ✅ **Complete or Fragment?** — a fast judgment game.
+
+### Unit 3 · Building out the sentence (phrases, clauses, objects)
+- ✅ **Object Tracker** — direct vs. indirect objects, highlighted live.
+- ✅ **Phrase Painter** — see prepositional, noun, and verb phrases as blocks.
+- ✅ **Clause Combiner** — snap independent and dependent clauses together.
+
+### Unit 4 · Sentence types & punctuation
+- ✅ **Sentence-Type Sorter** — simple, compound, complex, compound-complex.
+- ✅ **Punctuation Playground** — move a comma, change the meaning
+  ("Let's eat, Grandma").
+- ✅ **Run-on Repair** — fix run-ons and comma splices three different ways.
+
+---
+
+## Branch point — Sentence style & structure
+Once the mechanics are automatic, we shift from *correct* to *effective*.
+
+- ✅ **Rhythm & Length** — vary sentence length; hear and see the pacing.
+- ✅ **Active ↔ Passive** — flip voice and feel the change in emphasis.
+- ✅ **Combining & Reducing** — merge choppy sentences; trim bloated ones.
+- ✅ **Parallelism Tuner** — align list items until they sing.
+
+---
+
+## Branches — Writing modes
+Each branch is a self-contained track that assumes the trunk. They can be built
+and taken in any order.
+
+### 🌿 Descriptive writing
+- Sensory-detail palette; show-don't-tell rewriter; imagery and figurative
+  language (simile, metaphor, personification) sandboxes.
+
+### 🌿 Persuasive writing
+- Claim / evidence / reasoning builder; ethos-pathos-logos analyzer;
+  counter-argument and rebuttal mapper; rhetorical-device spotter.
+
+### 🌿 Narrative & creative writing
+- Story-arc plotter; point-of-view switcher; dialogue punctuation trainer;
+  "show the scene" sensory expander.
+
+### 🌿 Expository & informational writing
+- Paragraph anatomy (topic sentence → support → conclusion); transition
+  chooser; outline-to-draft scaffolder.
+
+---
+
+## Cross-cutting systems (build as needed)
+- **Progress map** — a visual trunk-and-branches tree the learner walks.
+- **Shared word/sentence bank** — grows in `assets/data/grammar.js`.
+- **Achievement + streak layer** — light game scoring already seeded in Word Sort.
+
+---
+
+## Guiding sequence
+1. Ship one polished interactive per unit before widening.
+2. Never introduce a concept without a way to *manipulate* it.
+3. Reuse the color code and shared data everywhere — consistency is the lesson.

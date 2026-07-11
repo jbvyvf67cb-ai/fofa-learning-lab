@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electron Configuration &amp; Shells — STEM Visualizations</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .layout3 { display:grid; grid-template-columns: 260px 1fr 300px; gap:20px; align-items:start; }
+    @media (max-width:1100px){ .layout3{ grid-template-columns:1fr; } }
+
+    .picker { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .picker select, .picker input { background:var(--bg-soft); color:var(--ink); border:1px solid var(--line);
+                    border-radius:8px; padding:7px; font-family:var(--font); }
+    .step-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+
+    /* aufbau energy ladder */
+    .ladder { display:flex; flex-direction:column-reverse; gap:3px; margin-top:6px; }
+    .rung { display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:.82rem;
+            padding:3px 8px; border-radius:6px; color:var(--ink-soft); }
+    .rung .cap { color:var(--ink-dim); font-size:.72rem; }
+    .rung.filled { background:rgba(74,214,255,.10); color:var(--electron); }
+    .rung.current { background:rgba(91,140,255,.22); color:#fff; outline:1px solid var(--accent); }
+
+    /* orbital boxes */
+    .subshell { margin:14px 0; }
+    .subshell .lbl { font-family:var(--mono); color:var(--ink-soft); font-size:.85rem; margin-bottom:5px; }
+    .orbs { display:flex; gap:6px; flex-wrap:wrap; }
+    .orb { width:46px; height:30px; border:1.5px solid var(--line); border-radius:6px; background:var(--bg-soft);
+           display:flex; align-items:center; justify-content:center; gap:2px; font-size:1rem; }
+    .orb.valence { border-color:var(--accent-2); box-shadow:0 0 0 2px rgba(0,208,192,.18); }
+    .arrow { font-weight:700; }
+    .arrow.up { color:#4ad6ff; }
+    .arrow.dn { color:#ff7a9a; }
+
+    #shellCanvas { width:100%; height:280px; background:radial-gradient(circle at 50% 50%,#10183a,#0a0f24 70%);
+                   border:1px solid var(--line); border-radius:var(--radius); }
+
+    .cfg { font-family:var(--mono); font-size:1.05rem; word-break:break-word; line-height:1.7; }
+    .cfg .core { color:var(--warn); }
+    .cfg .valence { color:var(--accent-2); font-weight:700; }
+    table.kv { width:100%; border-collapse:collapse; margin-top:10px; }
+    table.kv td { padding:6px 4px; border-bottom:1px solid var(--line); font-size:.85rem; }
+    table.kv td:first-child{ color:var(--ink-soft); } table.kv td:last-child{ text-align:right; font-family:var(--mono);}
+    .note { margin-top:12px; padding:11px; border-radius:10px; font-size:.85rem; }
+    .note.anom { background:rgba(255,200,87,.12); border:1px solid var(--warn); color:var(--ink); }
+    .note.info { background:rgba(91,140,255,.1); border:1px solid var(--accent); color:var(--ink); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../index.html">← All visualizations</a> · <a href="../periodic-table/index.html">Periodic Table</a></div>
+      <h1>Electron Configuration &amp; Shells</h1>
+      <div class="tag">Fill orbitals one electron at a time and watch shells, valence, and the aufbau order emerge.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="layout3">
+      <!-- LEFT: controls + aufbau ladder -->
+      <aside>
+        <div class="panel">
+          <strong>Choose an element</strong>
+          <div class="picker" style="margin-top:10px">
+            <select id="elPick"></select>
+          </div>
+          <label>Atomic number (Z = electrons): <span id="zLabel" class="readout"></span></label>
+          <input type="range" id="zRange" min="1" max="118" />
+          <div class="step-row">
+            <button id="clearBtn" class="ghost">Empty</button>
+            <button id="stepBack" class="ghost">− e⁻</button>
+            <button id="stepFwd" class="ghost">+ e⁻</button>
+            <button id="fillBtn">Fill ▶</button>
+            <button id="playBtn" class="ghost">Auto-fill</button>
+          </div>
+          <div style="margin-top:6px;color:var(--ink-soft);font-size:.82rem">
+            Electrons placed: <span id="shownCount" class="readout">0</span> / <span id="totalCount" class="readout">0</span>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>Aufbau energy order</strong>
+          <p style="color:var(--ink-soft);font-size:.8rem;margin:6px 0">
+            Electrons fill the lowest-energy subshell first. Bottom = lowest energy.
+          </p>
+          <div class="ladder" id="ladder"></div>
+        </div>
+      </aside>
+
+      <!-- CENTER: orbital boxes + shell rings -->
+      <section>
+        <div class="panel">
+          <strong>Orbital diagram</strong>
+          <p style="color:var(--ink-soft);font-size:.82rem;margin:6px 0">
+            Each box is one orbital (holds 2 electrons with opposite spin — Pauli).
+            Within a subshell, electrons go in singly first — Hund's rule.
+            <span style="color:var(--accent-2)">Teal-outlined</span> boxes are the valence (outer) shell.
+          </p>
+          <div id="orbitals"></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>Shell model (electrons per energy level)</strong>
+          <canvas id="shellCanvas"></canvas>
+          <div id="shellReadout" class="readout" style="color:var(--ink-soft);font-size:.85rem;margin-top:8px"></div>
+        </div>
+      </section>
+
+      <!-- RIGHT: configuration + facts -->
+      <aside>
+        <div class="panel">
+          <strong>Configuration</strong>
+          <div id="cfgFull" class="cfg" style="margin-top:8px"></div>
+          <div style="margin-top:10px;color:var(--ink-soft);font-size:.8rem">Noble-gas shorthand</div>
+          <div id="cfgShort" class="cfg"></div>
+
+          <table class="kv" id="facts"></table>
+          <div id="anomNote"></div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>The aufbau order predicts most configurations; the highlighted exceptions show
+         where half-filled and full subshells win. Data: <code>assets/data/elements.js</code>.</p>
+    </footer>
+  </main>
+
+  <script src="../../assets/data/elements.js"></script>
+  <script src="electron-configuration.js"></script>
+  <script src="module.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+</body>
+</html>

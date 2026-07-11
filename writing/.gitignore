@@ -1,0 +1,12 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Local servers / logs
+*.log
+
+# Node is not used by this project; ignore it if a contributor adds tooling
+node_modules/

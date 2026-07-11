@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laser on Diamond — STEM Visualizations</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .layoutL { display:grid; grid-template-columns: 1fr 340px; gap:20px; align-items:start; }
+    @media (max-width:1000px){ .layoutL{ grid-template-columns:1fr; } }
+    #stage, #plot { width:100%; display:block; border:1px solid var(--line); border-radius:var(--radius); background:#0a0f24; }
+    #stage { height:300px; } #plot { height:240px; margin-top:16px; }
+
+    .knob { display:grid; grid-template-columns: 150px 1fr 78px; gap:10px; align-items:center; margin:9px 0; }
+    .knob label { color:var(--ink-soft); font-size:.84rem; }
+    .knob .val { font-family:var(--mono); font-size:.82rem; text-align:right; color:var(--electron); }
+    .seg { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .seg button { flex:1; background:var(--bg-soft); color:var(--ink-soft); border:none; border-right:1px solid var(--line);
+                  border-radius:0; padding:6px 6px; font-size:.78rem; }
+    .seg button:last-child{ border-right:none; } .seg button.on { background:var(--accent); color:#06122e; font-weight:700; }
+    .knob.choice { grid-template-columns: 150px 1fr; }
+
+    .badge-regime { padding:12px 14px; border-radius:12px; border:1px solid var(--line); margin-bottom:10px; }
+    .badge-regime .tag { font-weight:800; letter-spacing:.4px; }
+    .r-transparent { background:rgba(111,120,163,.14); border-color:#6f78a3; } .r-transparent .tag{ color:#aab2d5; }
+    .r-local { background:rgba(91,140,255,.14); border-color:var(--accent); } .r-local .tag{ color:#9bb6ff; }
+    .r-bulk { background:rgba(255,200,87,.14); border-color:var(--warn); } .r-bulk .tag{ color:var(--warn); }
+    .r-stable { background:rgba(54,211,153,.12); border-color:var(--good); } .r-stable .tag{ color:var(--good); }
+    .r-runaway { background:rgba(255,107,107,.14); border-color:var(--bad); } .r-runaway .tag{ color:var(--bad); }
+
+    .headline { font-size:.92rem; padding:11px 13px; border-radius:10px; background:var(--bg-soft); border:1px solid var(--line); margin-bottom:12px; }
+    .headline b { color:var(--accent-2); }
+    table.kv { width:100%; border-collapse:collapse; } table.kv td{ padding:6px 4px; border-bottom:1px solid var(--line); font-size:.84rem; }
+    table.kv td:first-child{ color:var(--ink-soft);} table.kv td:last-child{ text-align:right; font-family:var(--mono);}
+    .tbtn { margin-top:8px; display:flex; gap:8px; align-items:center; }
+    details.assume summary { cursor:pointer; color:var(--accent); font-size:.84rem; }
+    details.assume p { color:var(--ink-soft); font-size:.82rem; line-height:1.5; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../index.html">← All visualizations</a></div>
+      <h1>Laser on Diamond</h1>
+      <div class="tag">Can a laser ever cut a diamond? Whether <em>infinite time</em> helps depends on how the diamond sheds heat.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="layoutL">
+      <section>
+        <canvas id="stage"></canvas>
+        <div style="color:var(--ink-soft); font-size:.8rem; margin-top:8px">
+          Diamond cross-section: whole-stone <b>baseline</b> colour + the <b>focal hot spot</b> at the centre.
+          Graphitization (a "cut") triggers when the spot reaches T<sub>g</sub> ≈ 1900 K.
+        </div>
+        <canvas id="plot"></canvas>
+        <div style="color:var(--ink-dim); font-size:.78rem; margin-top:6px">
+          Temperature vs time: <span style="color:#5b8cff">bulk baseline</span> and
+          <span style="color:#ffb24d">spot</span>; the dashed red line is the graphitization threshold.
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>Knobs</strong>
+          <div class="knob"><label>Laser power P<sub>L</sub></label><input type="range" id="kPL" min="-3" max="2" step="0.02"><span class="val" id="vPL"></span></div>
+          <div class="knob"><label>Absorbed fraction</label><input type="range" id="kAbs" min="-2" max="2" step="0.02"><span class="val" id="vAbs"></span></div>
+          <div class="knob"><label>Focal spot radius w₀</label><input type="range" id="kW0" min="0.5" max="50" step="0.5"><span class="val" id="vW0"></span></div>
+          <div class="knob"><label>Diamond radius b</label><input type="range" id="kB" min="0.1" max="10" step="0.1"><span class="val" id="vB"></span></div>
+          <div class="knob"><label>Conductivity k</label><input type="range" id="kK" min="500" max="3300" step="50"><span class="val" id="vK"></span></div>
+          <div class="knob choice"><label>Boundary (how heat leaves)</label>
+            <div class="seg" id="segBoundary">
+              <button data-v="sink">Heat-sunk</button><button data-v="convective">Air-cooled</button><button data-v="isolated">Isolated</button>
+            </div>
+          </div>
+          <div class="knob choice"><label>Atmosphere</label>
+            <div class="seg" id="segAtmos"><button data-v="air">Air</button><button data-v="vacuum">Vacuum</button></div>
+          </div>
+          <div class="knob"><label>Exposure time t</label><input type="range" id="kT" min="0" max="100" step="1"><span class="val" id="vT"></span></div>
+          <div class="tbtn"><button id="infBtn">Jump to t → ∞</button>
+            <span style="color:var(--ink-dim); font-size:.8rem">(steady state)</span></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="badge-regime" id="regime"><span class="tag" id="regimeTag">—</span>
+          <div id="regimeWhy" style="font-size:.85rem; color:var(--ink-soft); margin-top:4px"></div></div>
+        <div class="headline" id="headline"></div>
+
+        <div class="panel">
+          <strong>Live readout</strong>
+          <table class="kv" id="readout" style="margin-top:8px"></table>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>The big idea</strong>
+          <p style="color:var(--ink-soft); font-size:.86rem; line-height:1.55; margin:8px 0 0">
+            The spot temperature = <b>bulk baseline</b> (set by how the outer surface sheds heat, over time)
+            <b>+ local rise</b> (set by how fast the lattice conducts heat away from the spot). Flip the
+            <b>Boundary</b> control: a heat-sunk diamond can only be cut by a huge local rise (~40 W absorbed) and
+            time doesn't help; an isolated diamond slowly preheats until even a weak beam cuts it — there, time is everything.
+          </p>
+          <details class="assume" style="margin-top:10px">
+            <summary>Model &amp; assumptions</summary>
+            <p>CW model with constant k (real k falls ~1/T, so hot-spot temps are underestimated); spherical
+               source with a ≈ w₀; lumped-capacitance bulk; graphitization treated as a hard threshold (really a
+               rate); absorbed fraction is a stand-in for uncertain nonlinear/defect absorption. Pulsed "cold
+               ablation", wavelength, oxidation feedback and the moving cut are omitted.</p>
+          </details>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>Physics per <code>ideas/laser-on-diamond.md</code>: ΔT<sub>loc</sub> = P<sub>abs</sub>/(4πk)(1/a − 1/b);
+         bulk C·dT/dt = P<sub>abs</sub> − hA(T−T∞) − εσA(T⁴−T∞⁴).</p>
+    </footer>
+  </main>
+
+  <script src="laser-diamond.js"></script>
+  <script src="module.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VSEPR Molecular Geometry — STEM Visualizations</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .layout6 { display:grid; grid-template-columns: 1fr 320px; gap:20px; align-items:start; }
+    @media (max-width:1000px){ .layout6{ grid-template-columns:1fr; } }
+    #scene { width:100%; height:440px; background:radial-gradient(circle at 50% 45%,#10183a,#0a0f24 72%);
+             border:1px solid var(--line); border-radius:var(--radius); cursor:grab; touch-action:none; }
+    #scene:active { cursor:grabbing; }
+
+    .domain-ctl { display:flex; gap:18px; flex-wrap:wrap; margin-top:14px; }
+    .domain-ctl .field { display:flex; flex-direction:column; gap:6px; }
+    .domain-ctl label { color:var(--ink-soft); font-size:.85rem; }
+    .stepper { display:flex; align-items:center; gap:8px; }
+    .stepper .v { font-family:var(--mono); font-size:1.3rem; min-width:24px; text-align:center; }
+
+    .presets { display:flex; gap:6px; flex-wrap:wrap; margin-top:14px; }
+    .presets button { font-size:.8rem; }
+
+    .shape-name { font-size:1.4rem; font-weight:700; margin:0; }
+    .pillrow { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+    .pill { font-weight:700; padding:5px 12px; border-radius:999px; font-size:.82rem; }
+    .pill.polar { background:rgba(91,140,255,.18); color:#9bb6ff; }
+    .pill.nonpolar { background:rgba(0,208,192,.16); color:#5fe6d8; }
+    table.kv { width:100%; border-collapse:collapse; margin-top:8px; }
+    table.kv td { padding:6px 4px; border-bottom:1px solid var(--line); font-size:.85rem; }
+    table.kv td:first-child{ color:var(--ink-soft);} table.kv td:last-child{text-align:right;font-family:var(--mono);}
+    .legend-dots{ color:var(--ink-soft); font-size:.8rem; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../index.html">← All visualizations</a> · <a href="../bonding/index.html">Chemical Bonding</a></div>
+      <h1>VSEPR Molecular Geometry</h1>
+      <div class="tag">Electron pairs repel. Set bonds and lone pairs, drag to rotate, and see the 3D shape — and whether it's polar.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="layout6">
+      <section>
+        <div class="panel">
+          <canvas id="scene"></canvas>
+          <div class="legend-dots">
+            Drag to rotate · <span style="color:#5b8cff">●</span> bonded atom ·
+            <span style="color:#ff7a9a">◗</span> lone pair (takes space, but invisible in the shape name) ·
+            <span style="color:#ffd35c">→</span> net dipole
+          </div>
+
+          <div class="domain-ctl">
+            <div class="field">
+              <label>Bonding groups (atoms attached)</label>
+              <div class="stepper">
+                <button class="ghost" id="bMinus">−</button>
+                <span class="v" id="bVal">2</span>
+                <button class="ghost" id="bPlus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Lone pairs on the centre</label>
+              <div class="stepper">
+                <button class="ghost" id="lMinus">−</button>
+                <span class="v" id="lVal">2</span>
+                <button class="ghost" id="lPlus">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <label style="display:flex;align-items:center;gap:6px;color:var(--ink)">
+                <input type="checkbox" id="autorotate" checked> auto-rotate
+              </label>
+            </div>
+          </div>
+
+          <div class="presets">
+            <span style="color:var(--ink-soft);font-size:.85rem;align-self:center">Real molecules:</span>
+            <button class="ghost" data-b="2" data-l="0">CO₂</button>
+            <button class="ghost" data-b="3" data-l="0">BF₃</button>
+            <button class="ghost" data-b="2" data-l="1">SO₂</button>
+            <button class="ghost" data-b="4" data-l="0">CH₄</button>
+            <button class="ghost" data-b="3" data-l="1">NH₃</button>
+            <button class="ghost" data-b="2" data-l="2">H₂O</button>
+            <button class="ghost" data-b="5" data-l="0">PCl₅</button>
+            <button class="ghost" data-b="6" data-l="0">SF₆</button>
+            <button class="ghost" data-b="4" data-l="2">XeF₄</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>The VSEPR idea</strong>
+          <p style="color:var(--ink-soft);font-size:.9rem;line-height:1.55;margin:8px 0 0">
+            All electron groups around a central atom — bonds <em>and</em> lone pairs — push as
+            far apart as possible. That repulsion fixes the geometry. The <strong>shape name</strong>
+            counts only the atoms you can see, but the lone pairs still bend things. And the
+            shape decides polarity: if the bond dipoles cancel by symmetry, the molecule is
+            nonpolar even with polar bonds (that's why CO₂ is nonpolar but H₂O is polar).
+          </p>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <p class="shape-name" id="shapeName">—</p>
+          <div class="pillrow"><span class="pill" id="polarPill">—</span></div>
+          <table class="kv" id="facts"></table>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <strong>Electron-domain geometry</strong>
+          <p id="domainNote" style="color:var(--ink-soft);font-size:.85rem;margin:8px 0 0"></p>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>Polarity is computed from the vector sum of the bond directions (equal bonds assumed),
+         so symmetric molecules correctly come out nonpolar.</p>
+    </footer>
+  </main>
+
+  <script src="vsepr.js"></script>
+  <script src="module.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+</body>
+</html>

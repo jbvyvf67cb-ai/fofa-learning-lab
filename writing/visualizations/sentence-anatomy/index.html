@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sentence Anatomy — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Click any word to reveal its part of speech and its job in the sentence.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    /* The sentence itself */
+    .sentence {
+      font-family: var(--font);
+      font-size: clamp(24px, 4.4vw, 40px);
+      line-height: 2.1; text-align: center;
+      padding: 26px 18px; user-select: none;
+    }
+    .word {
+      position: relative; cursor: pointer;
+      padding: 2px 6px; margin: 0 1px; border-radius: 8px;
+      border-bottom: 4px solid transparent;
+      transition: background .12s ease, transform .08s ease;
+      background: transparent; color: inherit; font: inherit;
+    }
+    .word:hover { transform: translateY(-2px); }
+    .word:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .word.selected { background: rgba(255,255,255,.08); }
+    /* part-of-speech coloring is applied inline from the dataset */
+
+    /* Subject / predicate underlay: star marks the simple subject/predicate */
+    .word[data-head="true"]::after {
+      content: "★"; font-size: 10px; color: var(--accent-warm);
+      position: absolute; top: -4px; right: -2px; opacity: 0;
+      transition: opacity .15s ease;
+    }
+    .sentence.show-core .word[data-head="true"]::after { opacity: 1; }
+
+    .sentence.show-core .word[data-role="subject"] {
+      background: linear-gradient(180deg, transparent 62%, rgba(111,179,255,.22) 62%);
+    }
+    .sentence.show-core .word[data-role="predicate"] {
+      background: linear-gradient(180deg, transparent 62%, rgba(255,122,144,.20) 62%);
+    }
+    .sentence.show-core .word[data-role="modifier"] {
+      background: linear-gradient(180deg, transparent 62%, rgba(136,145,180,.18) 62%);
+    }
+    .sentence.show-core .word.selected { background: rgba(255,255,255,.10) !important; }
+
+    /* Inspector card */
+    .inspector { min-height: 118px; }
+    .inspector .empty { color: var(--ink-mute); }
+    .insp-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .insp-word { font-family: var(--font); font-size: 30px; }
+    .pos-badge {
+      padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 14px;
+      color: #10131f;
+    }
+    .insp-blurb { margin: 12px 0 4px; color: var(--ink-soft); }
+    .insp-role { font-size: 14px; color: var(--ink-mute); }
+    .insp-role b { color: var(--ink); }
+
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+    .toggle {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 14px; border-radius: 10px; cursor: pointer;
+      border: 1px solid var(--line); background: var(--panel-2); font-weight: 600; font-size: 14px;
+    }
+    .toggle input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .legend .chip { cursor: default; }
+    .note { margin-top: 14px; color: var(--ink-mute); font-size: 14px; text-align: center; }
+
+    .cols { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 20px; }
+    @media (min-width: 860px) { .cols { grid-template-columns: 1.3fr .9fr; } }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../word-sort/">Word Sort →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 1 · Parts of speech</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Sentence Anatomy</h1>
+      <p class="muted" style="margin-top:0; max-width:60ch">
+        Every word in a sentence has a <b>job</b>. Click a word to see what kind
+        of word it is and how it fits in. Flip on <b>Show sentence core</b> to
+        see the two halves every sentence is built from.
+      </p>
+
+      <div class="cols">
+        <!-- Left: the sentence stage -->
+        <section class="panel pad">
+          <div class="sentence" id="sentence" role="group" aria-label="Interactive sentence. Click a word to inspect it."></div>
+          <p class="note" id="note"></p>
+          <div class="controls">
+            <label class="toggle">
+              <input type="checkbox" id="coreToggle">
+              Show sentence core
+            </label>
+            <button class="btn" id="prevBtn">‹ Previous</button>
+            <button class="btn" id="nextBtn">Next sentence ›</button>
+          </div>
+        </section>
+
+        <!-- Right: the inspector -->
+        <aside class="panel pad inspector" id="inspector" aria-live="polite">
+          <p class="empty">Select a word to inspect it →<br>or use ← → then Enter with the keyboard.</p>
+        </aside>
+      </div>
+
+      <div class="legend" id="legend" aria-label="Part-of-speech color key"></div>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Colors and sentences come from the shared dataset in
+      <code>assets/data/grammar.js</code>, so they mean the same thing in every module.
+      &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARTS, SENTENCES, POS_ORDER } = WL_GRAMMAR;
+    const ROLE_LABEL = {
+      subject:   "part of the <b>subject</b> (who or what the sentence is about)",
+      predicate: "part of the <b>predicate</b> (what the subject does or is)",
+      modifier:  "a <b>modifier</b> that decorates the sentence",
+    };
+
+    const elSentence = document.getElementById("sentence");
+    const elNote     = document.getElementById("note");
+    const elInsp     = document.getElementById("inspector");
+    const elLegend   = document.getElementById("legend");
+    const coreToggle = document.getElementById("coreToggle");
+
+    let sIndex = 0;
+    let selected = -1;
+
+    /* ---- Legend (built once) --------------------------------------------- */
+    POS_ORDER.forEach(key => {
+      const p = PARTS[key];
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.innerHTML = `<span class="dot" style="background:${p.color}"></span>${p.label}`;
+      elLegend.appendChild(chip);
+    });
+
+    /* ---- Render a sentence ----------------------------------------------- */
+    function render() {
+      const s = SENTENCES[sIndex];
+      elSentence.innerHTML = "";
+      selected = -1;
+      renderInspector(null);
+
+      s.tokens.forEach((t, i) => {
+        const b = document.createElement("button");
+        b.className = "word";
+        b.type = "button";
+        b.textContent = t.w;
+        b.style.borderBottomColor = PARTS[t.pos].color;
+        b.style.color = PARTS[t.pos].color;
+        b.dataset.role = t.role;
+        b.dataset.head = t.head ? "true" : "false";
+        b.setAttribute("aria-label", `${t.w}, ${PARTS[t.pos].label}`);
+        b.addEventListener("click", () => select(i));
+        elSentence.appendChild(b);
+        elSentence.appendChild(document.createTextNode(" "));
+      });
+
+      elNote.textContent = s.note;
+      applyCore();
+    }
+
+    function applyCore() {
+      elSentence.classList.toggle("show-core", coreToggle.checked);
+    }
+
+    /* ---- Selection + inspector ------------------------------------------- */
+    function select(i) {
+      const words = [...elSentence.querySelectorAll(".word")];
+      words.forEach(w => w.classList.remove("selected"));
+      if (i < 0 || i >= words.length) { selected = -1; renderInspector(null); return; }
+      selected = i;
+      words[i].classList.add("selected");
+      words[i].focus();
+      renderInspector(SENTENCES[sIndex].tokens[i]);
+    }
+
+    function renderInspector(token) {
+      if (!token) {
+        elInsp.innerHTML = '<p class="empty">Select a word to inspect it →<br>or use ← → then Enter with the keyboard.</p>';
+        return;
+      }
+      const p = PARTS[token.pos];
+      const examples = p.examples.slice(0, 3).join(", ");
+      elInsp.innerHTML = `
+        <div class="insp-head">
+          <span class="insp-word" style="color:${p.color}">${token.w}</span>
+          <span class="pos-badge" style="background:${p.color}">${p.label}</span>
+          ${token.head ? '<span class="chip">★ core word</span>' : ''}
+        </div>
+        <p class="insp-blurb">${p.blurb}</p>
+        <p class="insp-role">In this sentence it is ${ROLE_LABEL[token.role]}.</p>
+        <p class="insp-role" style="margin-top:8px">More ${p.label.toLowerCase()}s: <b>${examples}</b></p>
+      `;
+    }
+
+    /* ---- Controls -------------------------------------------------------- */
+    coreToggle.addEventListener("change", applyCore);
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      sIndex = (sIndex + 1) % SENTENCES.length; render();
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      sIndex = (sIndex - 1 + SENTENCES.length) % SENTENCES.length; render();
+    });
+
+    // Keyboard: left/right to move between words, Enter/click already handled.
+    document.addEventListener("keydown", (e) => {
+      const words = elSentence.querySelectorAll(".word");
+      if (!words.length) return;
+      if (e.key === "ArrowRight") { e.preventDefault(); select(Math.min(selected + 1, words.length - 1) || 0); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); select(Math.max(selected - 1, 0)); }
+    });
+
+    render();
+  </script>
+</body>
+</html>

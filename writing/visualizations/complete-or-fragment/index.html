@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Complete or Fragment? — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="A fast judgment game: is it a complete sentence or a fragment?">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .scorebar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+    .stat { display: flex; flex-direction: column; line-height: 1.1; }
+    .stat b { font-family: var(--font); font-size: 26px; }
+    .stat span { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .08em; }
+    .stat.sep { width: 1px; height: 34px; background: var(--line); }
+
+    .stage-panel { margin-top: 18px; text-align: center; }
+    .prompt { color: var(--ink-mute); font-size: 14px; }
+    .item-text {
+      font-family: var(--font); font-size: clamp(24px, 4.6vw, 38px);
+      margin: 14px 0 22px; line-height: 1.3;
+    }
+
+    .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (max-width: 560px) { .choices { grid-template-columns: 1fr; } }
+    .choice-btn {
+      appearance: none; cursor: pointer;
+      border: 2px solid var(--line);
+      background: var(--panel-2);
+      color: var(--ink);
+      font: 700 17px/1.3 var(--ui-font);
+      padding: 22px 16px; border-radius: var(--radius-sm);
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-2px); }
+    .choice-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .choice-btn:disabled { cursor: default; }
+    .choice-btn .key { display: block; margin-top: 6px; font-size: 12px; color: var(--ink-mute); font-weight: 600; }
+    .choice-btn.correct { border-color: var(--good); background: color-mix(in srgb, var(--good) 18%, var(--panel-2)); color: var(--good); }
+    .choice-btn.incorrect { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 18%, var(--panel-2)); color: var(--bad); }
+
+    .feedback { min-height: 90px; margin-top: 20px; }
+    .feedback .verdict { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+    .feedback .verdict.good { color: var(--good); }
+    .feedback .verdict.bad { color: var(--bad); }
+    .feedback .why { color: var(--ink-soft); max-width: 56ch; margin: 0 auto; }
+
+    .controls { display: flex; justify-content: center; gap: 12px; margin-top: 18px; min-height: 44px; }
+
+    /* End screen */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(10,12,22,.72);
+      display: none; place-items: center; padding: 20px; z-index: 50;
+    }
+    .overlay.show { display: grid; }
+    .result { max-width: 420px; text-align: center; }
+    .result h2 { font-family: var(--font); font-size: 30px; margin: 0 0 6px; }
+    .result .big { font-family: var(--font); font-size: 56px; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../word-sort/">Word Sort →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="eyebrow">Unit 2 · Subject &amp; predicate</div>
+    <h1 style="font-family:var(--font); margin:.2em 0 .1em">Complete or Fragment?</h1>
+    <p class="muted" style="margin-top:0; max-width:60ch">
+      Read the line. Decide fast: is it a <b>complete sentence</b> (a subject and a
+      predicate that finish a thought) or a <b>fragment</b> (a piece missing something)?
+      Press a button or use the keys <b>C</b> / <b>F</b>.
+    </p>
+
+    <section class="panel pad scorebar">
+      <div class="stat"><b id="score">0</b><span>Score</span></div>
+      <div class="stat sep"></div>
+      <div class="stat"><b id="streak">0</b><span>Streak</span></div>
+      <div class="stat sep"></div>
+      <div class="stat"><b id="progress">0 / 0</b><span>Progress</span></div>
+      <div class="spacer"></div>
+      <button class="btn primary" id="startBtn">Start</button>
+    </section>
+
+    <section class="panel pad stage-panel">
+      <div class="prompt">Is this a complete sentence?</div>
+      <div class="item-text" id="itemText">Press Start to begin.</div>
+
+      <div class="choices">
+        <button class="choice-btn" id="btnComplete" type="button" disabled>
+          Complete sentence
+          <span class="key">key: C</span>
+        </button>
+        <button class="choice-btn" id="btnFragment" type="button" disabled>
+          Fragment
+          <span class="key">key: F</span>
+        </button>
+      </div>
+
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+
+      <div class="controls">
+        <button class="btn" id="nextBtn" type="button" hidden>Next →</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay">
+    <div class="panel pad result">
+      <h2 id="resultTitle">Deck complete!</h2>
+      <div class="big" id="finalScore">0</div>
+      <p class="muted" id="finalMsg"></p>
+      <div class="row" style="justify-content:center; margin-top:14px">
+        <button class="btn primary" id="againBtn">Play again</button>
+        <a class="btn ghost" href="../../#modules">Back to Experiences</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Sentences and explanations come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { FRAGMENTS } = WL_GRAMMAR;
+
+    const el = {
+      score: document.getElementById("score"),
+      streak: document.getElementById("streak"),
+      progress: document.getElementById("progress"),
+      start: document.getElementById("startBtn"),
+      itemText: document.getElementById("itemText"),
+      btnComplete: document.getElementById("btnComplete"),
+      btnFragment: document.getElementById("btnFragment"),
+      feedback: document.getElementById("feedback"),
+      nextBtn: document.getElementById("nextBtn"),
+      overlay: document.getElementById("overlay"),
+      resultTitle: document.getElementById("resultTitle"),
+      finalScore: document.getElementById("finalScore"),
+      finalMsg: document.getElementById("finalMsg"),
+      again: document.getElementById("againBtn"),
+    };
+
+    let state = null; // null until a game is running
+
+    /* Fisher–Yates shuffle over a copy of the deck. */
+    function shuffledDeck() {
+      const pool = FRAGMENTS.slice();
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      return pool;
+    }
+
+    function startGame() {
+      state = {
+        deck: shuffledDeck(),
+        index: 0,
+        score: 0,
+        streak: 0,
+        best: 0,
+        correctCount: 0,
+        answered: false,
+      };
+      el.overlay.classList.remove("show");
+      el.start.textContent = "Restart";
+      updateHud();
+      showItem();
+    }
+
+    function showItem() {
+      state.answered = false;
+      const item = state.deck[state.index];
+      el.itemText.textContent = item.text;
+      el.btnComplete.disabled = false;
+      el.btnFragment.disabled = false;
+      el.btnComplete.classList.remove("correct", "incorrect");
+      el.btnFragment.classList.remove("correct", "incorrect");
+      el.feedback.innerHTML = "";
+      el.nextBtn.hidden = true;
+      updateHud();
+    }
+
+    function answer(choseComplete) {
+      if (!state || state.answered) return;
+      state.answered = true;
+      const item = state.deck[state.index];
+      const correct = choseComplete === item.complete;
+
+      el.btnComplete.disabled = true;
+      el.btnFragment.disabled = true;
+
+      const chosenBtn = choseComplete ? el.btnComplete : el.btnFragment;
+      const answerBtn = item.complete ? el.btnComplete : el.btnFragment;
+      chosenBtn.classList.add(correct ? "correct" : "incorrect");
+      if (!correct) answerBtn.classList.add("correct");
+
+      if (correct) {
+        state.streak++;
+        state.best = Math.max(state.best, state.streak);
+        state.score += 10 + Math.min(state.streak - 1, 5) * 2;
+        state.correctCount++;
+      } else {
+        state.streak = 0;
+      }
+
+      el.feedback.innerHTML =
+        `<div class="verdict ${correct ? "good" : "bad"}">` +
+        (correct ? "✓ Correct — " : "✗ Not quite — ") +
+        `it's a ${item.complete ? "complete sentence" : "fragment"}.</div>` +
+        `<div class="why">${item.why}</div>`;
+
+      el.nextBtn.hidden = false;
+      el.nextBtn.focus();
+      updateHud();
+    }
+
+    function nextItem() {
+      if (!state) return;
+      state.index++;
+      if (state.index >= state.deck.length) {
+        endGame();
+        return;
+      }
+      showItem();
+    }
+
+    function updateHud() {
+      el.score.textContent = state.score;
+      el.streak.textContent = state.streak;
+      el.progress.textContent = `${Math.min(state.index + 1, state.deck.length)} / ${state.deck.length}`;
+    }
+
+    function endGame() {
+      const total = state.deck.length;
+      el.finalScore.textContent = state.score;
+      el.resultTitle.textContent = "Deck complete!";
+      el.finalMsg.textContent =
+        `${state.correctCount} / ${total} correct. Best streak: ${state.best}. ` +
+        (state.correctCount === total ? "Perfect run! 🎉"
+         : state.correctCount >= total * 0.75 ? "Great instincts — keep it up!"
+         : "Nice effort. Run it again to sharpen your eye.");
+      el.itemText.textContent = "Press Start to begin.";
+      el.btnComplete.disabled = true;
+      el.btnFragment.disabled = true;
+      el.btnComplete.classList.remove("correct", "incorrect");
+      el.btnFragment.classList.remove("correct", "incorrect");
+      el.feedback.innerHTML = "";
+      el.nextBtn.hidden = true;
+      el.overlay.classList.add("show");
+    }
+
+    el.btnComplete.addEventListener("click", () => answer(true));
+    el.btnFragment.addEventListener("click", () => answer(false));
+    el.nextBtn.addEventListener("click", nextItem);
+    el.start.addEventListener("click", startGame);
+    el.again.addEventListener("click", startGame);
+
+    document.addEventListener("keydown", (e) => {
+      if (!state) return;
+      const key = e.key.toLowerCase();
+      if (key === "c") { e.preventDefault(); if (!state.answered) answer(true); }
+      else if (key === "f") { e.preventDefault(); if (!state.answered) answer(false); }
+      else if ((key === "enter" || key === "n") && state.answered && !el.nextBtn.hidden) {
+        e.preventDefault();
+        nextItem();
+      }
+    });
+  </script>
+</body>
+</html>

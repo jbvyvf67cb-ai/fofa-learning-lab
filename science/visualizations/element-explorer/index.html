@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Element Explorer — STEM Visualizations</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; align-items: start; }
+    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+
+    #stage {
+      width: 100%; height: 440px; display: block;
+      background: radial-gradient(circle at 50% 50%, #10183a 0%, #0a0f24 70%);
+      border: 1px solid var(--line); border-radius: var(--radius);
+    }
+    .legend { display: flex; gap: 16px; margin-top: 10px; font-size: .85rem; color: var(--ink-soft); flex-wrap: wrap; }
+    .dot { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+    .dot.p { background: var(--proton); } .dot.n { background: var(--neutron); } .dot.e { background: var(--electron); }
+
+    /* filter segmented control */
+    .filter-seg { display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; margin:4px 0 8px; }
+    .filter-seg button { flex:1; background:var(--bg-soft); color:var(--ink-soft); border:none; border-right:1px solid var(--line);
+                         border-radius:0; padding:9px 8px; font-size:.85rem; }
+    .filter-seg button:last-child { border-right:none; }
+    .filter-seg button.on { background:var(--accent); color:#06122e; font-weight:700; }
+    .filter-hint { color:var(--ink-dim); font-size:.8rem; margin-bottom:10px; }
+    .ion-chips { display:flex; gap:6px; flex-wrap:wrap; }
+    .ion-chip { font-family:var(--mono); font-size:.82rem; padding:4px 10px; border-radius:999px; cursor:pointer;
+                background:var(--bg-soft); border:1px solid var(--line); color:var(--ink-soft); }
+    .ion-chip:hover { border-color:var(--accent); }
+    .ion-chip.on { border-color:var(--accent-2); color:var(--accent-2); background:rgba(0,208,192,.1); }
+
+    .particle-row { display:grid; grid-template-columns: 96px 1fr auto; gap:10px; align-items:center; margin:10px 0; }
+    .particle-row .ctl { display:flex; align-items:center; gap:6px; }
+    .particle-row input[type=number] { width:62px; background:var(--bg-soft); color:var(--ink);
+      border:1px solid var(--line); border-radius:7px; padding:6px; font-family:var(--mono); }
+    .particle-row .name { font-weight:600; } .particle-row .name small { display:block; font-weight:400; color:var(--ink-dim); }
+    .particle-row.locked input[type=range] { opacity:.55; }
+
+    .identity { display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+    .symbol-tile { width:88px; height:88px; border-radius:12px; flex:none; border:1px solid var(--line);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .symbol-tile .sym { font-size:2.1rem; font-weight:800; line-height:1; }
+    .symbol-tile .z { font-size:.7rem; color:var(--ink-dim); }
+    .identity .who h2 { margin:0; font-size:1.5rem; }
+    .identity .who .iso { font-family:var(--mono); font-size:1.35rem; color:var(--accent-2); }
+    .identity .who .iso small { color:var(--ink-dim); font-size:.8rem; font-family:var(--font); }
+
+    .badge-existence { display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:12px;
+      border:1px solid var(--line); margin-bottom:10px; }
+    .badge-existence .tag { font-weight:800; font-size:.95rem; letter-spacing:.5px; white-space:nowrap; }
+    .badge-existence .reason { font-size:.86rem; color:var(--ink-soft); }
+    .exist-nature      { background:rgba(54,211,153,.12);  border-color:var(--good); }
+    .exist-nature .tag { color:var(--good); }
+    .exist-lab         { background:rgba(91,140,255,.12);  border-color:var(--accent); }
+    .exist-lab .tag    { color:#9bb6ff; }
+    .exist-theoretical      { background:rgba(255,200,87,.12); border-color:var(--warn); }
+    .exist-theoretical .tag { color:var(--warn); }
+    .exist-impossible      { background:rgba(255,107,107,.12); border-color:var(--bad); }
+    .exist-impossible .tag { color:var(--bad); }
+
+    .charge-line { font-size:.88rem; color:var(--ink-soft); margin-bottom:10px; padding-left:2px; }
+    .charge-line b { color:var(--ink); }
+
+    table.readouts { width:100%; border-collapse:collapse; }
+    table.readouts td { padding:7px 6px; border-bottom:1px solid var(--line); font-size:.9rem; }
+    table.readouts td:first-child { color:var(--ink-soft); } table.readouts td:last-child { text-align:right; font-family:var(--mono); }
+
+    .deriv { margin-top:14px; padding:13px; border-radius:10px; background:var(--bg-soft); border:1px solid var(--line); }
+    .deriv h4 { margin:0 0 8px; font-size:.95rem; }
+    .shell-pills { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; }
+    .shell-pill { font-family:var(--mono); font-size:.82rem; padding:4px 9px; border-radius:8px;
+                  background:var(--panel-2); border:1px solid var(--line); }
+    .shell-pill.outer { border-color:var(--accent-2); color:var(--accent-2); }
+    .deriv .step { font-size:.85rem; color:var(--ink-soft); margin:5px 0; line-height:1.5; }
+    .deriv code { color:var(--electron); }
+
+    details.explain { margin:0 0 12px; border:1px solid var(--line); border-radius:10px; background:var(--bg-soft); }
+    details.explain > summary { cursor:pointer; padding:10px 13px; font-size:.88rem; font-weight:600; color:var(--accent);
+      list-style:none; user-select:none; }
+    details.explain > summary::-webkit-details-marker { display:none; }
+    details.explain[open] > summary { border-bottom:1px solid var(--line); }
+    .explain-inner { padding:12px 13px; }
+    #nuclideChart { width:100%; height:250px; display:block; background:#0a0f24; border:1px solid var(--line); border-radius:8px; }
+    .chart-caption { color:var(--ink-dim); font-size:.78rem; margin:6px 0 12px; line-height:1.4; }
+    #explainBody { font-size:.86rem; color:var(--ink-soft); line-height:1.55; }
+    #explainBody b { color:var(--ink); }
+    #explainBody .big-num { font-family:var(--mono); font-size:1.3rem; color:var(--accent-2); display:block; margin:2px 0 8px; }
+
+    .iso-title { margin:14px 0 8px; font-size:.85rem; color:var(--ink); font-weight:600; }
+    .iso-bar-row { display:grid; grid-template-columns:58px 1fr 56px; gap:8px; align-items:center; margin:5px 0; }
+    .iso-bar-row .lbl { font-family:var(--mono); font-size:.8rem; color:var(--ink-soft); }
+    .iso-bar-row .lbl.cur { color:var(--accent-2); font-weight:700; }
+    .iso-track { background:var(--panel-2); border-radius:6px; height:18px; overflow:hidden; }
+    .iso-fill { height:100%; background:var(--electron); border-radius:6px; }
+    .iso-fill.main { background:var(--accent-2); }
+    .iso-fill.cur { outline:2px solid #fff; outline-offset:-2px; }
+    .iso-bar-row .pctv { font-family:var(--mono); font-size:.78rem; text-align:right; color:var(--ink-soft); }
+    .iso-chips { display:flex; gap:5px; flex-wrap:wrap; margin-top:6px; }
+    .iso-masschip { font-family:var(--mono); font-size:.78rem; padding:3px 8px; border-radius:7px; background:var(--panel-2); border:1px solid var(--line); color:var(--ink-soft); }
+    .iso-masschip.cur { border-color:var(--accent-2); color:var(--accent-2); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../index.html">← Home</a></div>
+      <h1>Element Explorer</h1>
+      <div class="tag">Build any atom — and see whether it exists in nature, only in the lab, in theory, or not at all.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="layout">
+      <!-- LEFT: the atom + controls -->
+      <section>
+        <canvas id="stage"></canvas>
+        <div class="legend">
+          <span><span class="dot p"></span>Proton (+1, nucleus)</span>
+          <span><span class="dot n"></span>Neutron (0, nucleus)</span>
+          <span><span class="dot e"></span>Electron (−1, shells)</span>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>Existence filter</strong>
+          <div class="filter-seg" id="filterSeg">
+            <button data-f="nature">Naturally occurring</button>
+            <button data-f="lab">Lab-made</button>
+            <button data-f="anything">Anything goes</button>
+          </div>
+          <div class="filter-hint" id="filterHint"></div>
+
+          <div id="ionRow" style="display:none; margin:0 0 12px;">
+            <div style="color:var(--ink-soft); font-size:.8rem; margin-bottom:6px;">
+              Common natural ion <span style="color:var(--ink-dim)">— click to switch</span>
+              <button class="ghost" id="ionCycle" style="padding:2px 9px; font-size:.74rem; margin-left:6px;">↻ cycle</button>
+            </div>
+            <div class="ion-chips" id="ionChips"></div>
+          </div>
+
+          <div class="particle-row" id="rowP">
+            <span class="name">Protons<small>→ element &amp; Z</small></span>
+            <input type="range" id="pRange" min="1" max="1000" />
+            <span class="ctl"><button class="ghost" id="pMinus">−</button>
+              <input type="number" id="pNum" min="1" max="1000" /><button class="ghost" id="pPlus">+</button></span>
+          </div>
+          <div class="particle-row" id="rowN">
+            <span class="name">Neutrons<small>→ isotope</small></span>
+            <input type="range" id="nRange" min="0" max="200" />
+            <span class="ctl"><button class="ghost" id="nMinus">−</button>
+              <input type="number" id="nNum" min="0" max="3000" /><button class="ghost" id="nPlus">+</button></span>
+          </div>
+          <div class="particle-row" id="rowE">
+            <span class="name">Electrons<small>→ charge</small></span>
+            <input type="range" id="eRange" min="0" max="1010" />
+            <span class="ctl"><button class="ghost" id="eMinus">−</button>
+              <input type="number" id="eNum" min="0" max="1010" /><button class="ghost" id="ePlus">+</button></span>
+          </div>
+          <div style="margin-top:8px"><button class="ghost" id="neutralBtn">Make neutral</button></div>
+        </div>
+      </section>
+
+      <!-- RIGHT: identity, existence, electron derivation -->
+      <section>
+        <div class="panel">
+          <div class="identity">
+            <div class="symbol-tile" id="tile"><span class="sym" id="elSymbol">C</span><span class="z" id="elZ">Z 6</span></div>
+            <div class="who">
+              <h2 id="elName">Carbon</h2>
+              <div class="iso"><span id="isotope">¹²₆C</span> <small id="isotopeName">Carbon-12</small></div>
+            </div>
+          </div>
+
+          <div class="badge-existence" id="existence">
+            <span class="tag" id="existTag">—</span>
+            <span class="reason" id="existReason"></span>
+          </div>
+          <div class="charge-line" id="chargeLine"></div>
+
+          <details class="explain" id="explain">
+            <summary id="explainSummary">Learn more ▾</summary>
+            <div class="explain-inner">
+              <canvas id="nuclideChart"></canvas>
+              <div class="chart-caption" id="chartCaption"></div>
+              <div id="explainBody"></div>
+              <div id="isoBreakdown"></div>
+            </div>
+          </details>
+
+          <table class="readouts">
+            <tr><td>Atomic number (Z = protons)</td><td id="rZ">6</td></tr>
+            <tr><td>Neutrons (N)</td><td id="rN">6</td></tr>
+            <tr><td>Mass number (A = Z + N)</td><td id="rA">12</td></tr>
+            <tr><td>Electrons</td><td id="rE">6</td></tr>
+            <tr><td>Net charge</td><td id="rCharge">0</td></tr>
+          </table>
+
+          <div class="deriv">
+            <h4>Electron structure <span style="color:var(--ink-dim);font-weight:400;font-size:.8rem">— prep for bonding &amp; the periodic table</span></h4>
+            <div class="shell-pills" id="shellPills"></div>
+            <div class="step" id="stepLevels"></div>
+            <div class="step" id="stepValence"></div>
+            <div class="step" id="stepWhy"></div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <p>Protons go up to Z = 1000: elements past 118 have never been made, but every one has a
+         systematic IUPAC placeholder name (e.g. 120 = unbinilium, Ubn), so they show as
+         <em>theoretical</em>. Existence categories use curated natural-isotope data plus an
+         approximate model of nuclear stability — good for learning the concept, not a substitute
+         for a full chart of nuclides. Super-heavy electron structures are theoretical extrapolations.</p>
+    </footer>
+  </main>
+
+  <script src="../../assets/data/elements.js"></script>
+  <script src="../../assets/data/element-facts.js"></script>
+  <script src="element-explorer.js"></script>
+  <script src="module.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+</body>
+</html>

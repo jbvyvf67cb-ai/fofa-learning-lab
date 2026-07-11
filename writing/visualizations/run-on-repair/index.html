@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Run-on Repair — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Spot a run-on sentence, then try every strategy for repairing it.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    .progress { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+    .progress .count { font-size: 14px; color: var(--ink-mute); }
+    .progress .kind {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 11px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--panel);
+      font-size: 13px; color: var(--ink-soft);
+    }
+
+    /* Broken sentence card */
+    .broken {
+      border: 2px solid var(--bad);
+      background: color-mix(in srgb, var(--bad) 12%, var(--panel));
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .broken .tag {
+      display: inline-block; font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--bad); margin-bottom: 8px;
+    }
+    .broken .text {
+      font-family: var(--font); font-size: clamp(20px, 3.4vw, 28px);
+      line-height: 1.35; color: var(--ink);
+    }
+
+    /* Strategy buttons */
+    .strategies {
+      display: grid; gap: 10px; margin-top: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+    .strategy {
+      appearance: none; cursor: pointer; text-align: left;
+      border: 1px solid var(--line); background: var(--panel-2);
+      color: var(--ink); border-radius: var(--radius-sm);
+      padding: 12px 14px; font: inherit;
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+    }
+    .strategy:hover { border-color: var(--accent); background: #2c3454; transform: translateY(-2px); }
+    .strategy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .strategy .label { font-weight: 700; }
+    .strategy .sub { display: block; font-size: 12px; color: var(--ink-mute); margin-top: 3px; }
+    .strategy.tried { border-color: var(--good); }
+    .strategy.tried .label::after { content: " ✓"; color: var(--good); }
+    .strategy.active { border-color: var(--good); background: color-mix(in srgb, var(--good) 16%, var(--panel-2)); }
+
+    /* Repaired sentence card */
+    .fixed {
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px; margin-top: 18px;
+      min-height: 128px;
+      display: flex; flex-direction: column; justify-content: center;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    .fixed.show {
+      border-color: var(--good);
+      background: color-mix(in srgb, var(--good) 12%, var(--panel));
+    }
+    .fixed .tag {
+      display: inline-block; font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--ink-mute); margin-bottom: 8px;
+    }
+    .fixed.show .tag { color: var(--good); }
+    .fixed .text {
+      font-family: var(--font); font-size: clamp(20px, 3.4vw, 28px);
+      line-height: 1.35; color: var(--ink-mute);
+    }
+    .fixed.show .text { color: var(--ink); }
+    .fixed .why {
+      margin: 10px 0 0; font-size: 14px; color: var(--ink-mute);
+      display: none;
+    }
+    .fixed.show .why { display: block; }
+    .fixed .placeholder { font-size: 14px; color: var(--ink-mute); }
+    .fixed.show .placeholder { display: none; }
+
+    .tally { font-size: 13px; color: var(--ink-mute); margin-top: 14px; }
+
+    .nav-controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+      <nav>
+        <a href="../../#modules">Experiences</a>
+        <a href="../complete-or-fragment/">Complete or Fragment? →</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 4 · Sentence types &amp; punctuation</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Run-on Repair</h1>
+      <p class="muted" style="margin-top:0; max-width:60ch">
+        This sentence ran together two complete thoughts with nothing — or too
+        little — to hold them apart. Read the <b>run-on</b>, then try each
+        repair strategy to see the different ways a fused sentence or comma
+        splice can be fixed.
+      </p>
+
+      <div class="progress">
+        <span class="count" id="count">Sentence 1 of 3</span>
+        <span class="kind" id="kindChip"><span class="dot" style="background:var(--bad)"></span> <span id="kindText"></span></span>
+      </div>
+
+      <section class="panel pad">
+        <div class="broken">
+          <div class="tag">✗ Run-on</div>
+          <div class="text" id="brokenText"></div>
+        </div>
+
+        <div class="strategies" id="strategies" role="group" aria-label="Repair strategies"></div>
+
+        <div class="fixed" id="fixedCard">
+          <div class="tag" id="fixedTag">Repaired sentence</div>
+          <p class="placeholder">Pick a strategy above to see a repaired version.</p>
+          <div class="text" id="fixedText"></div>
+          <p class="why" id="fixedWhy"></p>
+        </div>
+
+        <p class="tally muted" id="tally"></p>
+
+        <div class="nav-controls">
+          <button class="btn ghost" id="prevBtn" type="button">← Previous</button>
+          <button class="btn primary" id="nextBtn" type="button">Next →</button>
+          <span class="spacer"></span>
+          <span class="muted" id="hint" style="font-size:13px">Try all the strategies — every one produces a valid, different fix.</span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Run-on sentences and their repairs come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { RUNONS } = WL_GRAMMAR;
+
+    // Short explanations for each repair strategy, keyed by label text.
+    const WHY = {
+      "Period": "A period splits the run-on into two complete sentences, each with its own subject and verb.",
+      "Semicolon": "A semicolon links two closely related independent clauses without a conjunction.",
+      "Comma + conjunction": "A comma plus a coordinating conjunction (and, but, so…) joins the clauses while showing how they relate.",
+      "Subordinate clause": "Turning one clause into a subordinate clause (with because, although, when…) makes it depend on the other, so only one main idea remains.",
+    };
+
+    const el = {
+      count: document.getElementById("count"),
+      kindText: document.getElementById("kindText"),
+      brokenText: document.getElementById("brokenText"),
+      strategies: document.getElementById("strategies"),
+      fixedCard: document.getElementById("fixedCard"),
+      fixedTag: document.getElementById("fixedTag"),
+      fixedText: document.getElementById("fixedText"),
+      fixedWhy: document.getElementById("fixedWhy"),
+      tally: document.getElementById("tally"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+    };
+
+    let idx = 0;
+    let tried = new Set();     // labels tried for the current sentence
+    let activeLabel = null;
+
+    function render() {
+      const item = RUNONS[idx];
+      tried = new Set();
+      activeLabel = null;
+
+      el.count.textContent = `Sentence ${idx + 1} of ${RUNONS.length}`;
+      el.kindText.textContent = item.kind;
+      el.brokenText.textContent = item.text;
+
+      el.strategies.innerHTML = "";
+      item.fixes.forEach((fix) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "strategy";
+        b.dataset.label = fix.label;
+        b.innerHTML = `<span class="label">${fix.label}</span>
+          <span class="sub">${WHY[fix.label] ? WHY[fix.label].split(",")[0] + "…" : "Reveal this repair"}</span>`;
+        b.addEventListener("click", () => showFix(item, fix, b));
+        el.strategies.appendChild(b);
+      });
+
+      el.fixedCard.classList.remove("show");
+      el.fixedText.textContent = "";
+      el.fixedWhy.textContent = "";
+      el.fixedTag.textContent = "Repaired sentence";
+
+      updateTally(item);
+      el.prevBtn.disabled = idx === 0;
+      el.nextBtn.textContent = idx === RUNONS.length - 1 ? "Restart →" : "Next →";
+    }
+
+    function showFix(item, fix, btnEl) {
+      activeLabel = fix.label;
+      tried.add(fix.label);
+
+      // Mark buttons
+      [...el.strategies.children].forEach((b) => {
+        b.classList.toggle("active", b === btnEl);
+        if (b.dataset.label === fix.label) b.classList.add("tried");
+      });
+
+      el.fixedCard.classList.remove("show");
+      // Force reflow so the reveal animates each time, even for the same fix.
+      void el.fixedCard.offsetWidth;
+
+      el.fixedTag.textContent = `Fixed with: ${fix.label}`;
+      el.fixedText.textContent = fix.result;
+      el.fixedWhy.textContent = WHY[fix.label] || "";
+      requestAnimationFrame(() => el.fixedCard.classList.add("show"));
+
+      updateTally(item);
+    }
+
+    function updateTally(item) {
+      const n = tried.size;
+      const total = item.fixes.length;
+      if (n === 0) {
+        el.tally.textContent = `${total} repair strateg${total === 1 ? "y" : "ies"} available for this run-on.`;
+      } else if (n < total) {
+        el.tally.textContent = `You've tried ${n} of ${total} repairs — try the rest to see how differently each one reads.`;
+      } else {
+        el.tally.textContent = `All ${total} repairs tried. Same run-on, ${total} valid fixes — nice work.`;
+      }
+    }
+
+    el.prevBtn.addEventListener("click", () => {
+      if (idx > 0) { idx--; render(); }
+    });
+    el.nextBtn.addEventListener("click", () => {
+      idx = (idx + 1) % RUNONS.length;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

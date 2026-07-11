@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isotopes &amp; Average Atomic Mass — STEM Visualizations</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .layout5 { display:grid; grid-template-columns: 1fr 320px; gap:20px; align-items:start; }
+    @media (max-width:1000px){ .layout5{ grid-template-columns:1fr; } }
+    .picker select { background:var(--bg-soft); color:var(--ink); border:1px solid var(--line);
+                     border-radius:8px; padding:8px; font-family:var(--font); }
+
+    .iso-row { display:grid; grid-template-columns: 120px 1fr 70px; gap:12px; align-items:center; margin:14px 0; }
+    .iso-row .tag { font-family:var(--mono); }
+    .iso-row .tag b { font-size:1.05rem; }
+    .iso-row .tag small { color:var(--ink-dim); display:block; }
+    .iso-row .pct { text-align:right; font-family:var(--mono); color:var(--electron); }
+
+    .bars { position:relative; height:46px; background:var(--bg-soft); border:1px solid var(--line);
+            border-radius:8px; display:flex; overflow:hidden; }
+    .bars .seg { height:100%; display:flex; align-items:center; justify-content:center; font-size:.72rem;
+                 font-family:var(--mono); color:#06122e; font-weight:700; min-width:0; transition:flex-basis .15s; }
+
+    .scale { position:relative; height:70px; margin-top:18px; }
+    .scale .axis { position:absolute; top:34px; left:0; right:0; height:2px; background:var(--line); }
+    .scale .tick { position:absolute; top:28px; width:1px; height:14px; background:var(--ink-dim); }
+    .scale .ticklabel { position:absolute; top:46px; font-size:.7rem; color:var(--ink-dim); transform:translateX(-50%); }
+    .scale .marker { position:absolute; top:6px; width:2px; height:30px; }
+    .scale .marker.iso { background:var(--electron); }
+    .scale .marker.avg { background:var(--proton); width:3px; }
+    .scale .mlabel { position:absolute; top:-10px; font-size:.68rem; transform:translateX(-50%); white-space:nowrap; }
+
+    .big-avg { font-family:var(--mono); font-size:2rem; color:var(--proton); }
+    table.kv { width:100%; border-collapse:collapse; margin-top:8px; }
+    table.kv td { padding:6px 4px; border-bottom:1px solid var(--line); font-size:.85rem; }
+    table.kv td:first-child{ color:var(--ink-soft);} table.kv td:last-child{text-align:right;font-family:var(--mono);}
+    .match { padding:10px 12px; border-radius:10px; margin-top:12px; font-size:.88rem; }
+    .match.ok { background:rgba(54,211,153,.12); border:1px solid var(--good); color:var(--ink); }
+    .match.off{ background:rgba(255,200,87,.12); border:1px solid var(--warn); color:var(--ink); }
+    .toolbar { display:flex; gap:8px; margin:12px 0; flex-wrap:wrap; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../index.html">← All visualizations</a> · <a href="../element-explorer/index.html">Element Explorer</a></div>
+      <h1>Isotopes &amp; Average Atomic Mass</h1>
+      <div class="tag">Why isn't chlorine's mass a whole number? Mix isotopes and find out — the bridge to the mole.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="layout5">
+      <section>
+        <div class="panel">
+          <div class="picker">
+            <label style="margin:0;color:var(--ink-soft)">Element: </label>
+            <select id="elPick"></select>
+          </div>
+
+          <div class="toolbar">
+            <button id="resetBtn" class="ghost">Reset to natural abundances</button>
+            <button id="equalBtn" class="ghost">Make all equal</button>
+          </div>
+
+          <div id="isotopes"></div>
+
+          <div class="scale" id="scale"></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>What you're seeing</strong>
+          <p id="explain" style="color:var(--ink-soft);font-size:.9rem;line-height:1.55;margin:8px 0 0"></p>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <strong>Weighted average mass</strong>
+          <div class="big-avg" id="avgMass">—</div>
+          <div style="color:var(--ink-dim);font-size:.8rem">Σ (fraction × isotope mass)</div>
+
+          <table class="kv" id="calc"></table>
+          <div id="match" class="match"></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>Why this matters</strong>
+          <p style="color:var(--ink-soft);font-size:.85rem;line-height:1.5;margin:8px 0 0">
+            This weighted average <em>is</em> the atomic mass on the periodic table, and it's
+            exactly the number you'll multiply by in stoichiometry to get molar mass
+            (grams per mole). Non-whole masses come straight from isotope mixing.
+          </p>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>Standard atomic weights for comparison come from the shared dataset
+         (<code>assets/data/elements.js</code>). Isotope masses and natural abundances are
+         curated per element.</p>
+    </footer>
+  </main>
+
+  <script src="../../assets/data/elements.js"></script>
+  <script src="isotopes.js"></script>
+  <script src="module.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+</body>
+</html>

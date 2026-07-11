@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chemical Bonding — STEM Visualizations</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .layout4 { display:grid; grid-template-columns: 1fr 320px; gap:20px; align-items:start; }
+    @media (max-width:1000px){ .layout4{ grid-template-columns:1fr; } }
+
+    .atom-pick { display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:14px; }
+    .atom-pick .field { display:flex; flex-direction:column; gap:4px; }
+    .atom-pick label { color:var(--ink-soft); font-size:.82rem; }
+    .atom-pick select { background:var(--bg-soft); color:var(--ink); border:1px solid var(--line);
+                        border-radius:8px; padding:8px; font-family:var(--font); min-width:150px; }
+    .plus { font-size:1.6rem; color:var(--ink-dim); padding-bottom:6px; }
+
+    #bondCanvas { width:100%; height:380px; background:radial-gradient(circle at 50% 40%,#10183a,#0a0f24 72%);
+                  border:1px solid var(--line); border-radius:var(--radius); }
+
+    .verdict { display:flex; align-items:center; gap:12px; margin:14px 0; padding:12px 14px; border-radius:12px;
+               border:1px solid var(--line); background:var(--panel); }
+    .verdict .pill { font-weight:700; padding:5px 12px; border-radius:999px; font-size:.85rem; white-space:nowrap; }
+    .pill.ionic    { background:rgba(255,93,108,.16); color:#ff8f9a; }
+    .pill.polar    { background:rgba(91,140,255,.18); color:#9bb6ff; }
+    .pill.nonpolar { background:rgba(0,208,192,.16); color:#5fe6d8; }
+    .pill.metallic { background:rgba(255,211,92,.16); color:#ffdf8a; }
+    .verdict .why { font-size:.88rem; color:var(--ink-soft); }
+
+    .bond-order { display:flex; gap:8px; align-items:center; margin:10px 0; }
+    .bond-order .seg { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .bond-order .seg button { background:var(--bg-soft); color:var(--ink-soft); border:none; border-right:1px solid var(--line);
+                              border-radius:0; padding:6px 12px; }
+    .bond-order .seg button:last-child{ border-right:none; }
+    .bond-order .seg button.on { background:var(--accent); color:#06122e; }
+
+    table.kv { width:100%; border-collapse:collapse; }
+    table.kv td { padding:6px 4px; border-bottom:1px solid var(--line); font-size:.85rem; }
+    table.kv td:first-child{ color:var(--ink-soft);} table.kv td:last-child{text-align:right;font-family:var(--mono);}
+
+    .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-top:10px; }
+    .mol { background:var(--bg-soft); border:1px solid var(--line); border-radius:10px; padding:8px; cursor:pointer;
+           text-align:center; }
+    .mol:hover { border-color:var(--accent); }
+    .mol canvas { width:100%; height:90px; }
+    .mol .name { font-family:var(--mono); font-size:.8rem; margin-top:4px; }
+    .legend-dots { color:var(--ink-soft); font-size:.8rem; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb">
+        <a href="../../index.html">← All visualizations</a> ·
+        <a href="../electron-configuration/index.html">Electron Config</a> ·
+        <a href="../periodic-table/index.html">Periodic Table</a>
+      </div>
+      <h1>Chemical Bonding</h1>
+      <div class="tag">Pick two atoms — predict the bond from electronegativity, then watch electrons transfer or share.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="layout4">
+      <section>
+        <div class="panel">
+          <div class="atom-pick">
+            <div class="field">
+              <label for="atomA">Atom A</label>
+              <select id="atomA"></select>
+            </div>
+            <span class="plus">+</span>
+            <div class="field">
+              <label for="atomB">Atom B</label>
+              <select id="atomB"></select>
+            </div>
+          </div>
+
+          <canvas id="bondCanvas"></canvas>
+          <div class="legend-dots">
+            <span style="color:#4ad6ff">●</span> valence electron ·
+            <span style="color:#ffd35c">●</span> shared (bonding) pair ·
+            lines = bonds · brackets show ion charge
+          </div>
+
+          <div class="verdict">
+            <span class="pill" id="bondPill">—</span>
+            <span class="why" id="bondWhy"></span>
+          </div>
+
+          <div class="bond-order" id="bondOrderRow" style="display:none">
+            <span style="color:var(--ink-soft);font-size:.85rem">Bonded pairs (try changing it):</span>
+            <div class="seg" id="bondOrderSeg">
+              <button data-o="1">Single</button>
+              <button data-o="2">Double</button>
+              <button data-o="3">Triple</button>
+            </div>
+            <span id="bondOrderNote" style="color:var(--ink-soft);font-size:.82rem"></span>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>Covalent focus — common molecules</strong>
+          <p style="color:var(--ink-soft);font-size:.84rem;margin:6px 0">
+            Click a molecule to load it (diatomics open in the builder above; the shapes
+            show how shared pairs and lone pairs complete every atom's octet).
+          </p>
+          <div class="gallery" id="gallery"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <strong>What's happening</strong>
+          <table class="kv" id="facts" style="margin-top:8px"></table>
+          <div id="explain" style="margin-top:12px;font-size:.88rem;color:var(--ink-soft);line-height:1.55"></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>The electronegativity rule</strong>
+          <table class="kv" style="margin-top:8px">
+            <tr><td>ΔEN &lt; 0.4</td><td>nonpolar covalent</td></tr>
+            <tr><td>0.4 – 1.7</td><td>polar covalent</td></tr>
+            <tr><td>≥ 1.7</td><td>ionic</td></tr>
+            <tr><td>metal + metal</td><td>metallic</td></tr>
+          </table>
+          <p style="color:var(--ink-dim);font-size:.78rem;margin-top:8px">
+            Cut-offs are a teaching convention, not a hard law — bonding is a continuum.
+          </p>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>Electronegativity and valence come from the shared dataset
+         (<code>assets/data/elements.js</code>). Lone pairs are derived automatically
+         from each atom's valence minus its bonds.</p>
+    </footer>
+  </main>
+
+  <script src="../../assets/data/elements.js"></script>
+  <script src="bonding.js"></script>
+  <script src="module.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+</body>
+</html>
