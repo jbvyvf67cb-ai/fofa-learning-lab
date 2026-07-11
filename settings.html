@@ -31,6 +31,13 @@
     <section class="fofa-panel" style="margin-top:22px">
       <p style="margin-top:0"><span class="fofa-pill" id="statePill"><span class="dot"></span><span id="stateText">Not connected</span></span></p>
 
+      <label class="fofa-field" for="backend">Home Assistant base URL <span class="fofa-muted">(accounts, cross-device progress &amp; gating)</span></label>
+      <input class="fofa-input" id="backend" placeholder="https://your-ha.example  (blank = demo mode on this device)" autocomplete="off" inputmode="url">
+      <p class="fofa-help">Where the <code>fofa</code> integration lives (see <a href="docs/BACKEND-CONTRACT.md">the backend contract</a>). Leave blank to run in on-device demo mode. When set, the login screen and progress talk to Home Assistant.</p>
+
+      <hr style="border:none;border-top:1px solid var(--line);margin:20px 0">
+      <p class="fofa-muted" style="font-size:13px;margin:0 0 6px">The fields below are the older fire-and-forget webhook path (optional; superseded by the base URL above).</p>
+
       <label class="fofa-field" for="child">Child's name <span class="fofa-muted">(shown on the lab, sent with results)</span></label>
       <input class="fofa-input" id="child" placeholder="e.g. Fofa" autocomplete="off">
 
@@ -69,6 +76,7 @@
     <div class="fofa-wrap"><a href="./">← Back to the lab</a></div>
   </footer>
 
+  <script src="assets/js/fofa-account.js"></script>
   <script src="assets/js/fofa-measure.js"></script>
   <script>
     var $ = function (id) { return document.getElementById(id); };
@@ -76,13 +84,16 @@
 
     function reflect() {
       var c = Fofa.config;
+      $("backend").value = FofaAccount.backendUrl();
       $("child").value = c.child || "";
       $("webhook").value = c.webhookUrl || "";
       $("grade").value = c.gradeUrl || "";
-      var on = !!c.webhookUrl;
+      var connected = !!FofaAccount.backendUrl();
       var pill = $("statePill");
-      pill.className = "fofa-pill " + (on ? "on" : "off");
-      $("stateText").textContent = on ? "Connected" : "Not connected";
+      pill.className = "fofa-pill " + (connected ? "on" : "off");
+      $("stateText").textContent = connected
+        ? "Connected to Home Assistant"
+        : "Demo mode (on this device)";
       renderProgress();
     }
 
@@ -95,12 +106,13 @@
     }
 
     $("save").onclick = function () {
+      FofaAccount.setBackendUrl($("backend").value.trim());
       Fofa.setConfig({
         child: $("child").value.trim(),
         webhookUrl: $("webhook").value.trim(),
         gradeUrl: $("grade").value.trim()
       });
-      msg.textContent = "Saved.";
+      msg.textContent = "Saved." + (FofaAccount.backendUrl() ? "" : " (Demo mode — blank base URL.)");
       reflect();
     };
 
@@ -116,8 +128,9 @@
     };
 
     $("clear").onclick = function () {
+      FofaAccount.setBackendUrl("");
       Fofa.setConfig({ child: "", webhookUrl: "", gradeUrl: "" });
-      msg.textContent = "Disconnected. The lab still works and saves locally.";
+      msg.textContent = "Disconnected. The lab runs in on-device demo mode.";
       reflect();
     };
 

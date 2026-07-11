@@ -97,6 +97,18 @@
     evt = evt || {};
     recordLocal(evt);                       // always mirror locally first
 
+    // If the authenticated account client is present, record there too so
+    // server-side progress + lesson gating update (this is the primary path
+    // now; the webhook below is the legacy fire-and-forget option).
+    if (window.FofaAccount && typeof FofaAccount.progress === "function") {
+      try {
+        FofaAccount.progress({
+          subject: evt.subject, module: evt.module, activity: evt.activity,
+          kind: evt.kind, score: evt.score, max: evt.max, detail: evt.detail
+        });
+      } catch (e) {}
+    }
+
     if (!config.webhookUrl) {
       return Promise.resolve({ sent: false, error: "no-webhook" });
     }

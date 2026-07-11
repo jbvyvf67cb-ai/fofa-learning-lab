@@ -88,20 +88,23 @@
     </div>
   </footer>
 
-  <script src="assets/js/fofa-measure.js"></script>
+  <script src="assets/js/fofa-account.js"></script>
+  <script src="assets/js/fofa-gate.js"></script>
   <script>
-    // Reflect whether measurables are wired to Home Assistant yet.
+    // Reflect who's logged in and whether progress is server-backed yet.
     (function () {
       var pill = document.getElementById("haPill");
       var text = document.getElementById("haText");
-      if (window.Fofa && Fofa.config && Fofa.config.webhookUrl) {
-        pill.classList.add("on");
-        text.textContent = Fofa.config.child
-          ? ("Connected to Home Assistant · " + Fofa.config.child)
-          : "Connected to Home Assistant";
-      } else {
+      if (!window.FofaAccount) return;
+      var who = FofaAccount.student();
+      if (FofaAccount.isMock()) {
         pill.classList.add("off");
-        text.textContent = "Progress saved on this device — connect Home Assistant in Settings";
+        text.textContent = who
+          ? ("Hi " + who + " — demo mode (connect Home Assistant in Settings for cross-device saving)")
+          : "Demo mode — connect Home Assistant in Settings";
+      } else {
+        pill.classList.add("on");
+        text.textContent = "Signed in as " + (who || "student") + " · progress synced to Home Assistant";
       }
     })();
   </script>

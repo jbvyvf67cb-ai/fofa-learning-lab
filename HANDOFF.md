@@ -78,6 +78,33 @@ distinct from each subject's own `../../assets/...`.
 The webhook/grading/manifest schemas are documented in [`MEASURABLES.md`](./MEASURABLES.md) — the
 interface for the HA-side session.
 
+## 5b. Accounts, gating & the authenticated backend (the current direction)
+
+The webhook above is device-local and anonymous. We are moving progress to an **authenticated,
+server-side model**: login → per-student cross-device progress → **sequential lesson gating** (a
+lesson unlocks only when the previous one is `complete`, where "complete" can mean meeting a grade).
+
+- **Contract:** [`docs/BACKEND-CONTRACT.md`](./docs/BACKEND-CONTRACT.md) — the `/api/fofa`
+  login/state/progress/grade endpoints the Home-Assistant `fofa` integration must implement. Hosting
+  stays on **GitHub Pages**; HA is the auth + storage backend (needs `cors_allowed_origins` + HTTPS).
+- **Gating rules:** [`curriculum/index.json`](./curriculum/index.json) — ordered arcs + per-lesson
+  `gate` (`quiz` min score / `complete` / `grade` / `visit`). BOTH the app and HA read it; the
+  **server** computes unlock status so it can't be bypassed by clearing the browser.
+- **Client:** [`assets/js/fofa-account.js`](./assets/js/fofa-account.js) (`window.FofaAccount`:
+  login/state/progress/grade) and [`assets/js/fofa-gate.js`](./assets/js/fofa-gate.js) (login guard,
+  user chip, and locking module cards by curriculum order). `login.html` is the login screen; the
+  Fofa + subject landing pages include the gate script.
+- **Mock mode:** with no Home Assistant base URL set (Settings), `fofa-account.js` runs a built-in
+  **mock backend** that computes gating from `curriculum/index.json` — so login + gating work today
+  on Pages. Demo login: **`fofa` / `learn`**. Set the HA base URL in Settings to switch to the real
+  integration (client contract is identical).
+- **Recording:** `Fofa.report()` forwards to `FofaAccount.progress()` when present, so completing a
+  science quiz or a writing activity advances gating. Exploration lessons report a `visit` on load.
+
+**Still to do:** enforce gating at the *module page* level (a locked lesson opened by direct URL
+should bounce) — currently only the landing cards lock. Then wire the real HA endpoints and retire
+the webhook path once the integration is live.
+
 ## 6. How to add things
 
 - **A quiz measurable to a writing module:** load `../../../assets/js/fofa-measure.js`, then at the

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in — Fofa Learning Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3EF%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/fofa.css">
+</head>
+<body class="fofa-page">
+  <main class="fofa-wrap" style="max-width:420px">
+    <section style="padding:70px 0 10px;text-align:center">
+      <div class="fofa-brand" style="justify-content:center;font-size:20px">
+        <span class="fofa-glyph">F</span> Fofa&nbsp;Learning&nbsp;Lab
+      </div>
+    </section>
+
+    <section class="fofa-panel" style="margin-top:18px">
+      <h1 style="font-size:24px;margin:0 0 4px">Welcome back</h1>
+      <p class="fofa-muted" style="margin-top:0">Log in to pick up where you left off.</p>
+
+      <form id="loginForm" autocomplete="on">
+        <label class="fofa-field" for="username">Username</label>
+        <input class="fofa-input" id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+
+        <label class="fofa-field" for="password">Password</label>
+        <input class="fofa-input" id="password" name="password" type="password" autocomplete="current-password" required>
+
+        <div class="row" style="margin-top:20px">
+          <button class="fofa-btn primary" type="submit" id="go">Log in</button>
+          <span class="fofa-help" id="msg" aria-live="polite" style="margin:0"></span>
+        </div>
+      </form>
+    </section>
+
+    <p class="fofa-muted" id="mockHint" style="margin-top:14px;text-align:center;display:none"></p>
+    <p class="fofa-muted" style="margin-top:6px;text-align:center;font-size:13px">
+      <a href="settings.html">Grown-up settings</a>
+    </p>
+  </main>
+
+  <script src="assets/js/fofa-account.js"></script>
+  <script>
+    var msg = document.getElementById("msg");
+    var NEXT = new URLSearchParams(location.search).get("next") || "./";
+    // only allow same-origin redirects
+    function safeNext() { try { return new URL(NEXT, location.href).origin === location.origin ? NEXT : "./"; } catch (e) { return "./"; } }
+
+    // If already logged in, go straight in.
+    if (FofaAccount.isLoggedIn()) location.replace(safeNext());
+
+    // In mock mode (no Home Assistant configured yet), show the demo login.
+    if (FofaAccount.isMock()) {
+      var h = document.getElementById("mockHint");
+      h.style.display = "block";
+      h.innerHTML = "Demo mode — Home Assistant isn't connected yet. Try <b>" +
+        FofaAccount.MOCK_CREDS.username + "</b> / <b>" + FofaAccount.MOCK_CREDS.password + "</b>.";
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var u = document.getElementById("username").value.trim();
+      var p = document.getElementById("password").value;
+      msg.textContent = "Checking…";
+      FofaAccount.login(u, p).then(function (r) {
+        if (r.ok) { msg.textContent = ""; location.replace(safeNext()); }
+        else { msg.textContent = r.error === "bad-credentials" ? "That username or password isn't right." : ("Couldn't log in: " + r.error); }
+      });
+    });
+  </script>
+</body>
+</html>
