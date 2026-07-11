@@ -100,10 +100,14 @@ lesson unlocks only when the previous one is `complete`, where "complete" can me
   integration (client contract is identical).
 - **Recording:** `Fofa.report()` forwards to `FofaAccount.progress()` when present, so completing a
   science quiz or a writing activity advances gating. Exploration lessons report a `visit` on load.
+- **Module-level enforcement:** [`assets/js/fofa-lesson-guard.js`](./assets/js/fofa-lesson-guard.js)
+  is included on all 24 module pages. It requires login and, if the server says the lesson is
+  `locked`, blocks the page with an overlay (and a way back to the subject) — so a locked lesson
+  can't be opened by typing its URL. Lessons not in `curriculum/index.json` stay open once logged in.
 
-**Still to do:** enforce gating at the *module page* level (a locked lesson opened by direct URL
-should bounce) — currently only the landing cards lock. Then wire the real HA endpoints and retire
-the webhook path once the integration is live.
+**Still to do:** wire the real HA `/api/fofa` endpoints (the integration is being built against
+`docs/BACKEND-CONTRACT.md` in the Home-Assistant repo), set the HA base URL in Settings to leave
+demo mode, and retire the legacy webhook path once the integration is live.
 
 ## 6. How to add things
 

@@ -38,6 +38,10 @@ async function run(page) {
     // both work fine in real browsers, so ignore those artifacts.
     if (msg.includes("Could not parse CSS stylesheet")) return;
     if (msg.includes("scrollIntoView is not a function")) return;
+    // The Fofa lesson guard redirects a logged-out load to the login page;
+    // jsdom has no navigation, but it works in real browsers (verified via
+    // Playwright), so ignore this jsdom-only stub too.
+    if (msg.includes("Not implemented: navigation")) return;
     errors.push("jsdomError: " + msg);
   });
 
