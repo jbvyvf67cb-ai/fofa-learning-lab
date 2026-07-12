@@ -16,11 +16,12 @@ creative writing. Every step is something you *do*, not something you read.
 ## Live experiences
 
 The full grammar trunk — from parts of speech to the style branch point — is
-built and playable. Seventeen interactive modules, no dependencies.
+built and playable. Twenty-one interactive modules, no dependencies.
 
 **Unit 1 · Parts of speech**
 - **Sentence Anatomy** — click any word to reveal its part of speech and job; toggle the subject / predicate split.
-- **Word Sort** — race the clock to drop words into the right part-of-speech bucket.
+- **Nouns / Verbs / Adjectives / Adverbs** — four short lessons that teach each part of speech and how to spot it, then have you tap every one in a sentence, with a hint whenever you miss and an optional color-coded worked example.
+- **Word Sort** — drop words into the right part-of-speech bucket; get ten right in a row.
 - **Part-of-Speech Detective** — one spelling, many disguises: see how a word's job changes with use.
 - **Word-Shape Lab** — morph one root across parts of speech (beauty → beautify → beautiful → beautifully).
 
@@ -78,8 +79,10 @@ README.md · ROADMAP.md · MODULES.md
 assets/
   css/base.css             Shared design system + part-of-speech colors
   data/grammar.js          Authoritative dataset (parts of speech, sentences)
+  js/pos-lesson.js         Shared engine for the noun/verb/adjective/adverb lessons
+  js/wl-nav.js             Shared "what's next" sequential lesson navigation
 visualizations/
-  <slug>/index.html        One self-contained folder per experience (17 of them)
+  <slug>/index.html        One self-contained folder per experience (21 of them)
 .github/workflows/pages.yml  Automatic GitHub Pages deploy (no build step)
 ```
 

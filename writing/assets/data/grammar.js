@@ -266,6 +266,116 @@
       { pos: "adverb",    text: "She studies very hard.", idx: 3 } ] },
   ];
 
+  /* ----------------------------------------------------------------------
+     Part-of-speech lessons (nouns / verbs / adjectives / adverbs)
+     ----------------------------------------------------------------------
+     One shared bank of short, fully tagged sentences powers all four
+     "learn to spot it" lessons: each lesson simply treats the words of its
+     own part of speech as the targets, and uses every other word's real
+     `pos` to explain a wrong tap ("that's an adjective, not a noun").
+     Every sentence contains at least one noun, verb, adjective, and adverb
+     so the same set works for every lesson. */
+  const SPOT_SENTENCES = [
+    { text: "The happy puppy barked loudly.",
+      tokens: [
+        { w: "The",    pos: "article" },   { w: "happy",  pos: "adjective" },
+        { w: "puppy",  pos: "noun" },      { w: "barked", pos: "verb" },
+        { w: "loudly", pos: "adverb" } ] },
+    { text: "A tall wizard quietly opened the heavy door.",
+      tokens: [
+        { w: "A",       pos: "article" },   { w: "tall",   pos: "adjective" },
+        { w: "wizard",  pos: "noun" },      { w: "quietly",pos: "adverb" },
+        { w: "opened",  pos: "verb" },      { w: "the",    pos: "article" },
+        { w: "heavy",   pos: "adjective" }, { w: "door",   pos: "noun" } ] },
+    { text: "The young artist carefully painted a bright picture.",
+      tokens: [
+        { w: "The",      pos: "article" },   { w: "young",  pos: "adjective" },
+        { w: "artist",   pos: "noun" },      { w: "carefully", pos: "adverb" },
+        { w: "painted",  pos: "verb" },      { w: "a",      pos: "article" },
+        { w: "bright",   pos: "adjective" }, { w: "picture",pos: "noun" } ] },
+    { text: "A curious kitten playfully chased the red ball.",
+      tokens: [
+        { w: "A",         pos: "article" },   { w: "curious", pos: "adjective" },
+        { w: "kitten",    pos: "noun" },      { w: "playfully", pos: "adverb" },
+        { w: "chased",    pos: "verb" },      { w: "the",     pos: "article" },
+        { w: "red",       pos: "adjective" }, { w: "ball",    pos: "noun" } ] },
+    { text: "The ancient castle stood silently on the hill.",
+      tokens: [
+        { w: "The",     pos: "article" },     { w: "ancient", pos: "adjective" },
+        { w: "castle",  pos: "noun" },        { w: "stood",   pos: "verb" },
+        { w: "silently",pos: "adverb" },      { w: "on",      pos: "preposition" },
+        { w: "the",     pos: "article" },     { w: "hill",    pos: "noun" } ] },
+    { text: "The brave firefighter quickly climbed the tall ladder.",
+      tokens: [
+        { w: "The",         pos: "article" },   { w: "brave", pos: "adjective" },
+        { w: "firefighter", pos: "noun" },      { w: "quickly", pos: "adverb" },
+        { w: "climbed",     pos: "verb" },      { w: "the",   pos: "article" },
+        { w: "tall",        pos: "adjective" }, { w: "ladder",pos: "noun" } ] },
+    { text: "Bright stars gently twinkled above the quiet town.",
+      tokens: [
+        { w: "Bright",   pos: "adjective" },  { w: "stars",   pos: "noun" },
+        { w: "gently",   pos: "adverb" },     { w: "twinkled",pos: "verb" },
+        { w: "above",    pos: "preposition" },{ w: "the",     pos: "article" },
+        { w: "quiet",    pos: "adjective" },  { w: "town",    pos: "noun" } ] },
+    { text: "Three noisy crows suddenly flew away.",
+      tokens: [
+        { w: "Three",   pos: "adjective" },   { w: "noisy",  pos: "adjective" },
+        { w: "crows",   pos: "noun" },        { w: "suddenly", pos: "adverb" },
+        { w: "flew",    pos: "verb" },        { w: "away",   pos: "adverb" } ] },
+  ];
+
+  /* Teaching copy for each part-of-speech lesson. `blurb`, `color`, `label`,
+     and `examples` are reused from PARTS; this only adds the lesson-specific
+     "how to spot it" material, the target instruction, and a nudge shown when
+     a learner taps a word of the wrong kind. `example` selects a SPOT_SENTENCES
+     index used for the optional color-coded walk-through. */
+  const POS_LESSONS = {
+    noun: {
+      task: "Tap every noun.",
+      intro: "A noun is a naming word. It names a person, a place, a thing, or an idea. Almost every sentence is about a noun.",
+      nudge: "Look for a naming word — a person, place, thing, or idea you could put “the” in front of.",
+      spot: [
+        { test: "Put “the” or “a” in front of it.", ex: "the castle, a puppy — sounds right, so it's a noun." },
+        { test: "Can there be more than one?", ex: "one crow → two crows. Nouns can usually be counted or made plural." },
+        { test: "Can you point to it or name it?", ex: "a thing you can see (ladder) or an idea you can name (courage)." },
+      ],
+      example: 1,
+    },
+    verb: {
+      task: "Tap every verb.",
+      intro: "A verb is the engine of the sentence. It shows an action (run, paint, climb) or a state of being (is, seems). Without a verb, nothing happens.",
+      nudge: "Look for what the subject does or is — the action word.",
+      spot: [
+        { test: "Ask “what is happening?”", ex: "The puppy barked — barked is the action." },
+        { test: "Try changing the time.", ex: "today I climb, yesterday I climbed. Verbs change with time." },
+        { test: "Put “I” or “they” in front.", ex: "they paint, they chase — verbs fit right after a subject." },
+      ],
+      example: 1,
+    },
+    adjective: {
+      task: "Tap every adjective.",
+      intro: "An adjective describes a noun. It tells which one, what kind, or how many — adding color and detail to the naming words.",
+      nudge: "Look for a describing word attached to a noun — which one? what kind? how many?",
+      spot: [
+        { test: "Find the noun, then look just before it.", ex: "the heavy door — heavy describes door." },
+        { test: "Ask “what kind?” or “how many?”", ex: "a red ball, three crows — red and three are adjectives." },
+        { test: "Could it fit “It is very ___”?", ex: "very tall, very brave — describing words pass this test." },
+      ],
+      example: 3,
+    },
+    adverb: {
+      task: "Tap every adverb.",
+      intro: "An adverb describes a verb. It usually tells how, when, or where the action happens — and it very often ends in “-ly”.",
+      nudge: "Look for a word that describes the action — how, when, or where it happens (often ends in -ly).",
+      spot: [
+        { test: "Find the verb, then ask “how?”", ex: "barked loudly — loudly tells how it barked." },
+        { test: "Watch for the “-ly” ending.", ex: "quietly, gently, suddenly — a strong adverb clue." },
+        { test: "Ask when or where, too.", ex: "flew away, left yesterday — away and yesterday are adverbs." },
+      ],
+      example: 3,
+    },
+  };
+
   /* ======================================================================
      UNIT 2 — subject / predicate, building, fragments
      ====================================================================== */
@@ -537,7 +647,7 @@
       "preposition", "conjunction", "article", "interjection",
     ],
     // Unit 1
-    WORD_FORMS, DISGUISES,
+    WORD_FORMS, DISGUISES, SPOT_SENTENCES, POS_LESSONS,
     // Unit 2
     CORE_SENTENCES, BUILDER, FRAGMENTS,
     // Unit 3

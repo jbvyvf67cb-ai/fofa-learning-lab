@@ -6,7 +6,7 @@ Each unit is an interactive experience, not a reading. Items marked ✅ exist
 today; the rest are the build sequence.
 
 > Status: the entire grammar trunk — Units 1–4 plus the Style &amp; Structure
-> branch point (17 interactive modules) — is built and live. The writing-mode
+> branch point (21 interactive modules) — is built and live. The writing-mode
 > branches below are next.
 
 ---
@@ -18,7 +18,10 @@ The atoms of language. Every later module inherits the fixed color code
 established here.
 
 - ✅ **Sentence Anatomy** — click words to reveal part of speech + sentence role.
-- ✅ **Word Sort** — drop words into part-of-speech buckets against the clock.
+- ✅ **Nouns · Verbs · Adjectives · Adverbs** — one focused lesson per part of
+  speech: what it is, how to spot it, an optional color-coded worked example,
+  then tap-every-one practice with a hint on each wrong tap.
+- ✅ **Word Sort** — drop words into part-of-speech buckets.
 - ✅ **Part-of-Speech Detective** — one word, many disguises ("*book* a room" vs
   "read a *book*"); learn that a word's job depends on its use.
 - ✅ **Word-Shape Lab** — turn a noun into a verb into an adjective

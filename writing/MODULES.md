@@ -45,6 +45,23 @@ A module's `index.html` should:
 - **Learn by changing things.** Every module needs a knob, a drag, or a click
   whose effect teaches the concept. No passive walls of text.
 
+## Shared engines (optional)
+
+Two small shared scripts under `assets/js/` keep families of modules
+consistent and let you add new ones with almost no code:
+
+- **`pos-lesson.js`** — the engine behind the Nouns / Verbs / Adjectives /
+  Adverbs lessons. A lesson page is just a shell that sets
+  `window.WL_POS = "noun"` and includes an empty `<div id="app">`; the engine
+  builds the explanation, the "how to spot it" tests, an optional color-coded
+  worked example, and the tap-to-find practice (with a helpful hint on every
+  wrong tap) from `WL_GRAMMAR.POS_LESSONS` + `WL_GRAMMAR.SPOT_SENTENCES`. To add
+  a similar lesson, add data and a four-line page — no new logic.
+- **`wl-nav.js`** — the shared sequential navigation. It holds the canonical
+  Unit 1 order in one place and drops a prominent **Next** button (plus a quiet
+  Previous link and a link back up to the Writing Lab) above the footer. Include
+  it on any lesson page; keep its order in step with `curriculum/index.json`.
+
 ## Registering a module
 
 Add a card to the top-level `index.html` grid:

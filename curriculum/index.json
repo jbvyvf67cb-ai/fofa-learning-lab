@@ -23,6 +23,10 @@
       "title": "Writing",
       "lessons": [
         { "module": "sentence-anatomy",           "slug": "sentence-anatomy",           "title": "Sentence Anatomy",        "url": "writing/visualizations/sentence-anatomy/",           "gate": { "type": "visit" } },
+        { "module": "nouns",                      "slug": "nouns",                      "title": "Nouns",                   "url": "writing/visualizations/nouns/",                      "gate": { "type": "visit" } },
+        { "module": "verbs",                      "slug": "verbs",                      "title": "Verbs",                   "url": "writing/visualizations/verbs/",                      "gate": { "type": "visit" } },
+        { "module": "adjectives",                 "slug": "adjectives",                 "title": "Adjectives",              "url": "writing/visualizations/adjectives/",                 "gate": { "type": "visit" } },
+        { "module": "adverbs",                    "slug": "adverbs",                    "title": "Adverbs",                 "url": "writing/visualizations/adverbs/",                    "gate": { "type": "visit" } },
         { "module": "word-sort",                  "slug": "word-sort",                  "title": "Word Sort",               "url": "writing/visualizations/word-sort/",                  "gate": { "type": "complete" } },
         { "module": "parts-of-speech-detective",  "slug": "parts-of-speech-detective",  "title": "Part-of-Speech Detective","url": "writing/visualizations/parts-of-speech-detective/",  "gate": { "type": "complete" } },
         { "module": "word-shape-lab",             "slug": "word-shape-lab",             "title": "Word-Shape Lab",          "url": "writing/visualizations/word-shape-lab/",             "gate": { "type": "visit" } }
