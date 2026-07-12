@@ -118,8 +118,8 @@
   const WORD_BANK = [].concat(
     ["elephant","mountain","river","courage","teacher","kitchen","planet","forest",
      "castle","engine","pillow","seashell","giraffe","orchestra","umbrella","biology",
-     "freedom","thunder","diamond","sister","penguin","volcano","blanket","garden",
-     "island","ceiling","monster","wizard","journey","muscle","jungle","rocket",
+     "freedom","acorn","diamond","sister","penguin","volcano","blanket","balcony",
+     "island","ceiling","monster","wizard","staircase","skeleton","jungle","compass",
      "tunnel","sandwich","holiday","library","hospital","autumn","valley","glacier",
      "meadow","cabin","canyon","comet","cottage","cousin","avalanche","dragon",
      "feather","galaxy","kingdom","lantern","needle","orchard","pebble","ribbon",
@@ -127,14 +127,17 @@
      "fountain","grandmother","hallway","iceberg","kitten","ladder","notebook","telescope"
     ].map(w => ({ w, pos: "noun" })),
 
-    ["become","explore","imagine","discover","believe","protect","rescue","decorate",
-     "celebrate","apologize","investigate","participate","negotiate","illuminate",
-     "evaporate","hibernate","memorize","exaggerate","hesitate","devour","conquer",
-     "stumble","giggle","tremble","wander","scatter","gather","squeeze","whispered",
-     "sprinted","galloped","arrived","vanished","collapsed","flourished","wondered",
-     "admired","obeyed","invented","explored","imagined","protected","celebrated",
-     "discovered","believed","hesitated","apologized","decorated","examined","delivered",
-     "scattered","gathered","trembled","wandered","giggled","shivered"
+    // Base-form (infinitive) verbs only — deliberately no "-ed" participles
+    // (protected, celebrated, …) or noun/verb homographs (rescue, scatter, …),
+    // since those double as other parts of speech and make sorting unfair.
+    ["become","explore","imagine","discover","believe","protect","decorate","celebrate",
+     "apologize","investigate","participate","negotiate","illuminate","evaporate","hibernate",
+     "memorize","exaggerate","hesitate","devour","conquer","admire","invent","examine",
+     "deliver","vanish","obey","explain","describe","decide","create","pretend","require",
+     "achieve","improve","include","compare","prepare","arrange","announce","discuss",
+     "defend","forgive","borrow","belong","behave","depend","deserve","disappear",
+     "encourage","entertain","exist","expect","ignore","inspire","introduce","obtain",
+     "persuade","recognize","remember","remove","replace","respond","satisfy","survive","understand"
     ].map(w => ({ w, pos: "verb" })),
 
     ["golden","fragile","enormous","silent","curious","ancient","brilliant","gentle",
@@ -142,8 +145,8 @@
      "sturdy","crooked","luminous","weary","jagged","ferocious","transparent","magnificent",
      "peculiar","invisible","tremendous","adorable","courageous","glorious","hideous",
      "marvelous","nimble","obedient","precious","quaint","ridiculous","spectacular",
-     "victorious","wobbly","youthful","zealous","dazzling","elegant","graceful","humble",
-     "jolly","lively","narrow","plump","shiny","tender","vivid","clumsy","grumpy","fluffy"
+     "victorious","wobbly","youthful","zealous","dazzling","elegant","graceful","flawless",
+     "sneaky","spotless","colossal","cozy","shiny","breezy","vivid","clumsy","grumpy","fluffy"
     ].map(w => ({ w, pos: "adjective" })),
 
     ["slowly","often","everywhere","carefully","quickly","silently","gracefully","eagerly",
