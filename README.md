@@ -12,7 +12,7 @@ serves subjects; each subject is an arc of learning with visualizations, quizzes
 |---|---|---|
 | **Science** | Ready · 7 explorations (Learn/Explore/Quiz) | [`science/`](./science) — merged from `stem-viz` |
 | **Writing** | Ready · Unit 1 live (17 modules total) | [`writing/`](./writing) — merged from `Writing` |
-| **Math** | Ready · P1 live (Probability → Statistics arc) | [`math/`](./math) |
+| **Math** | Ready · 3 guided lessons live (Probability → Statistics arc) | [`math/`](./math) |
 | **Reading** | Coming soon (arc drafted) | [`reading/`](./reading) |
 
 Science and Writing gate their in-progress content behind `?beta=1` (append it to any subject or

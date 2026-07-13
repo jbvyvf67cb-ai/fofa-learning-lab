@@ -10,7 +10,7 @@
 @import url("../../../assets/css/fofa.css");
 
 :root {
-  /* legacy aliases → canonical Fofa tokens (same names the shell/module.css use) */
+  /* legacy aliases → canonical Fofa tokens (the names lesson.css/main.css use) */
   --ink-dim: var(--ink-mute);
   --font:    var(--font-ui);
   /* math-only accents (not part of the shared palette) */

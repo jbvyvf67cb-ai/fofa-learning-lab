@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 3 · Sums &amp; Permutations — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Lesson 3: mark the squares of the 36-grid that add up to a number, see why order matters (permutations), and watch the probability shape come from counting flat, equally-likely squares." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%8E%B2%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">➕ Lesson 3 · Sums &amp; Permutations</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Probability · Lesson 3 of 3</div>
+      <h1>Sums &amp; Permutations</h1>
+      <div class="tag">Roll two dice and add them up. Why is 7 so easy and 2 so hard? The 36-grid shows exactly why.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">Here's the same <b>36-square grid</b> from Lesson 2 — every equally-likely roll of two dice.
+      This time we care about the <b>total</b> (die A + die B). Some totals turn out way more likely than
+      others, and the grid shows us <b>why</b>, just by counting squares.</p>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> Mark the squares that make a total</h2>
+      <p class="say">Pick a total, then <b>click every square that adds up to it</b>. Green means you found
+        one; a wrong square shakes. Find them all!</p>
+      <div class="viz">
+        <div class="controls">
+          <span class="lbl">Total to find:</span>
+          <span id="findTargets"></span>
+        </div>
+        <div class="controls" style="margin:8px 0 12px">
+          <button id="findReveal" class="ghost pillbtn">Reveal all</button>
+          <button id="findClear" class="ghost pillbtn">Clear</button>
+          <span class="lbl" id="findStatus" style="margin-left:auto"></span>
+        </div>
+        <div class="dgrid-wrap"><div id="gridFind"></div></div>
+        <div class="cap" id="findCap"></div>
+      </div>
+      <div class="big-note" id="findBig"></div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> Why order matters: permutations</h2>
+      <p class="say">Look at the squares you marked. <b>(1,5)</b> and <b>(5,1)</b> are <b>different squares</b> —
+        in one, die A showed 1; in the other, die A showed 5. They're genuinely different rolls, so we count
+        them <b>both</b>. These ordered arrangements have a name: <span class="term">permutations</span>.</p>
+      <div class="viz">
+        <div class="controls">
+          <span class="lbl">Total:</span>
+          <span id="permTargets"></span>
+        </div>
+        <div class="dgrid-wrap" style="margin-top:12px"><div id="gridPerm"></div></div>
+        <div id="permList" style="margin-top:14px"></div>
+        <div class="cap">The marked squares are <b>mirror images</b> across the diagonal (the dotted line):
+          every <span class="mono">(a,b)</span> has a partner <span class="mono">(b,a)</span> — except a
+          "doubles" square like <span class="mono">3,3</span>, which is its own mirror. Counting <b>both</b> of
+          each mirror pair is what keeps all 36 squares equally likely.</div>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> Where the shape comes from</h2>
+      <p class="say">Now colour the grid by total. Every square on the same slanted stripe has the same sum.
+        The <b>height of each bar</b> below is just <b>how many squares are on that stripe</b>. That's the whole
+        secret: the famous "bell" shape is nothing but <b>counting equally-likely squares</b>.</p>
+      <div class="viz">
+        <div class="dgrid-wrap"><div id="gridBands"></div></div>
+        <div style="margin-top:18px" class="controls">
+          <span class="lbl">Highlight total:</span>
+          <span id="distTargets"></span>
+        </div>
+        <div class="dist" id="distBars"></div>
+        <div class="dist-axis" id="distAxis"></div>
+        <div class="pform" id="distOut" style="margin-top:14px"></div>
+        <div class="cap" id="distCap"></div>
+      </div>
+      <div class="big-note">P(total) = <b>(squares that make it) ÷ 36</b>. "Chaining" two dice didn't need any
+        new magic — the probability of a total is just its <b>share of the flat 36-square grid</b>. Count the
+        squares, divide by 36. Done.</div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step">
+      <h2><span class="n">4</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>You now have the one idea everything else is built on: <b>probability is counting outcomes in the
+        sample space</b>. From here we can tackle coins, "at least one", combinations, and real data.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="sums-and-permutations.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

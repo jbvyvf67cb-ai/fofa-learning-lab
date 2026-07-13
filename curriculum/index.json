@@ -35,7 +35,9 @@
     "math": {
       "title": "Math",
       "lessons": [
-        { "module": "p1-dice-probability",  "slug": "dice-probability",        "title": "Dice & Probability",      "url": "math/visualizations/dice-probability/?beta=1",          "gate": { "type": "quiz", "min": 0.8 } }
+        { "module": "single-die",         "slug": "single-die",            "title": "The Single Die",              "url": "math/visualizations/single-die/",             "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "two-dice",           "slug": "two-dice",              "title": "Two Dice & the Sample Space", "url": "math/visualizations/two-dice/",               "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "sums-permutations",  "slug": "sums-and-permutations", "title": "Sums & Permutations",         "url": "math/visualizations/sums-and-permutations/",  "gate": { "type": "quiz", "min": 0.6 } }
       ]
     },
     "reading": { "title": "Reading", "status": "coming-soon", "lessons": [] }

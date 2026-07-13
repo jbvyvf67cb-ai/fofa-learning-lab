@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1 · The Single Die — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Lesson 1: what probability is, using one die. Draw the sample space, roll it, and learn to write a chance as a fraction, decimal, and percent." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%8E%B2%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">🎲 Lesson 1 · The Single Die</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Probability · Lesson 1 of 3</div>
+      <h1>The Single Die</h1>
+      <div class="tag">What is probability? We'll figure it out with one ordinary die — one step at a time.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">A die is just a cube with the numbers <b>1 to 6</b> on its faces. When you roll it, one
+      face lands up. That's it. From this one little object we can learn what <b>probability</b> really
+      means — no formulas you can't see a reason for. Let's go slowly.</p>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> What can happen?</h2>
+      <p class="say">Before we talk about <i>chances</i>, let's just list <b>everything that could happen</b>
+        when you roll one die. Here they are — all of them:</p>
+      <div class="viz">
+        <div class="die-row" id="ssRow"></div>
+        <div class="controls" style="margin-top:16px">
+          <button id="ssRoll">🎲 Roll the die</button>
+          <span id="ssCap" class="say" style="margin:0"></span>
+        </div>
+        <div class="cap">These six pictures are <b>everything that can happen</b>. Mathematicians call the
+          whole list the <span class="term">sample space</span> — a fancy name for "all the things that
+          could happen." Roll the die: whatever you get is always <b>one of these six</b>. Nothing else is
+          possible.</div>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> A fair die has no favourites</h2>
+      <p class="say">A <b>fair</b> die doesn't prefer any number. Each of the six faces is
+        <span class="term">equally likely</span> — it has the same chance as every other. Hard to believe?
+        Roll a bunch and watch. A few rolls look lumpy and random. But keep going…</p>
+      <div class="viz">
+        <div class="tally" id="tally"></div>
+        <div class="controls" style="margin-top:14px">
+          <button id="t10" class="ghost">Roll ×10</button>
+          <button id="t100" class="ghost">Roll ×100</button>
+          <button id="tReset" class="ghost">Start over</button>
+          <span class="lbl" id="tTotal" style="margin-left:auto"></span>
+        </div>
+        <div class="cap">The more you roll, the more the six bars <b>even out</b>. That's what "equally
+          likely" looks like: given enough rolls, every face shows up about the same amount.</div>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> So what <i>is</i> a probability?</h2>
+      <p class="say"><b>Probability is just counting.</b> It's <b>how many faces make your wish come true,
+        divided by how many faces there are in total</b>:</p>
+      <div class="big-note"><b>probability = (faces that count) ÷ (all six faces)</b></div>
+      <p class="say">Rolling a 4? Only <b>one</b> face is a 4, out of six faces → <span class="mono">1 ÷ 6</span>.
+        Click the faces below to choose which ones "count" as a win, and watch the chance change. Try the
+        shortcut buttons too.</p>
+      <div class="viz">
+        <div class="die-row" id="pickRow"></div>
+        <div class="controls" style="margin-top:14px">
+          <span class="lbl">Quick picks:</span>
+          <button class="ghost pillbtn" data-pick="4">Roll a 4</button>
+          <button class="ghost pillbtn" data-pick="even">An even number</button>
+          <button class="ghost pillbtn" data-pick="gt4">Bigger than 4</button>
+          <button class="ghost pillbtn" data-pick="all">Any number at all</button>
+          <button class="ghost pillbtn" data-pick="none">Clear</button>
+        </div>
+        <div style="margin:16px 0 8px" class="slice" id="pickSlice"></div>
+        <div class="pform" id="pickOut"></div>
+        <div class="cap" id="pickCap">Pick some faces to see the chance.</div>
+      </div>
+      <p class="say">See how the answer is always <b>(green faces) out of 6</b>? A probability is never bigger
+        than <b>1</b> (all six faces — certain) and never smaller than <b>0</b> (no faces — impossible).</p>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step">
+      <h2><span class="n">4</span> More sides, smaller chance</h2>
+      <p class="say">Dice come in other sizes: 8 sides, 20 sides, more. The rule doesn't change —
+        one number out of <b>N</b> faces is <span class="mono">1 ÷ N</span>. But notice: the <b>more</b>
+        faces there are, the <b>rarer</b> any single number becomes, because the sample space is bigger.</p>
+      <div class="viz">
+        <div class="controls">
+          <span class="lbl">Die size:</span>
+          <button class="ghost pillbtn" data-n="6">6</button>
+          <button class="ghost pillbtn" data-n="8">8</button>
+          <button class="ghost pillbtn" data-n="10">10</button>
+          <button class="ghost pillbtn" data-n="12">12</button>
+          <button class="ghost pillbtn" data-n="20">20</button>
+        </div>
+        <div class="die-row" id="nsRow" style="margin:14px 0"></div>
+        <div class="pform" id="nsOut"></div>
+        <div class="cap">Every face is still <b>1 out of N</b> — the whole sample space is drawn above, and
+          exactly one square in it is your number.</div>
+      </div>
+    </section>
+
+    <!-- STEP 5: checks -->
+    <section class="step">
+      <h2><span class="n">5</span> Check yourself</h2>
+      <p class="say">Answer these three and the lesson unlocks the next one. Take your time — the pictures
+        above are still there to look at.</p>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>Next up: we add a <b>second die</b> and draw the whole sample space as a grid you can count.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="single-die.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

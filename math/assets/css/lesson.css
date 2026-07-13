@@ -1,0 +1,133 @@
+/* ============================================================
+   lesson.css — the guided-lesson format for math
+   ------------------------------------------------------------
+   A math lesson is ONE scrolling flow: short teaching text and the
+   interactive that goes with it sit together, in order. No tabs, no
+   jumping between "learn" and "explore". Uses the tokens from
+   main.css (→ fofa.css).
+   ============================================================ */
+
+.lesson { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+
+/* progress pill in the top bar */
+.lesson-topbar { position: sticky; top: 0; z-index: 20;
+  background: linear-gradient(180deg, var(--bg-soft), rgba(23,27,46,.85));
+  backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.lesson-topbar .row { max-width: 760px; margin: 0 auto; padding: 9px 20px;
+  display: flex; align-items: center; gap: 14px; }
+.lesson-topbar .lt-title { font-weight: 700; font-size: .95rem; white-space: nowrap; }
+.lesson-topbar .lt-prog { margin-left: auto; font-family: var(--mono); font-size: .8rem; color: var(--ink-dim); white-space: nowrap; }
+
+/* a numbered step: teaching + its interactive */
+.step { margin: 30px 0; }
+.step > h2 { font-size: 1.35rem; margin: 0 0 4px; display: flex; align-items: baseline; gap: 10px; }
+.step > h2 .n { font-family: var(--mono); font-size: .9rem; color: #06122e; background: var(--accent);
+  border-radius: 8px; padding: 2px 9px; font-weight: 800; }
+.step .say { color: var(--ink-soft); line-height: 1.65; font-size: 1.02rem; margin: 10px 0; }
+.step .say b { color: var(--ink); }
+.step .say .term { color: var(--accent-2); font-weight: 700; border-bottom: 1px dashed var(--accent-2); }
+.step .say .mono, .mono { font-family: var(--mono); }
+.big-note { background: rgba(0,208,192,.09); border: 1px solid var(--accent-2); border-radius: 12px;
+  padding: 13px 15px; color: var(--ink); font-size: .98rem; line-height: 1.6; margin: 14px 0; }
+.big-note b { color: var(--accent-2); }
+
+/* the interactive card that carries a widget + its caption */
+.viz { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; margin: 14px 0; }
+.viz .cap { color: var(--ink-dim); font-size: .86rem; line-height: 1.55; margin-top: 12px; }
+.viz .cap b { color: var(--ink-soft); }
+.viz .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 4px 0 2px; }
+.viz .controls .lbl { font-size: .82rem; color: var(--ink-soft); margin-right: 2px; }
+
+/* ---- die tiles (shared everywhere) ---- */
+.ldie { display: inline-grid; place-items: center; border-radius: 12px; flex: none;
+  background: linear-gradient(150deg, #a9bcff, var(--die));
+  box-shadow: 0 3px 8px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.4); color: var(--die-pip); }
+.ldie.num { font-family: var(--mono); font-weight: 800; }
+.ldie.pip { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: .14em; gap: .03em; }
+.ldie.pip .p { border-radius: 50%; align-self: center; justify-self: center; width: .2em; height: .2em; }
+.ldie.pip .p.on { background: var(--die-pip); box-shadow: inset 0 1px 1px rgba(255,255,255,.35); }
+.ldie.dim { filter: grayscale(.5) brightness(.8); opacity: .6; }
+.ldie.land { outline: 3px solid var(--prob-hi); outline-offset: 2px; }
+.ldie.win { background: linear-gradient(150deg, #86e5c0, var(--good)); }
+.ldie.rolling { animation: dietumble .5s steps(1) 1; }
+@keyframes dietumble { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+
+.die-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+/* ---- fairness tally ---- */
+.tally { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: end; }
+.tally .col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.tally .track { width: 100%; height: 130px; background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: 8px; display: flex; align-items: flex-end; overflow: hidden; }
+.tally .fill { width: 100%; background: var(--prob); transition: height .12s ease; }
+.tally .cnt { font-family: var(--mono); font-size: .78rem; color: var(--ink-soft); }
+
+/* ---- probability slice bar ---- */
+.slice { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; height: 34px; }
+.slice .seg { flex: 1; border-right: 1px solid var(--line); }
+.slice .seg:last-child { border-right: none; }
+.slice .seg.on { background: var(--good); }
+.pform { font-family: var(--mono); }
+.pform .big { font-size: 1.8rem; color: var(--good); }
+.pform .sep { color: var(--ink-dim); margin: 0 8px; }
+
+/* ---- the dice-pair grid (36 squares) ---- */
+.dgrid-wrap { overflow-x: auto; }
+.dgrid { border-collapse: separate; border-spacing: 4px; }
+.dgrid th { font-family: var(--mono); color: var(--ink-dim); font-weight: 600; font-size: .8rem; padding: 2px; }
+.dgrid th .hd { display: inline-grid; place-items: center; }
+.dgrid td { padding: 0; }
+.cell { width: 46px; height: 46px; border-radius: 8px; background: var(--bg-soft); border: 1px solid var(--line);
+  display: grid; place-items: center; gap: 2px; cursor: default; transition: background .1s, border-color .1s, transform .1s; }
+.cell .pair { font-family: var(--mono); font-size: .72rem; color: var(--ink-soft); }
+.cell .minidice { display: flex; gap: 2px; }
+.cell .md { width: 16px; height: 16px; font-size: 16px; border-radius: 3px; background: linear-gradient(150deg,#a9bcff,var(--die));
+  display: grid; grid-template-columns: repeat(3,1fr); grid-template-rows: repeat(3,1fr); padding: .12em; gap: .02em; }
+.cell .md .p { border-radius: 50%; align-self: center; justify-self: center; width: .2em; height: .2em; }
+.cell .md .p.on { background: var(--die-pip); }
+.cell.mark { background: rgba(255,184,107,.22); border-color: var(--prob-hi); }
+.cell.correct { background: rgba(86,211,160,.24); border-color: var(--good); }
+.cell.wrongpick { animation: shake .3s; border-color: var(--bad); }
+.cell.land { outline: 3px solid var(--prob-hi); outline-offset: 1px; z-index: 1; }
+.cell.clickable { cursor: pointer; }
+.cell.clickable:hover { border-color: var(--accent); transform: translateY(-1px); }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 75%{transform:translateX(3px)} }
+
+/* sum-band coloring (anti-diagonals) — set inline via --band */
+.cell.band { background: var(--band, var(--bg-soft)); border-color: transparent; color: #06122e; }
+
+/* ---- distribution bars (DOM) ---- */
+.dist { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; align-items: end; height: 150px; margin-top: 6px; }
+.dist .bar { background: var(--prob); border-radius: 4px 4px 0 0; min-height: 2px; position: relative; transition: height .12s; }
+.dist .bar.on { background: var(--prob-hi); }
+.dist .bar .ways { position: absolute; top: -16px; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: .66rem; color: var(--ink-dim); }
+.dist-axis { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; margin-top: 4px; }
+.dist-axis span { text-align: center; font-family: var(--mono); font-size: .7rem; color: var(--ink-dim); }
+.dist-axis span.on { color: var(--prob-hi); font-weight: 700; }
+
+/* ---- inline check questions ---- */
+.lcheck { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+.lcheck .lq { font-weight: 600; margin-bottom: 10px; }
+.lchoices { display: flex; flex-direction: column; gap: 8px; }
+.lchoice { text-align: left; background: var(--panel); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 9px; padding: 10px 13px; font-size: .95rem; }
+.lchoice:hover { border-color: var(--accent); }
+.lchoice.right { border-color: var(--good); background: rgba(86,211,160,.14); color: var(--good); }
+.lchoice.wrong { border-color: var(--bad); background: rgba(255,122,144,.12); color: var(--bad); }
+.lfb { margin-top: 10px; font-size: .88rem; padding: 9px 12px; border-radius: 8px; line-height: 1.5;
+  background: var(--panel); border: 1px solid var(--line); color: var(--ink-soft); }
+.lfb.ok { border-color: var(--good); } .lfb.no { border-color: var(--bad); }
+
+/* ---- completion banner ---- */
+.lesson-done { margin: 34px 0 10px; padding: 24px; text-align: center; border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(86,211,160,.12), var(--panel)); border: 1px solid var(--good); }
+.lesson-done h2 { margin: 0 0 6px; font-size: 1.4rem; }
+.lesson-done .score { font-family: var(--mono); color: var(--good); font-size: 1.1rem; }
+.lesson-done .next { display: inline-block; margin-top: 14px; background: var(--accent); color: #10131f;
+  font-weight: 700; text-decoration: none; padding: 11px 18px; border-radius: 10px; }
+.lesson-done .next:hover { filter: brightness(1.08); text-decoration: none; }
+
+/* small round icon buttons reuse .ghost from main.css */
+.pillbtn { padding: 6px 13px; font-size: .85rem; }
+.pillbtn.on { background: var(--accent); color: #06122e; border-color: var(--accent); }

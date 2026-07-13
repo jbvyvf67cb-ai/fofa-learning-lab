@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 2 · Two Dice & the Sample Space — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Lesson 2: add a second die and draw the whole sample space as a 6×6 = 36 grid you can count. Each square is one equally-likely roll." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%8E%B2%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">🎲🎲 Lesson 2 · Two Dice</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Probability · Lesson 2 of 3</div>
+      <h1>Two Dice &amp; the Sample Space</h1>
+      <div class="tag">One die had six outcomes. Let's add a second die and draw <em>every</em> outcome — then count them.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">In Lesson 1, the sample space for one die was the six faces. Now we roll <b>two</b> dice —
+      call them die&nbsp;A and die&nbsp;B. The big question of this lesson: <b>how many things can happen
+      now, and can we still draw them all?</b> (Spoiler: yes.)</p>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> Draw every outcome</h2>
+      <p class="say">Die A can land 6 ways. And for <b>each</b> of those, die B can also land 6 ways. So we make
+        a grid: <b>rows are die A</b>, <b>columns are die B</b>. Every square is one possible roll — die A
+        showing one number, die B showing another.</p>
+      <div class="viz">
+        <div class="dgrid-wrap"><div id="gridA"></div></div>
+        <div class="cap" id="capA"></div>
+      </div>
+      <div class="big-note">6 rows × 6 columns = <b>36 squares</b>. That's the whole sample space for two
+        dice — bigger than one die, but still something you can draw and <b>count</b>.</div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> Every square is equally likely</h2>
+      <p class="say">Just like the six faces of one die, all <b>36</b> squares are <span class="term">equally
+        likely</span>. A roll of two dice is simply <b>landing on one square</b>. Roll a bunch and watch the
+        squares fill in evenly — no square is special.</p>
+      <div class="viz">
+        <div class="controls">
+          <button id="rollOne">🎲🎲 Roll</button>
+          <button id="roll200" class="ghost">Roll ×200</button>
+          <button id="rollReset" class="ghost">Clear</button>
+          <span class="lbl" id="rollTotal" style="margin-left:auto"></span>
+        </div>
+        <div class="dgrid-wrap" style="margin-top:12px"><div id="gridB"></div></div>
+        <div class="cap" id="capB">Or <b>click any square</b> to pick one exact roll and see its chance.</div>
+      </div>
+      <p class="say">Why exactly 36? Because for each of die A's <b>6</b> outcomes, die B adds <b>6</b> more.
+        <b>6 groups of 6 = 6 × 6 = 36.</b> That multiplying is all "chaining dice together" means — and it
+        drops right out of the picture. Each single square is <b>1 out of 36</b>.</p>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>Next: we'll take this same 36-square grid and <b>mark the squares that add up to a number</b> — and
+        discover why some totals are so much more likely than others.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="two-dice.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>
