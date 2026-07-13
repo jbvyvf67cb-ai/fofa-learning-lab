@@ -32,7 +32,12 @@
         { "module": "word-shape-lab",             "slug": "word-shape-lab",             "title": "Word-Shape Lab",          "url": "writing/visualizations/word-shape-lab/",             "gate": { "type": "visit" } }
       ]
     },
-    "math":    { "title": "Math",    "status": "coming-soon", "lessons": [] },
+    "math": {
+      "title": "Math",
+      "lessons": [
+        { "module": "p1-dice-probability",  "slug": "dice-probability",        "title": "Dice & Probability",      "url": "math/visualizations/dice-probability/?beta=1",          "gate": { "type": "quiz", "min": 0.8 } }
+      ]
+    },
     "reading": { "title": "Reading", "status": "coming-soon", "lessons": [] }
   }
 }

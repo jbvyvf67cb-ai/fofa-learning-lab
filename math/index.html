@@ -4,46 +4,128 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Math — Fofa Learning Lab</title>
-  <meta name="description" content="Math at Fofa Learning Lab — coming soon: number sense, operations, fractions, and geometry you can move and rearrange.">
+  <meta name="description" content="Math at Fofa Learning Lab — a Probability → Statistics course you learn by rolling dice, flipping coins, and counting. Arithmetic and a little algebra only.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2724%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%E2%88%91%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="../assets/css/fofa.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    /* beta-only content is hidden unless the page is opened with ?beta=1 */
+    .beta-only { display: none; }
+    body.beta .beta-only { display: block; }
+    .beta-banner { display:none; }
+    body.beta .beta-banner { display:flex; align-items:center; gap:10px; margin-bottom:20px;
+      padding:10px 14px; border-radius:10px; background:rgba(255,200,87,.12); border:1px solid var(--warn);
+      color:var(--ink); font-size:.88rem; }
+    .beta-banner .tagpill { background:var(--warn); color:#06122e; font-weight:700; border-radius:999px; padding:2px 10px; font-size:.75rem; }
+    .arc-note { color:var(--ink-dim); font-size:.85rem; margin:6px 2px 0; }
+  </style>
 </head>
-<body class="fofa-page">
-  <header class="fofa-bar">
-    <div class="fofa-wrap">
-      <a class="fofa-brand" href="../"><span class="fofa-glyph">F</span> Fofa&nbsp;Learning&nbsp;Lab</a>
-      <span class="fofa-crumb">/ <b>Math</b></span>
+<body>
+  <div style="background:var(--panel-2);border-bottom:1px solid var(--line)">
+    <div class="wrap" style="display:flex;align-items:center;gap:10px;height:42px;font-size:14px">
+      <a href="../" style="color:var(--ink-soft)">← Fofa&nbsp;Learning&nbsp;Lab</a>
+      <span style="color:var(--ink-dim)">/ Math</span>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="wrap">
+      <h1>∑ Math — Probability &amp; Statistics</h1>
+      <div class="tag">Learn chance by <em>rolling, flipping, and counting</em> — no formulas you can't see a reason for.</div>
     </div>
   </header>
 
-  <main class="fofa-wrap" style="max-width:820px">
-    <section class="fofa-hero">
-      <div class="eyebrow" style="color:var(--subj-math)">Subject · coming soon</div>
-      <h1>Math</h1>
+  <main class="wrap">
+    <div class="beta-banner">
+      <span class="tagpill">BETA</span>
+      <span>You're viewing in-progress modules. Remove <code>?beta=1</code> from the URL for the public view.</span>
+    </div>
+
+    <section class="hero">
+      <h2>A Probability → Statistics course, built from counting.</h2>
       <p>
-        The plan for math is the same as everywhere else in the lab: make the idea something you can
-        <strong>move, stretch, and rearrange</strong> until it clicks — number lines you can drag,
-        fractions you can cut, shapes you can fold. Here's the arc we're building toward.
+        Every idea here you can <strong>roll, flip, or count</strong> until it clicks. You won't memorize a
+        probability formula — you'll build the sample space, count the outcomes that work, and watch real
+        dice drift onto the exact numbers. We start with the chance of a single die face and end up describing
+        real data. <strong>Only arithmetic and a little algebra are used anywhere.</strong>
       </p>
     </section>
 
-    <section class="fofa-panel" style="margin-top:20px">
-      <div class="fofa-eyebrow">The learning arc</div>
-      <ol class="fofa-arc">
-        <li><span class="n">1</span> <span><b>Number sense</b> — count, compare, and place numbers on a line you can drag and zoom.</span></li>
-        <li><span class="n">2</span> <span><b>Operations</b> — add, subtract, multiply, and divide as things happening to groups you can see.</span></li>
-        <li><span class="n">3</span> <span><b>Fractions &amp; decimals</b> — cut wholes into parts and watch the same amount wear different names.</span></li>
-        <li><span class="n">4</span> <span><b>Ratios &amp; proportion</b> — scale recipes and maps and feel quantities move together.</span></li>
-        <li><span class="n">5</span> <span><b>Geometry &amp; measurement</b> — build, fold, and measure shapes; discover why the formulas are true.</span></li>
-        <li><span class="n">6</span> <span><b>Into algebra</b> — balance both sides of an equation like a scale and solve for the unknown.</span></li>
-      </ol>
-    </section>
+    <!-- ===================== PUBLIC ===================== -->
+    <div class="section-title">Unit A · Probability — start here</div>
+    <div class="grid">
+      <a class="card live" href="visualizations/dice-probability/?beta=1">
+        <span class="num">P1</span>
+        <h3>Dice &amp; Probability</h3>
+        <p>The chance of a single number (1/N), chaining independent dice (N<sup>k</sup> outcomes), and
+           counting the ways to make a sum. Roll thousands of times and watch the results land on the exact
+           bars.</p>
+        <span class="badge ready">Ready</span>
+      </a>
+    </div>
+    <p class="arc-note">Each module is a three-tab lesson: <b>📖 Learn</b> cards → <b>🔬 Explore</b> lab →
+      <b>✅ Quiz</b>. Finish the quiz to unlock the next module.</p>
 
-    <p class="fofa-muted" style="margin-top:20px"><a class="fofa-btn" href="../">← Back to the lab</a></p>
+    <!-- ===================== BETA: THE REST OF THE ARC ===================== -->
+    <div class="beta-only">
+      <div class="section-title">Unit A · Probability — coming next</div>
+      <div class="grid">
+        <div class="card soon">
+          <span class="num">P2</span><h3>Coins, Spinners &amp; “At Least One”</h3>
+          <p>The complement rule <span class="readout">P(not A) = 1 − P(A)</span>, OR vs AND, and the
+             “at least one” trick that turns a hard question into an easy one.</p>
+          <span class="badge soon">Planned</span>
+        </div>
+        <div class="card soon">
+          <span class="num">P3</span><h3>Combinations — when order doesn’t matter</h3>
+          <p>Choosing a handful where (1,4) and (4,1) are the <em>same</em> pick. Build Pascal’s triangle by
+             counting and meet “n choose k”.</p>
+          <span class="badge soon">Planned</span>
+        </div>
+        <div class="card soon">
+          <span class="num">P4</span><h3>Conditional Probability &amp; Trees</h3>
+          <p>When one event changes the next: drawing without replacement, tree diagrams, and multiplying
+             along the branches.</p>
+          <span class="badge soon">Planned</span>
+        </div>
+      </div>
+
+      <div class="section-title">Unit B · Statistics — from counts to data</div>
+      <div class="grid">
+        <div class="card soon">
+          <span class="num">S1</span><h3>Describing Data — mean, median, mode</h3>
+          <p>Drag data points and watch the average, the middle value, and the most common value respond.</p>
+          <span class="badge stats">Statistics</span>
+        </div>
+        <div class="card soon">
+          <span class="num">S2</span><h3>Spread — range, quartiles, box plots</h3>
+          <p>Two data sets with the same average can look nothing alike. Measure how spread out they are.</p>
+          <span class="badge stats">Statistics</span>
+        </div>
+        <div class="card soon">
+          <span class="num">S3</span><h3>Histograms &amp; the Shape of Data</h3>
+          <p>Bin real data into bars and meet the bell shape again — the same triangle the dice made.</p>
+          <span class="badge stats">Statistics</span>
+        </div>
+        <div class="card soon">
+          <span class="num">S4</span><h3>Expected Value &amp; Fair Games</h3>
+          <p>Is a game fair? Weight each payoff by its probability and add — the long-run average of a bet.</p>
+          <span class="badge stats">Statistics</span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Built to be read — open the page source of any module to see exactly how each probability is counted.
+         The full arc appears with <code>?beta=1</code>.</p>
+    </footer>
   </main>
 
-  <footer class="fofa-foot">
-    <div class="fofa-wrap">Fofa Learning Lab — Math is on the way.</div>
-  </footer>
+  <script>
+    // Reveal beta content when the page is opened with ?beta=1
+    if (new URLSearchParams(location.search).get("beta") === "1") {
+      document.body.classList.add("beta");
+    }
+  </script>
+  <script src="../assets/js/fofa-account.js"></script>
+  <script src="../assets/js/fofa-gate.js"></script>
 </body>
 </html>

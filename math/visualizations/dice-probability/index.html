@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dice &amp; Probability — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Build intuition for probability with dice: the chance of a single number, chaining independent dice, and counting the ways to make a sum." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%8E%B2%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/module.css" />
+  <style>
+    .layout { display:grid; grid-template-columns: 1fr 340px; gap:22px; align-items:start; }
+    @media (max-width: 1000px) { .layout { grid-template-columns:1fr; } }
+
+    .mono { font-family: var(--mono); }
+    .ink-dim { color: var(--ink-dim); }
+
+    /* ---- controls ---- */
+    .ctl-block { margin: 4px 0 16px; }
+    .ctl-block > .lbl { font-size:.85rem; color:var(--ink-soft); margin-bottom:7px; display:flex; justify-content:space-between; align-items:baseline; }
+    .ctl-block > .lbl b { color:var(--ink); font-family:var(--mono); }
+    .preset-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+    .preset-row button { padding:6px 11px; font-size:.82rem; }
+    .preset-row button.on { background:var(--accent); color:#06122e; border-color:var(--accent); }
+    .stepper { display:flex; align-items:center; gap:8px; }
+    .stepper input[type=range] { flex:1; }
+    .stepper .num { display:flex; align-items:center; gap:6px; }
+    .stepper input[type=number] { width:66px; background:var(--bg-soft); color:var(--ink);
+      border:1px solid var(--line); border-radius:7px; padding:6px; font-family:var(--mono); text-align:center; }
+    .stepper button.pm { padding:5px 11px; }
+
+    /* ---- dice tray ---- */
+    .tray { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-height:74px; margin:6px 0 8px; }
+    .tray .plus { color:var(--ink-dim); font-size:1.3rem; font-weight:700; }
+    .die { width:60px; height:60px; border-radius:12px; background:linear-gradient(150deg,#9db4ff,var(--die));
+      box-shadow: 0 4px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
+      display:grid; place-items:center; color:var(--die-pip); font-weight:800; }
+    .die.numdie { font-size:1.7rem; font-family:var(--mono); }
+    .die.pipdie { grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); padding:9px; gap:2px; }
+    .die.pipdie .pip { width:11px; height:11px; border-radius:50%; align-self:center; justify-self:center; }
+    .die.pipdie .pip.on { background:var(--die-pip); box-shadow: inset 0 1px 1px rgba(255,255,255,.4); }
+    .trayNote { font-size:.9rem; color:var(--ink-soft); line-height:1.5; min-height:2.6em; }
+    .trayNote b { color:var(--ink); }
+    .trayNote .hit { color:var(--good); font-weight:700; }
+    .trayNote .miss { color:var(--ink-dim); }
+
+    .roll-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+
+    /* ---- readout cards ---- */
+    .rc { background:var(--bg-soft); border:1px solid var(--line); border-radius:11px; padding:14px 15px; margin-bottom:14px; }
+    .rc .rc-h { font-size:.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--accent-2); margin-bottom:8px; }
+    .big-p { font-family:var(--mono); font-size:1.9rem; color:var(--prob); line-height:1.1; }
+    .big-p.warm { color:var(--prob-hi); }
+    .p-forms { font-family:var(--mono); font-size:.9rem; color:var(--ink-soft); margin-top:4px; }
+    .p-forms .sep { color:var(--ink-dim); margin:0 6px; }
+    .rc .formula { font-size:.9rem; color:var(--ink-soft); line-height:1.55; }
+    .rc .formula sup { font-size:.7em; }
+    .frac-line { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:2px 0 8px; }
+    .frac-line .lead { color:var(--ink-soft); font-size:.9rem; }
+    .frac-line .lead b { color:var(--ink); }
+
+    .ways { margin-top:6px; }
+    .ways .waychip { display:inline-block; font-family:var(--mono); font-size:.8rem; margin:3px 4px 0 0;
+      padding:3px 9px; border-radius:7px; background:var(--panel-2); border:1px solid var(--line); color:var(--ink-soft); }
+    .waysNote { font-size:.83rem; color:var(--ink-soft); margin-top:9px; line-height:1.5; }
+    .waysNote b { color:var(--ink); }
+
+    #distChart { width:100%; height:270px; display:block; }
+    .distCaption { color:var(--ink-dim); font-size:.82rem; margin:8px 2px 0; line-height:1.5; }
+    .distCaption b { color:var(--ink-soft); }
+
+    .mc-line { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    .mc-line .rolls { font-family:var(--mono); color:var(--observed); font-size:1.1rem; }
+    .observedNote { font-size:.86rem; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
+    .observedNote b { color:var(--ink); }
+    .legend-dot { display:inline-block; width:10px; height:10px; border-radius:50%; vertical-align:middle; margin-right:4px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../index.html">← Math</a> · <a href="../../../">Fofa Learning Lab</a></div>
+      <h1>🎲 Dice &amp; Probability</h1>
+      <div class="tag">The chance of a single number, chaining dice together, and counting the ways to make a sum — start of the probability &amp; statistics course.</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="explorePanel">
+    <div class="layout">
+      <!-- LEFT: controls, tray, roller, chart -->
+      <section>
+        <div class="panel">
+          <div class="ctl-block">
+            <div class="lbl">Sides per die <b id="sidesTag"></b></div>
+            <div class="preset-row" id="sidePresets"></div>
+            <div class="stepper">
+              <span class="ink-dim" style="font-size:.8rem">custom&nbsp;N</span>
+              <input type="number" id="sidesNum" min="2" max="100" />
+              <span class="ink-dim" style="font-size:.8rem">(2–100)</span>
+            </div>
+          </div>
+
+          <div class="ctl-block">
+            <div class="lbl">Number of dice <b id="diceTag"></b></div>
+            <div class="stepper">
+              <input type="range" id="diceRange" min="1" max="6" />
+              <span class="num">
+                <button class="ghost pm" id="diceMinus">−</button>
+                <input type="number" id="diceNum" min="1" max="6" />
+                <button class="ghost pm" id="dicePlus">+</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="ctl-block">
+            <div class="lbl">Target <span id="sumLabelK">sum</span> <b><span id="sumBounds"></span></b></div>
+            <div class="stepper">
+              <input type="range" id="sumRange" />
+              <span class="num">
+                <button class="ghost pm" id="sumMinus">−</button>
+                <input type="number" id="sumNum" />
+                <button class="ghost pm" id="sumPlus">+</button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>The dice</strong>
+          <div class="tray" id="tray"></div>
+          <div class="trayNote" id="trayNote"></div>
+          <div class="roll-row">
+            <button id="roll1">🎲 Roll</button>
+            <button id="roll100" class="ghost">Roll ×100</button>
+            <button id="roll1k" class="ghost">Roll ×1000</button>
+            <button id="rollReset" class="ghost">Reset rolls</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <strong>Probability of each <span id="chartWord">sum</span></strong>
+          <canvas id="distChart"></canvas>
+          <div class="distCaption" id="distCaption"></div>
+          <div style="margin-top:8px;font-size:.78rem;color:var(--ink-dim)">
+            <span class="legend-dot" style="background:var(--prob)"></span>exact probability&nbsp;&nbsp;
+            <span class="legend-dot" style="background:var(--prob-hi)"></span>your target&nbsp;&nbsp;
+            <span class="legend-dot" style="background:var(--observed)"></span>observed rolls
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: the numbers -->
+      <aside>
+        <div class="rc">
+          <div class="rc-h">One die · a single number</div>
+          <div class="big-p" id="pFaceFrac">1/6</div>
+          <div class="p-forms"><span id="pFaceDec">0.1667</span><span class="sep">=</span><span id="pFacePct">16.7%</span></div>
+          <div class="formula" style="margin-top:8px">A fair die has no favourites: each of the <b id="sidesEcho"></b> faces is
+            <span class="mono">1/N</span>. More sides → each single number is rarer.</div>
+        </div>
+
+        <div class="rc">
+          <div class="rc-h">Sample space · chaining dice</div>
+          <div class="formula" id="sampleFormula"></div>
+        </div>
+
+        <div class="rc">
+          <div class="rc-h">Chance of <span id="targetVerb">a sum of</span> <span id="targetVal" class="mono" style="color:var(--prob-hi)">7</span></div>
+          <div class="frac-line">
+            <span class="lead"><b id="waysOut">6</b> favourable ways</span>
+            <span class="ink-dim">out of</span>
+            <span class="lead"><b id="totalOut">36</b> total</span>
+          </div>
+          <div class="big-p warm"><span id="fracRaw">6/36</span> <span class="mono" id="fracRed" style="font-size:1rem;color:var(--ink-dim)"></span></div>
+          <div class="p-forms"><span id="decOut">0.1667</span><span class="sep">=</span><span id="pctOut">16.7%</span></div>
+          <div class="ways" id="waysList"></div>
+          <div class="waysNote" id="waysNote"></div>
+        </div>
+
+        <div class="rc">
+          <div class="rc-h">Roll it for real</div>
+          <div class="mc-line"><span class="rolls" id="rollCount">0</span><span class="ink-dim">rolls so far</span></div>
+          <div class="observedNote" id="observedNote"></div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p>Every probability here is <em>exact</em> — computed by counting outcomes, not by rolling. The roller is only there
+         so you can watch real randomness settle onto those exact numbers (the more you roll, the closer it lands). All of it
+         uses nothing past arithmetic and a little algebra.</p>
+    </footer>
+  </main>
+
+  <script src="dice-probability.js"></script>
+  <script src="module.js"></script>
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/module-shell.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>
