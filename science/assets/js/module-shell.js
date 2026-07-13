@@ -23,29 +23,8 @@
 
   const elFrom = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; };
   const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
-
-  /* build-task matcher: value may be a primitive (strict ===) or a spec
-     { min, max, gt, lt, eq } for numeric ranges/comparisons. */
-  function matches(got, want) {
-    if (want && typeof want === "object") {
-      if ("eq" in want && got !== want.eq) return false;
-      if ("min" in want && !(got >= want.min)) return false;
-      if ("max" in want && !(got <= want.max)) return false;
-      if ("gt" in want && !(got > want.gt)) return false;
-      if ("lt" in want && !(got < want.lt)) return false;
-      return true;
-    }
-    return got === want;
-  }
-  function describe(want) {
-    if (want && typeof want === "object") {
-      if ("min" in want && "max" in want) return `${want.min}–${want.max}`;
-      if ("gt" in want) return `> ${want.gt}`;
-      if ("lt" in want) return `< ${want.lt}`;
-      if ("eq" in want) return `${want.eq}`;
-    }
-    return want;
-  }
+  // Build-task grading now happens server-side (the shell just captures
+  // window.moduleState() and submits it) — see FofaAccount.quiz / the contract.
 
   /* ---------- progress (localStorage) ---------- */
   function pKey() { return "module-progress:" + MODULE.id; }
@@ -141,88 +120,136 @@
     return card;
   }
 
-  /* ---------- Quiz ---------- */
-  let answered = {}; // qIndex -> correct?
+  /* ---------- Quiz (answer everything, then submit; graded by the backend) ----------
+     The shell holds NO grading logic: it collects the student's answers and posts
+     them to FofaAccount.quiz(), then renders the per-question results it returns.
+     Objective, build, and free-response questions are all just answer types. */
+  let selection = {};   // qIndex -> student's answer (choice idx / bool / text / number string)
+  let submitted = false;
+
   function renderQuiz(root) {
-    answered = {};
+    selection = {}; submitted = false;
+    const n = (MODULE.quiz || []).length;
     root.innerHTML = `<div class="quiz-head">
-      <span class="quiz-score" id="quizScore">0 / ${(MODULE.quiz || []).length}</span>
-      <button class="ghost" id="quizReset">Reset quiz</button></div>`;
+      <span class="quiz-score" id="quizScore">${n} question${n === 1 ? "" : "s"}</span></div>`;
     (MODULE.quiz || []).forEach((Q, i) => root.appendChild(quizCard(Q, i)));
-    root.querySelector("#quizReset").onclick = () => renderQuiz(root);
+    const foot = elFrom(`<div class="quiz-foot">
+      <button id="quizSubmit">Submit quiz</button>
+      <span class="quiz-msg" id="quizMsg"></span></div>`);
+    root.appendChild(foot);
+    foot.querySelector("#quizSubmit").onclick = () => submitQuiz(root);
   }
 
-  function markScore() {
-    const correct = Object.values(answered).filter(Boolean).length;
-    const total = (MODULE.quiz || []).length;
-    document.getElementById("quizScore").textContent = `${correct} / ${total}`;
-    if (correct > prog.quizBest) { prog.quizBest = correct; saveProg(prog); updateProgress(); }
-    // Report the quiz result to the lab's measurables engine (mirrors locally,
-    // pushes to Home Assistant if the parent has connected it in Settings).
-    if (window.Fofa && Object.keys(answered).length === total) {
-      Fofa.report({ subject: "science", module: MODULE.id, activity: "quiz",
-                    kind: "quiz", score: correct, max: total });
-    }
-  }
-
-  function feedback(card, ok, explain) {
-    const old = card.querySelector(".explain"); if (old) old.remove();
-    const box = elFrom(`<div class="explain ${ok ? "ok" : "no"}">${ok ? "✓ Correct. " : "✗ Not quite. "}${explain ? esc(explain) : ""}</div>`);
-    card.appendChild(box);
-    card.classList.add("done");
+  function pick(wrap, btn, i, value) {
+    if (submitted) return;
+    selection[i] = value;
+    wrap.querySelectorAll("button").forEach((x) => x.classList.remove("chosen"));
+    btn.classList.add("chosen");
   }
 
   function quizCard(Q, i) {
     const card = elFrom(`<div class="qcard" id="q-${i}"><div class="qnum">Question ${i + 1}</div><div class="q">${esc(Q.q)}</div></div>`);
-    const record = (ok) => { answered[i] = ok; markScore(); };
-
     if (Q.type === "mc") {
       const wrap = elFrom(`<div class="choices"></div>`);
       Q.choices.forEach((ch, ci) => {
-        const b = elFrom(`<button>${esc(ch)}</button>`);
-        b.onclick = () => {
-          if (card.classList.contains("done")) return;
-          const ok = ci === Q.answer;
-          b.classList.add(ok ? "correct" : "wrong");
-          if (!ok) wrap.children[Q.answer].classList.add("correct");
-          record(ok); feedback(card, ok, Q.explain);
-        };
+        const b = elFrom(`<button type="button">${esc(ch)}</button>`);
+        b.onclick = () => pick(wrap, b, i, ci);
         wrap.appendChild(b);
       });
       card.appendChild(wrap);
     } else if (Q.type === "tf") {
       const wrap = elFrom(`<div class="tf"></div>`);
       [["True", true], ["False", false]].forEach(([label, val]) => {
-        const b = elFrom(`<button>${label}</button>`);
-        b.onclick = () => { if (card.classList.contains("done")) return;
-          const ok = val === Q.answer; b.classList.add(ok ? "correct" : "wrong"); record(ok); feedback(card, ok, Q.explain); };
+        const b = elFrom(`<button type="button">${label}</button>`);
+        b.onclick = () => pick(wrap, b, i, val);
         wrap.appendChild(b);
       });
       card.appendChild(wrap);
     } else if (Q.type === "numeric") {
-      const row = elFrom(`<div class="row"><input class="num" type="number" inputmode="numeric"/><button>Check</button></div>`);
-      const input = row.querySelector("input"), btn = row.querySelector("button");
-      btn.onclick = () => { if (card.classList.contains("done")) return;
-        const v = parseFloat(input.value); const ok = isFinite(v) && Math.abs(v - Q.answer) <= (Q.tolerance || 0);
-        record(ok); feedback(card, ok, (ok ? "" : `Answer: ${Q.answer}. `) + (Q.explain || "")); };
+      const row = elFrom(`<div class="row"><input class="num" type="number" inputmode="decimal"/></div>`);
+      const input = row.querySelector("input");
+      input.oninput = () => { if (!submitted) selection[i] = input.value; };
       card.appendChild(row);
     } else if (Q.type === "build") {
+      // Each build question snapshots the viz state at capture time, so a quiz
+      // can ask for several different builds and grade them all on submit.
       const row = elFrom(`<div class="row">
-        <button data-act="go" class="ghost">Open Explore</button>
-        <button data-act="check">Check my atom</button></div>`);
+        <button type="button" data-act="go" class="ghost">Open Explore</button>
+        <button type="button" data-act="capture">Capture my build</button></div>`);
+      const note = elFrom(`<div class="build-note">Build it under the Explore tab, then press “Capture my build”. It's graded when you submit.</div>`);
       row.querySelector('[data-act="go"]').onclick = () => show("explore");
-      row.querySelector('[data-act="check"]').onclick = () => {
-        if (card.classList.contains("done")) return;
-        if (typeof window.moduleState !== "function") { feedback(card, false, "This page can't read the build state."); return; }
+      row.querySelector('[data-act="capture"]').onclick = () => {
+        if (submitted) return;
+        if (typeof window.moduleState !== "function") { note.textContent = "This page can't read the build state."; return; }
         const st = window.moduleState();
-        const ok = Object.keys(Q.check).every((k) => matches(st[k], Q.check[k]));
-        const fmt = (v) => (typeof v === "number" ? +v.toFixed(2) : v);
-        const detail = Object.entries(Q.check).map(([k, v]) => `${k}=${describe(v)}`).join(", ");
-        record(ok); feedback(card, ok, (ok ? "" : `Target: ${detail}. You have ${Object.keys(Q.check).map((k) => `${k}=${fmt(st[k])}`).join(", ")}. `) + (Q.explain || ""));
+        selection[i] = st;
+        note.textContent = "Captured: " + Object.entries(st).map(([k, v]) => `${k}=${typeof v === "number" ? +(+v).toFixed(2) : v}`).join(", ");
+        row.querySelector('[data-act="capture"]').classList.add("chosen");
       };
       card.appendChild(row);
-      card.appendChild(elFrom(`<div class="build-note">Build it under the Explore tab, then come back and press “Check my atom”.</div>`));
+      card.appendChild(note);
+    } else if (Q.type === "free") {
+      const ta = elFrom(`<textarea class="free" rows="4" placeholder="Write your answer…"></textarea>`);
+      ta.oninput = () => { if (!submitted) selection[i] = ta.value; };
+      card.appendChild(ta);
     }
     return card;
+  }
+
+  function collectAnswers() {
+    return (MODULE.quiz || []).map((Q, i) => {
+      const id = "q" + (i + 1);
+      if (Q.type === "mc")      return { id, type: "mc", choice: (i in selection ? selection[i] : null) };
+      if (Q.type === "tf")      return { id, type: "tf", choice: (i in selection ? selection[i] : null) };
+      if (Q.type === "numeric") { const v = parseFloat(selection[i]); return { id, type: "numeric", value: isFinite(v) ? v : null }; }
+      if (Q.type === "build")   return { id, type: "build", state: (i in selection ? selection[i] : (typeof window.moduleState === "function" ? window.moduleState() : {})) };
+      if (Q.type === "free")    return { id, type: "free", response: { kind: "text", text: selection[i] || "" } };
+      return { id, type: Q.type };
+    });
+  }
+
+  function submitQuiz(root) {
+    if (submitted) return;
+    const msg = root.querySelector("#quizMsg"), btn = root.querySelector("#quizSubmit");
+    if (!window.FofaAccount || typeof FofaAccount.quiz !== "function") { msg.textContent = "Grading isn't available on this page."; return; }
+    msg.textContent = "Grading…"; btn.disabled = true;
+    FofaAccount.quiz({ subject: "science", module: MODULE.id, quizId: MODULE.id, answers: collectAnswers() })
+      .then((res) => {
+        if (!res || !res.ok) { msg.textContent = "Couldn't grade: " + ((res && res.error) || "unknown"); btn.disabled = false; return; }
+        submitted = true;
+        renderResults(root, res);
+      });
+  }
+
+  function renderResults(root, res) {
+    const byId = {}; (res.results || []).forEach((r) => (byId[r.id] = r));
+    (MODULE.quiz || []).forEach((Q, i) => {
+      const card = document.getElementById("q-" + i);
+      const r = byId["q" + (i + 1)] || {};
+      const ok = r.correct === true || (r.of > 0 && r.earned >= r.of);
+      // reveal correct answer (from the module content) and lock inputs
+      if (Q.type === "mc") {
+        card.querySelectorAll(".choices button").forEach((b, ci) => {
+          if (ci === Q.answer) b.classList.add("correct");
+          if (ci === selection[i] && ci !== Q.answer) b.classList.add("wrong");
+          b.disabled = true;
+        });
+      } else if (Q.type === "tf") {
+        card.querySelectorAll(".tf button").forEach((b) => (b.disabled = true));
+      } else if (Q.type === "numeric" || Q.type === "free") {
+        const f = card.querySelector("input, textarea"); if (f) f.disabled = true;
+      }
+      const detail = (Q.type === "free" && r.feedback) ? r.feedback : (Q.explain || "");
+      const extra = (r.of > 1) ? ` (${r.earned}/${r.of})` : "";
+      const box = elFrom(`<div class="explain ${ok ? "ok" : "no"}">${ok ? "✓ Correct" : "✗ Not quite"}${extra}. ${esc(detail)}</div>`);
+      card.appendChild(box); card.classList.add("done");
+    });
+    const head = document.getElementById("quizScore");
+    if (head) head.textContent = `${res.score} / ${res.max}`;
+    if (res.score > prog.quizBest) { prog.quizBest = res.score; saveProg(prog); }
+    updateProgress();
+    const foot = root.querySelector(".quiz-foot");
+    foot.innerHTML = `<span class="quiz-msg">Scored ${res.score} / ${res.max}.</span> <button id="quizRetake" class="ghost">Retake</button>`;
+    foot.querySelector("#quizRetake").onclick = () => renderQuiz(root);
   }
 })();

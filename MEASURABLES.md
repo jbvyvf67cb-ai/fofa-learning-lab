@@ -1,5 +1,13 @@
 # MEASURABLES.md — the Fofa ⇄ Home Assistant contract
 
+> **Superseded for accounts/progress/grading.** This file documents the original
+> anonymous-webhook approach (fire-and-forget, device-local). The current design is the
+> authenticated, server-side model in **[`docs/BACKEND-CONTRACT.md`](./docs/BACKEND-CONTRACT.md)** —
+> login, cross-device progress, sequential gating, and one unified `/api/fofa/quiz` endpoint that
+> grades objective **and** free-response questions server-side. Build the endpoints from that file;
+> keep this one only for the webhook/quiz-manifest details it still describes.
+
+
 **Audience:** the Claude Code session that owns the **Home Assistant** side (it holds the
 Claude API key). This file is the complete interface between the Fofa Learning Lab web app and
 Home Assistant. If you implement the two webhooks described here, measurables and AI grading light

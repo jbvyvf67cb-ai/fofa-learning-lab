@@ -95,8 +95,8 @@
       .then(function (d) { if (d && d.ok) writeJSON(K.state, d); return d; })
       .catch(function (e) { return { ok: false, error: String(e.message || e) }; });
   }
-  function apiGrade(evt) {
-    return fetch(backendUrl() + "/api/fofa/grade", { method: "POST", headers: authHeaders(), body: JSON.stringify(evt) })
+  function apiQuiz(sub) {
+    return fetch(backendUrl() + "/api/fofa/quiz", { method: "POST", headers: authHeaders(), body: JSON.stringify(sub) })
       .then(function (r) { if (r.status === 401) { logout(); return { ok: false, error: "unauthorized" }; } return r.json(); })
       .then(function (d) { if (d && d.ok && d.state) writeJSON(K.state, d.state); return d; })
       .catch(function (e) { return { ok: false, error: String(e.message || e) }; });
@@ -164,8 +164,47 @@
     });
   }
 
+  /* ---- mock quiz grader: mirrors POST /api/fofa/quiz using the quiz manifest --- */
+  function matchesCheck(got, want) {
+    return Object.keys(want || {}).every(function (k) {
+      var g = got ? got[k] : undefined, w = want[k];
+      if (w && typeof w === "object") {
+        if ("eq" in w && g !== w.eq) return false;
+        if ("min" in w && !(g >= w.min)) return false;
+        if ("max" in w && !(g <= w.max)) return false;
+        if ("gt" in w && !(g > w.gt)) return false;
+        if ("lt" in w && !(g < w.lt)) return false;
+        return true;
+      }
+      return g === w;
+    });
+  }
+  function mockQuiz(sub) {
+    var url = SITE_ROOT + "quizzes/" + sub.subject + "/" + sub.quizId + ".json";
+    return fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (quiz) {
+      var byId = {};
+      if (quiz && quiz.questions) quiz.questions.forEach(function (q) { byId[q.id] = q; });
+      var results = [], score = 0, max = 0;
+      (sub.answers || []).forEach(function (a) {
+        var q = byId[a.id] || {};
+        var of = 1, earned = 0, correct = false, extra = {};
+        if (a.type === "mc")        { correct = a.choice === q.answer; }
+        else if (a.type === "tf")   { correct = a.choice === q.answer; }
+        else if (a.type === "numeric") { correct = (a.value != null) && Math.abs(a.value - q.answer) <= (q.tolerance || 0); extra.expected = q.answer; }
+        else if (a.type === "build")   { correct = q.check ? matchesCheck(a.state, q.check) : false; }
+        else if (a.type === "free")    { of = q.max || 1; earned = of; extra.feedback = "(demo) Connect Home Assistant for real AI feedback."; }
+        if (a.type !== "free") earned = correct ? 1 : 0;
+        score += earned; max += of;
+        results.push(Object.assign({ id: a.id, earned: earned, of: of }, (a.type === "free" ? {} : { correct: correct }), extra));
+      });
+      mockRecord({ subject: sub.subject, module: sub.module, activity: "quiz", kind: "quiz", score: score, max: max });
+      return mockState().then(function (state) { return { ok: true, score: score, max: max, results: results, state: state }; });
+    }).catch(function (e) { return { ok: false, error: String(e.message || e) }; });
+  }
+
   /* ============================ dispatch ================================= */
   var mock = function () { return backendUrl() === ""; };
+  function quiz(sub) { return mock() ? mockQuiz(sub) : apiQuiz(sub); }
 
   window.FofaAccount = {
     backendUrl: backendUrl,
@@ -182,13 +221,17 @@
       if (!mock()) return apiProgress(evt);
       mockRecord(evt); return mockState();
     },
+    // Unified quiz grading: submit answers, get back per-question results + gating.
+    quiz: quiz,
+    // Convenience wrapper for a single free-response prompt (a one-question quiz).
     grade: function (evt) {
-      if (!mock()) return apiGrade(evt);
-      // mock grade: no Claude — record a placeholder pass so gating can be demoed
-      var m = evt.max || 4, s = evt.max || 3;
-      mockRecord({ subject: evt.subject, module: evt.module, activity: "freeform", kind: "freeform", score: s, max: m });
-      return mockState().then(function (st) {
-        return { ok: true, score: s, max: m, feedback: "(demo) Looks good — connect Home Assistant for real AI feedback.", state: st };
+      return quiz({
+        subject: evt.subject, module: evt.module, quizId: evt.quizId || evt.module,
+        answers: [{ id: evt.qId || "q1", type: "free", response: { kind: "text", text: evt.response || "" } }]
+      }).then(function (res) {
+        if (!res || !res.ok) return res || { ok: false, error: "grade-failed" };
+        var r = (res.results || [])[0] || {};
+        return { ok: true, score: res.score, max: res.max, feedback: r.feedback || "", state: res.state };
       });
     }
   };

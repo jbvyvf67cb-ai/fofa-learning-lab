@@ -80,3 +80,23 @@
 .qcard .build-note { font-size: .82rem; color: var(--ink-dim); margin-top: 6px; }
 .qcard.done { opacity: .96; }
 .quiz-actions { margin-top: 10px; }
+
+/* Submit-at-end quiz: a chosen (but not yet graded) answer, the submit footer,
+   the free-response textarea, and locked inputs after grading. */
+.qcard .choices button.chosen, .qcard .tf button.chosen {
+  border-color: var(--accent); background: rgba(91,140,255,.16); color: var(--ink);
+}
+.qcard .choices button:disabled, .qcard .tf button:disabled { cursor: default; }
+.qcard textarea.free {
+  width: 100%; background: var(--bg-soft); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 9px; padding: 10px 12px; font: inherit; resize: vertical;
+}
+.qcard textarea.free:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.quiz-foot { margin-top: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.quiz-foot #quizSubmit {
+  background: var(--accent); color: #06122e; border: 1px solid var(--accent);
+  border-radius: 10px; padding: 10px 18px; font-weight: 700; font-size: .95rem; cursor: pointer;
+}
+.quiz-foot #quizSubmit:hover { filter: brightness(1.06); }
+.quiz-foot #quizSubmit:disabled { opacity: .6; cursor: default; }
+.quiz-msg { color: var(--ink-soft); font-size: .9rem; }

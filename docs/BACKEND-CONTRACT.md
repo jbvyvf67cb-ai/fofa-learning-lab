@@ -111,36 +111,82 @@ re-render locks immediately without a second round-trip. Recompute gating on wri
 
 ---
 
-## 4. Free-form grading (unchanged concept, now authenticated)
+## 4. Quiz grading — one endpoint for every question type
 
-### `POST /api/fofa/grade`
-Request:
+A quiz is graded **once, on the server**, in a single submission — whether its questions are
+objective, free-response, or a mix. The browser is a dumb reporter: it collects the student's
+*answers* (never a score, never keeps a separate grader) and posts them; the server grades each
+question by its type, sums, records the result (so it counts toward gating), and returns the
+per-question breakdown plus the updated `state`.
+
+This supersedes the old `/grade` endpoint — a free-response prompt is just a one-question quiz.
+
+### `POST /api/fofa/quiz`
+Request — the student's answers, keyed by question id:
 ```json
 {
-  "subject": "reading", "module": "response-1", "activity": "freeform",
-  "prompt": "…", "rubric": "…(from quizzes/writing/rubrics.json)…", "response": "…student writing…"
+  "subject": "science", "module": "m1-atomic-structure", "quizId": "m1-atomic-structure",
+  "answers": [
+    { "id": "q1", "type": "mc",      "choice": 1 },
+    { "id": "q2", "type": "tf",      "choice": true },
+    { "id": "q3", "type": "numeric", "value": 35 },
+    { "id": "q7", "type": "build",   "state": { "z": 6, "n": 6, "e": 6, "charge": 0 } },
+    { "id": "q9", "type": "free",    "response": { "kind": "text", "text": "Because the nucleus…" } }
+  ]
 }
 ```
-Behavior: the integration calls Claude (its key) to score the response against the rubric, **records
-the result** (so it counts toward gating), and responds:
+
+**How the server grades each `type`** (answer key comes from `quizzes/<subject>/<quizId>.json`, which
+the server holds; the client never sends keys):
+- `mc` → `choice` (index) equals the question's `answer`.
+- `tf` → `choice` (bool) equals `answer`.
+- `numeric` → `|value − answer| ≤ tolerance`.
+- `build` → the client-captured `state` (from the viz's `window.moduleState()`) satisfies the
+  question's `check` spec — the server evaluates the check, so grading logic still lives server-side.
+- `free` → the server sends `response` + the question's `rubric` to Claude (its key) and gets a score.
+
+### Free-response answers are a *typed content object* (forward-compatible)
+`answer.response` is `{ "kind": …, … }`, not a bare string — so non-text answers slot in later with
+**no schema change**:
+- `{ "kind": "text",  "text": "…" }`  — implemented now.
+- `{ "kind": "image", "mime": "image/png", "data": "<base64>" }`  — **reserved** for handwritten /
+  photographed answers. Grading them is the same call with Claude *vision*; the only additions are a
+  capture UI on the client and reading the image on the server. Nothing here changes to enable it.
+- `{ "kind": "ink", "strokes": [...] }` — reserved for stylus capture, if ever wanted.
+
+### Response
 ```json
-{ "ok": true, "score": 3, "max": 4, "feedback": "…", "state": { …updated state… } }
+{
+  "ok": true,
+  "score": 4, "max": 5,
+  "results": [
+    { "id": "q1", "correct": true,  "earned": 1, "of": 1 },
+    { "id": "q3", "correct": false, "earned": 0, "of": 1, "expected": 35 },
+    { "id": "q9", "earned": 2, "of": 3, "feedback": "Good — name one detail that shows it." }
+  ],
+  "state": { …updated gating state… }
+}
 ```
-On failure: `{ "ok": false, "error": "…" }`.
+On failure: `{ "ok": false, "error": "…" }`. Record the result and recompute gating before returning,
+so the client re-renders locks from `state` without a second call. (Because a `free` question waits on
+Claude, quiz results are shown all at once on submit — the client posts once and renders `results`.)
+
+`POST /api/fofa/progress` (§3) stays for **activities/games** (Word Sort streaks, `visit`, etc.) that
+report an outcome rather than answers. Quizzes always go through `/api/fofa/quiz`.
 
 ---
 
 ## 5. What each side builds
 
-- **HA session (`fofa` integration):** the endpoints in §2–§4, an accounts store (hashed
-  passwords), per-student progress storage, server-side gating computed from
-  `curriculum/index.json`, and the Claude grading call. Add `cors_allowed_origins`. Expose HA over
-  HTTPS.
+- **HA session (`fofa` integration):** the endpoints in §2–§4 (`login`, `state`, `progress`, and the
+  unified `quiz`), an accounts store (hashed passwords), per-student progress storage, server-side
+  gating computed from `curriculum/index.json`, and the Claude grading call for `free` questions
+  (text now; vision-ready for `image` later). Add `cors_allowed_origins`. Expose HA over HTTPS.
 - **This repo (web app):** a login screen; `assets/js/fofa-account.js` (login, token handling,
-  `state`/`progress`/`grade` calls, offline cache); gating UI that locks module cards and the
-  landing/subject pages based on `state`; `visit` reporting on exploration lessons; and a settings
-  field for the HA base URL. The existing `fofa-measure.js` localStorage path becomes the offline
-  cache behind this client.
+  `state`/`progress`/`quiz` calls, offline cache + a **mock backend** that grades from the quiz
+  manifest so it runs pre-integration); the quiz shell posts answers to `quiz` and renders `results`
+  (no client-side grading); gating UI that locks module cards; `visit` reporting on exploration
+  lessons; and a Settings field for the HA base URL.
 
 ---
 
@@ -151,7 +197,7 @@ The model is multi-user from day one; a single student is just N=1. To keep it t
 - **Accounts table:** each row is `{ username, password_hash, student_id, display_name, created }`.
   Adding a child = inserting a row. Hash with bcrypt/argon2; never store plaintext.
 - **Per-student data:** key all progress/results storage by `student_id`. `GET /api/fofa/state`,
-  `POST /api/fofa/progress`, and `POST /api/fofa/grade` operate **only** on the student behind the
+  `POST /api/fofa/progress`, and `POST /api/fofa/quiz` operate **only** on the student behind the
   request's bearer token — a user can never see or affect another's data.
 - **Creating/resetting accounts:** expose a parent/admin path — simplest is an HA service call or a
   small admin endpoint (e.g. `POST /api/fofa/admin/accounts`) guarded by your *Home Assistant* login
