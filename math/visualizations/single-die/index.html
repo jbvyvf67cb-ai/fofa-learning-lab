@@ -54,17 +54,20 @@
       <h2><span class="n">2</span> A fair die has no favourites</h2>
       <p class="say">A <b>fair</b> die doesn't prefer any number. Each of the six faces is
         <span class="term">equally likely</span> — it has the same chance as every other. Hard to believe?
-        Roll a bunch and watch. A few rolls look lumpy and random. But keep going…</p>
+        Roll a bunch and watch. Each bar shows the <b>share of rolls</b> that landed on that face, and the
+        dashed line is the "fair share" every face is heading for: <b>1/6 ≈ 16.7%</b>.</p>
       <div class="viz">
         <div class="tally" id="tally"></div>
-        <div class="controls" style="margin-top:14px">
+        <div class="controls" style="margin-top:16px">
           <button id="t10" class="ghost">Roll ×10</button>
           <button id="t100" class="ghost">Roll ×100</button>
+          <button id="t1000" class="ghost">Roll ×1000</button>
           <button id="tReset" class="ghost">Start over</button>
           <span class="lbl" id="tTotal" style="margin-left:auto"></span>
         </div>
-        <div class="cap">The more you roll, the more the six bars <b>even out</b>. That's what "equally
-          likely" looks like: given enough rolls, every face shows up about the same amount.</div>
+        <div class="cap" id="tallyCap">A handful of rolls looks lopsided — some bars poke above the line,
+          some fall below. But the <b>more you roll</b>, the more every bar <b>settles onto the dashed line</b>.
+          That "settling toward equal" is exactly what <b>equally likely</b> means.</div>
       </div>
     </section>
 

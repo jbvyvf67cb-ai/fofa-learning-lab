@@ -17,57 +17,69 @@ function stepOne() {
     "Count every square in the grid — there are <b>36</b> of them.";
 }
 
-/* ---------- Step 2: equally likely + roll + click ---------- */
+/* ---------- Step 2: equally likely — a 6×6 count table ----------
+   Each square shows how many times it has been rolled. A light heat tint tracks
+   the counts too, but the numbers are the point: after many rolls every square
+   sits near total ÷ 36, so no square is special. */
 const hits = {};
 let rolls = 0;
 function stepTwo() {
-  const cells = Lesson.grid($("gridB")).cells;
-  Object.values(cells).forEach((c) => {
-    c.classList.add("clickable");
-    c.onclick = () => selectPair(cells, c);
+  const g = Lesson.grid($("gridB"), { mini: false, showPair: false });
+  const cells = g.cells;
+  g.forEach((cell, a, b) => {
+    const cnt = document.createElement("div");
+    cnt.className = "cellcount zero";
+    cnt.textContent = "0";
+    cell.appendChild(cnt);
+    cell._cnt = cnt;
+    cell.classList.add("clickable");
+    cell.onclick = () => selectPair(cells, cell);
   });
 
-  function land(a, b) {
-    Object.values(cells).forEach((c) => c.classList.remove("land"));
-    const c = cells[a + "," + b];
-    c.classList.add("land");
-    const key = a + "," + b;
-    hits[key] = (hits[key] || 0) + 1;
-    rolls++;
-    paintHeat(cells);
-    $("rollTotal").textContent = rolls + " rolls";
-    $("capB").innerHTML = "Rolled <b>" + a + "," + b + "</b> — one square out of 36. " +
-      "Keep rolling: the whole grid fills in evenly because every square is equally likely.";
+  function refresh() {
+    const max = Math.max(1, ...Object.values(hits));
+    g.forEach((cell, a, b) => {
+      const h = hits[a + "," + b] || 0;
+      cell._cnt.textContent = h;
+      cell._cnt.classList.toggle("zero", h === 0);
+      cell.style.background = h ? "rgba(79,214,201," + (0.08 + 0.4 * (h / max)).toFixed(3) + ")" : "";
+    });
+    $("rollTotal").textContent = rolls ? rolls.toLocaleString() + " rolls" : "";
+    $("rollExpect").innerHTML = rolls
+      ? "Expected per square if perfectly even: <b>" + rolls.toLocaleString() + " ÷ 36 ≈ " + (rolls / 36).toFixed(1) + "</b> — compare it to the tallies."
+      : "";
   }
+  function land(a, b) {
+    g.forEach((c) => c.classList.remove("land"));
+    hits[a + "," + b] = (hits[a + "," + b] || 0) + 1;
+    rolls++;
+    refresh();
+    cells[a + "," + b].classList.add("land");
+    $("capB").innerHTML = "Rolled <b>" + a + "," + b + "</b>. Its tally ticked up by one. Roll a lot and every " +
+      "square's count stays close to the others — that's what equally likely looks like.";
+  }
+  const rnd = () => 1 + (Math.random() * 6 | 0);
 
-  $("rollOne").onclick = () => land(1 + (Math.random() * 6 | 0), 1 + (Math.random() * 6 | 0));
-  $("roll200").onclick = () => {
-    for (let i = 0; i < 199; i++) { const a = 1 + (Math.random() * 6 | 0), b = 1 + (Math.random() * 6 | 0); hits[a + "," + b] = (hits[a + "," + b] || 0) + 1; rolls++; }
-    land(1 + (Math.random() * 6 | 0), 1 + (Math.random() * 6 | 0));
-  };
+  function batch(n) { for (let i = 0; i < n - 1; i++) { const a = rnd(), b = rnd(); hits[a + "," + b] = (hits[a + "," + b] || 0) + 1; rolls++; } land(rnd(), rnd()); }
+  $("rollOne").onclick = () => land(rnd(), rnd());
+  $("roll200").onclick = () => batch(200);
+  $("roll2000").onclick = () => batch(2000);
   $("rollReset").onclick = () => {
     for (const k in hits) delete hits[k];
-    rolls = 0;
-    paintHeat(cells);
-    Object.values(cells).forEach((c) => c.classList.remove("land"));
-    $("rollTotal").textContent = "";
-    $("capB").innerHTML = "Or <b>click any square</b> to pick one exact roll and see its chance.";
+    rolls = 0; refresh();
+    g.forEach((c) => c.classList.remove("land"));
+    $("capB").innerHTML = "Each square shows its tally. <b>Click any square</b> to pick one exact roll and see its chance.";
   };
-}
-function paintHeat(cells) {
-  const max = Math.max(1, ...Object.values(hits));
-  for (const key in cells) {
-    const h = hits[key] || 0;
-    cells[key].style.background = h ? "rgba(79,214,201," + (0.12 + 0.55 * (h / max)).toFixed(3) + ")" : "";
+  refresh();
+
+  function selectPair(cellsRef, cell) {
+    g.forEach((c) => c.classList.remove("land"));
+    cell.classList.add("land");
+    const a = cell.dataset.a, b = cell.dataset.b;
+    $("capB").innerHTML =
+      "You picked the square <b>" + a + "," + b + "</b>. It's <b>one</b> square out of <b>36</b>, so the " +
+      "chance of rolling exactly that is <b class='mono'>1/36</b> ≈ 2.8% — the same tiny chance for every square.";
   }
-}
-function selectPair(cells, cell) {
-  Object.values(cells).forEach((c) => c.classList.remove("land"));
-  cell.classList.add("land");
-  const a = cell.dataset.a, b = cell.dataset.b;
-  $("capB").innerHTML =
-    "You picked the square <b>" + a + "," + b + "</b>. It's <b>one</b> square out of <b>36</b>, so the " +
-    "chance of rolling exactly that is <b class='mono'>1/36</b> ≈ 2.8% — the same tiny chance for every square.";
 }
 
 /* ---------- Step 3: checks ---------- */

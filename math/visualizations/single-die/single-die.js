@@ -33,42 +33,64 @@ function buildSampleSpace() {
   };
 }
 
-/* ---------- Step 2: equally likely (fairness tally) ---------- */
+/* ---------- Step 2: equally likely (converging share bars) ----------
+   Each bar shows the SHARE of rolls for that face (a percentage), not a raw
+   count. Shares are drawn against a fixed axis (AXIS) with a dashed line at the
+   "fair share" 1/6, so as you roll more the bars visibly settle onto the line —
+   the law of large numbers, made concrete. (Counts alone were confusing because
+   normalising to the tallest bar made bars appear to shrink.) */
+const TRACK = 150, AXIS = 0.5; // track px height; top of axis = 50% share
 const counts = [0, 0, 0, 0, 0, 0];
 function buildTally() {
   const t = $("tally");
+  t.innerHTML = "";
   for (let v = 1; v <= 6; v++) {
     const col = document.createElement("div");
     col.className = "col";
     const track = document.createElement("div");
     track.className = "track";
     const fill = document.createElement("div");
-    fill.className = "fill";
-    fill.id = "fill" + v;
-    fill.style.height = "0%";
+    fill.className = "fill"; fill.id = "fill" + v; fill.style.height = "0%";
     track.appendChild(fill);
     const face = Lesson.die(v, { size: 30 });
-    const cnt = document.createElement("div");
-    cnt.className = "cnt";
-    cnt.id = "cnt" + v;
-    cnt.textContent = "0";
-    col.appendChild(track); col.appendChild(face); col.appendChild(cnt);
+    const pct = document.createElement("div"); pct.className = "pct"; pct.id = "pct" + v; pct.textContent = "—";
+    const cnt = document.createElement("div"); cnt.className = "cnt"; cnt.id = "cnt" + v; cnt.textContent = "0 rolls";
+    col.appendChild(track); col.appendChild(face); col.appendChild(pct); col.appendChild(cnt);
     t.appendChild(col);
   }
+  // dashed "fair share" line at share = 1/6
+  const fair = document.createElement("div");
+  fair.className = "fairline";
+  fair.style.top = (TRACK * (1 - (1 / 6) / AXIS)) + "px";
+  fair.innerHTML = '<span class="flab">fair share = 1/6 ≈ 16.7%</span>';
+  t.appendChild(fair);
+
   drawTally();
   $("t10").onclick = () => rollTally(10);
   $("t100").onclick = () => rollTally(100);
+  $("t1000").onclick = () => rollTally(1000);
   $("tReset").onclick = () => { for (let i = 0; i < 6; i++) counts[i] = 0; drawTally(); };
 }
 function rollTally(n) { for (let i = 0; i < n; i++) counts[Math.floor(Math.random() * 6)]++; drawTally(); }
 function drawTally() {
   const total = counts.reduce((a, b) => a + b, 0);
-  const max = Math.max(1, ...counts);
+  let worst = 0;
   for (let v = 1; v <= 6; v++) {
-    $("fill" + v).style.height = (counts[v - 1] / max * 100) + "%";
-    $("cnt" + v).textContent = counts[v - 1];
+    const share = total ? counts[v - 1] / total : 0;
+    $("fill" + v).style.height = Math.min(100, share / AXIS * 100) + "%";
+    $("pct" + v).textContent = total ? (share * 100).toFixed(1) + "%" : "—";
+    $("cnt" + v).textContent = counts[v - 1] + (counts[v - 1] === 1 ? " roll" : " rolls");
+    if (total) worst = Math.max(worst, Math.abs(share - 1 / 6));
   }
-  $("tTotal").textContent = total ? total + " rolls" : "";
+  $("tTotal").textContent = total ? total.toLocaleString() + " rolls" : "";
+  const cap = $("tallyCap");
+  if (cap && total >= 10) {
+    const off = (worst * 100).toFixed(1);
+    cap.innerHTML = total < 100
+      ? `Only <b>${total}</b> rolls so far — the bars are still jumpy (the furthest is <b>${off}%</b> from fair). Keep rolling…`
+      : `After <b>${total.toLocaleString()}</b> rolls every bar is within <b>${off}%</b> of the dashed fair line. ` +
+        `That settling toward equal is what <b>equally likely</b> means — the more you roll, the closer they hug the line.`;
+  }
 }
 
 /* ---------- Step 3: probability = favourable / 6 ---------- */
@@ -151,10 +173,10 @@ function buildChecks() {
     explain: "Just one face is a 2, out of six faces → 1/6.",
   });
   Lesson.check("checks", {
-    q: "How many faces are <b>even</b> (2, 4, 6)? So what's the probability of rolling an even number?",
+    q: "What's the probability of rolling an <b>even number</b>? &nbsp;<span style='color:var(--ink-dim)'>Hint: how many faces are even?</span>",
     choices: ["1/6", "2/6", "3/6 = 1/2", "5/6"],
     answer: 2,
-    explain: "Three faces count (2, 4, 6) out of six → 3/6, which is the same as 1/2.",
+    explain: "Three faces are even (2, 4, 6) out of six → 3/6, which is the same as 1/2.",
   });
   Lesson.check("checks", {
     q: "On a <b>20-sided</b> die, what is the probability of rolling any one particular number?",

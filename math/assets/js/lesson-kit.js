@@ -91,9 +91,11 @@ const Lesson = {
         const cell = document.createElement("div");
         cell.className = "cell";
         cell.dataset.a = a; cell.dataset.b = b; cell.dataset.sum = a + b;
-        const md = document.createElement("div"); md.className = "minidice";
-        md.appendChild(Lesson.miniDie(a)); md.appendChild(Lesson.miniDie(b));
-        cell.appendChild(md);
+        if (opts.mini !== false) {
+          const md = document.createElement("div"); md.className = "minidice";
+          md.appendChild(Lesson.miniDie(a)); md.appendChild(Lesson.miniDie(b));
+          cell.appendChild(md);
+        }
         if (showPair) {
           const pr = document.createElement("div"); pr.className = "pair";
           pr.textContent = a + "," + b;

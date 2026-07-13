@@ -55,13 +55,21 @@
 
 .die-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 
-/* ---- fairness tally ---- */
-.tally { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: end; }
+/* ---- fairness tally (percentage bars converging to a fair-share line) ---- */
+.tally { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: end; }
 .tally .col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.tally .track { width: 100%; height: 130px; background: var(--bg-soft); border: 1px solid var(--line);
-  border-radius: 8px; display: flex; align-items: flex-end; overflow: hidden; }
-.tally .fill { width: 100%; background: var(--prob); transition: height .12s ease; }
-.tally .cnt { font-family: var(--mono); font-size: .78rem; color: var(--ink-soft); }
+.tally .track { width: 100%; height: 150px; background: var(--bg-soft); border: 1px solid var(--line);
+  border-radius: 8px; display: flex; align-items: flex-end; overflow: hidden; position: relative; }
+.tally .fill { width: 100%; background: var(--prob); transition: height .2s ease; border-radius: 0 0 7px 7px; }
+.tally .pct { font-family: var(--mono); font-size: .74rem; color: var(--ink); font-weight: 700; }
+.tally .cnt { font-family: var(--mono); font-size: .7rem; color: var(--ink-dim); margin-top: -2px; }
+.tally .fairline { position: absolute; left: 0; right: 0; border-top: 2px dashed var(--prob-hi); z-index: 3; pointer-events: none; }
+.tally .fairline .flab { position: absolute; right: 2px; top: -17px; font-size: .68rem; color: var(--prob-hi);
+  font-family: var(--mono); background: var(--panel); padding: 0 5px; border-radius: 4px; }
+
+/* ---- per-cell roll counts (Lesson 2 count table) ---- */
+.cell .cellcount { font-family: var(--mono); font-weight: 700; font-size: .95rem; color: var(--ink); }
+.cell .cellcount.zero { color: var(--ink-dim); font-weight: 400; }
 
 /* ---- probability slice bar ---- */
 .slice { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; height: 34px; }

@@ -49,17 +49,21 @@
     <section class="step">
       <h2><span class="n">2</span> Every square is equally likely</h2>
       <p class="say">Just like the six faces of one die, all <b>36</b> squares are <span class="term">equally
-        likely</span>. A roll of two dice is simply <b>landing on one square</b>. Roll a bunch and watch the
-        squares fill in evenly — no square is special.</p>
+        likely</span>. A roll of two dice is simply <b>landing on one square</b>. This time <b>each square keeps
+        a running count</b> of how many times it's been rolled — watch the numbers stay close to each other, no
+        square pulling ahead.</p>
       <div class="viz">
         <div class="controls">
           <button id="rollOne">🎲🎲 Roll</button>
           <button id="roll200" class="ghost">Roll ×200</button>
+          <button id="roll2000" class="ghost">Roll ×2000</button>
           <button id="rollReset" class="ghost">Clear</button>
           <span class="lbl" id="rollTotal" style="margin-left:auto"></span>
         </div>
+        <div class="pform" id="rollExpect" style="margin:10px 0 0;font-size:.9rem"></div>
         <div class="dgrid-wrap" style="margin-top:12px"><div id="gridB"></div></div>
-        <div class="cap" id="capB">Or <b>click any square</b> to pick one exact roll and see its chance.</div>
+        <div class="cap" id="capB">Each square shows its tally. <b>Click any square</b> to pick one exact roll
+          and see its chance.</div>
       </div>
       <p class="say">Why exactly 36? Because for each of die A's <b>6</b> outcomes, die B adds <b>6</b> more.
         <b>6 groups of 6 = 6 × 6 = 36.</b> That multiplying is all "chaining dice together" means — and it
