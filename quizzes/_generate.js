@@ -76,7 +76,7 @@ function main() {
 
   // ---- Writing ----
   // Writing modules are interactive games/exploration, not multiple-choice quiz
-  // banks, so their measurable is the activity outcome (see MEASURABLES.md).
+  // banks, so their measurable is the activity outcome (see docs/BACKEND-CONTRACT.md).
   // Open-ended writing is graded by Claude via Home Assistant using a rubric.
   catalog.subjects.writing = {
     title: "Writing",

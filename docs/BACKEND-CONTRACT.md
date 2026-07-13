@@ -1,8 +1,8 @@
 # BACKEND-CONTRACT.md — the authenticated Fofa ⇄ Home Assistant API
 
-**Supersedes the anonymous webhook in [`../MEASURABLES.md`](../MEASURABLES.md) for progress.**
-That model was fire-and-forget and device-local. This one gives **login, cross-device persistent
-progress, and sequential lesson gating**, with every secret (the Claude key) staying server-side.
+**This is the single source of truth for the Home-Assistant `fofa` integration.** It gives
+**login, cross-device persistent progress, and sequential lesson gating**, with every secret (the
+Claude key) staying server-side. (An earlier anonymous-webhook design has been retired.)
 
 **Audience:** the Claude Code session that owns Home Assistant. It builds a small custom integration
 (`fofa`) that implements the endpoints below. This repo (the web app, on GitHub Pages) is the
@@ -173,6 +173,22 @@ Claude, quiz results are shown all at once on submit — the client posts once a
 
 `POST /api/fofa/progress` (§3) stays for **activities/games** (Word Sort streaks, `visit`, etc.) that
 report an outcome rather than answers. Quizzes always go through `/api/fofa/quiz`.
+
+### The quiz manifest (where the server reads questions + answer keys)
+The canonical quiz banks live in-repo under [`quizzes/`](../quizzes) and are fetched from the
+deployed Pages URL (e.g. `https://jbvyvf67cb-ai.github.io/fofa-learning-lab/quizzes/index.json`):
+- **`quizzes/index.json`** — catalog: `subjects.<subject>.modules[]`, each with `id`, `slug`,
+  `title`, `quiz` (path to the per-module JSON), `count`, `gradeable`, `types`.
+- **`quizzes/science/<module-id>.json`** — one file per module: `{ id, slug, title, source, page,
+  gradeable, questions[] }`. Question shape:
+  `{ "id":"q3", "type":"numeric", "prompt":"…", "answer":35, "tolerance":0, "explain":"…" }`
+  (`mc` has `choices[]`+`answer` index; `tf` has `answer` bool; `build` has `check` +
+  `interactiveOnly:true`; `free` carries a `rubric` and optional `max`).
+- **`quizzes/writing/rubrics.json`** — rubrics for open-ended prompts (used to grade `free` answers).
+
+These files are **GENERATED** from the science `module.js` quiz banks by `node quizzes/_generate.js`
+— edit the `module.js`, not the JSON. The server holds these (with answers); the client only ever
+sends answers.
 
 ---
 

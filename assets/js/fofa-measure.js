@@ -20,7 +20,7 @@
      Fofa.grade(evt)   -> Promise<{ ok:boolean, score?, max?, feedback?, error? }>
          evt = { subject, module, prompt, rubric, response, activity? }
 
-   The webhook payload + grading contract are documented in MEASURABLES.md — that
+   Progress now flows through the authenticated FofaAccount client (docs/BACKEND-CONTRACT.md) — that
    file is the interface for the Home-Assistant-side session.
    ============================================================================ */
 (function () {

@@ -1,8 +1,8 @@
 # HANDOFF — Fofa Learning Lab
 
 **Purpose:** cold-start briefing for a fresh Claude Code session. Read this first, then
-[`MEASURABLES.md`](./MEASURABLES.md) for the Home Assistant contract. Each merged subject also has
-its own original handoff under `science/HANDOFF.md` and `writing/HANDOFF.md`.
+[`docs/BACKEND-CONTRACT.md`](./docs/BACKEND-CONTRACT.md) for the Home Assistant contract. Each merged
+subject also has its own original handoff under `science/HANDOFF.md` and `writing/HANDOFF.md`.
 
 ## 1. What this is
 
@@ -35,7 +35,7 @@ math/ reading/        coming-soon subject pages (arcs)
 science/              merged stem-viz (own assets/, 7 modules, Learn/Explore/Quiz shell)
 writing/              merged Writing (own assets/, 17 modules, game-style)
 quizzes/              generated quiz manifest (index.json + science/*.json) + writing/rubrics.json
-MEASURABLES.md        THE Home Assistant contract (webhooks + grading + manifest)
+docs/BACKEND-CONTRACT.md   THE Home Assistant contract (login/state/progress/quiz + gating + manifest)
 .github/workflows/pages.yml   single Pages deploy for the whole repo
 ```
 
@@ -75,8 +75,8 @@ fully answered; writing `word-sort` (streak win) and `parts-of-speech-detective`
 it too. Module pages load the engine via `../../../assets/js/fofa-measure.js` (root shared asset),
 distinct from each subject's own `../../assets/...`.
 
-The webhook/grading/manifest schemas are documented in [`MEASURABLES.md`](./MEASURABLES.md) — the
-interface for the HA-side session.
+The auth/progress/quiz/gating/manifest schemas are documented in
+[`docs/BACKEND-CONTRACT.md`](./docs/BACKEND-CONTRACT.md) — the interface for the HA-side session.
 
 ## 5b. Accounts, gating & the authenticated backend (the current direction)
 

@@ -29,16 +29,22 @@ module URL to preview everything).
 - **Each subject is self-contained** under its own folder with its own `assets/`, so all in-module
   relative paths keep working.
 
-## Measurables → Home Assistant
+## Accounts, progress & grading → Home Assistant
 
-The lab is static, so it never holds an API key. Instead it POSTs results to a **Home Assistant
-webhook** (the only secret, stored in the browser on the **Settings** page). Home Assistant records
-the measurables and, for open-ended work, grades with its Claude key and returns feedback.
+The lab is static, so it never holds an API key. A student logs in, and progress, sequential lesson
+gating, and quiz grading all run **server-side in Home Assistant** (which holds the Claude key). The
+browser only stores a short-lived session token.
 
-- Engine: [`assets/js/fofa-measure.js`](./assets/js/fofa-measure.js) (global `Fofa`).
-- Parent setup: open [`settings.html`](./settings.html), paste the HA webhook URL(s) + child name.
-- **The full contract for the Home-Assistant side is in [`MEASURABLES.md`](./MEASURABLES.md)** —
-  webhook payloads, the grading API, and the quiz manifest.
+- Login + client: [`login.html`](./login.html) + [`assets/js/fofa-account.js`](./assets/js/fofa-account.js)
+  (global `FofaAccount`), with a built-in **mock backend** so it runs before the integration exists
+  (demo login `fofa` / `learn`).
+- Gating: [`assets/js/fofa-gate.js`](./assets/js/fofa-gate.js) +
+  [`assets/js/fofa-lesson-guard.js`](./assets/js/fofa-lesson-guard.js), driven by
+  [`curriculum/index.json`](./curriculum/index.json).
+- Parent setup: open [`settings.html`](./settings.html) and set the Home Assistant base URL.
+- **The full contract for the Home-Assistant side is in
+  [`docs/BACKEND-CONTRACT.md`](./docs/BACKEND-CONTRACT.md)** — `login`/`state`/`progress`/`quiz`
+  endpoints, gating, and the quiz manifest.
 - Canonical quiz data: [`quizzes/`](./quizzes) (`index.json` + per-module JSON, generated from the
   science `module.js` files via `node quizzes/_generate.js`).
 
