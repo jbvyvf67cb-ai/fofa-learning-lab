@@ -117,7 +117,8 @@ The public site is intentionally scoped to Unit 1 (see §6).
   (beauty → beautify → beautiful → beautifully).
 
 **Units 2–4 + Style branch point** — built and functional, but **preview-only**
-(gated, see §6). Slugs: `subject-predicate`, `sentence-builder`,
+(gated, see §6). Slugs: `subject-predicate` (concept lesson),
+`subject-predicate-splitter`, `sentence-builder`,
 `complete-or-fragment`, `object-tracker`, `phrase-painter`, `clause-combiner`,
 `sentence-type-sorter`, `punctuation-playground`, `run-on-repair`,
 `rhythm-and-length`, `active-passive`, `combining-reducing`, `parallelism-tuner`.

@@ -6,7 +6,7 @@ Each unit is an interactive experience, not a reading. Items marked ✅ exist
 today; the rest are the build sequence.
 
 > Status: the entire grammar trunk — Units 1–4 plus the Style &amp; Structure
-> branch point (21 interactive modules) — is built and live. The writing-mode
+> branch point (23 interactive modules) — is built and live. The writing-mode
 > branches below are next.
 
 ---
@@ -18,9 +18,11 @@ The atoms of language. Every later module inherits the fixed color code
 established here.
 
 - ✅ **Sentence Anatomy** — click words to reveal part of speech + sentence role.
-- ✅ **Nouns · Verbs · Adjectives · Adverbs** — one focused lesson per part of
-  speech: what it is, how to spot it, an optional color-coded worked example,
-  then tap-every-one practice with a hint on each wrong tap.
+- ✅ **Nouns · Pronouns · Verbs · Adjectives · Adverbs** — one focused lesson
+  per part of speech: what it is, how to spot it, an optional color-coded worked
+  example, then tap-every-one practice with a hint on each wrong tap. (Pronoun
+  sits next to noun because it *is* a noun stand-in — and the subject of a
+  sentence is always a noun or pronoun.)
 - ✅ **Word Sort** — drop words into part-of-speech buckets.
 - ✅ **Part-of-Speech Detective** — one word, many disguises ("*book* a room" vs
   "read a *book*"); learn that a word's job depends on its use.
@@ -28,6 +30,9 @@ established here.
   (*beauty → beautify → beautiful*) and watch the sentence adapt.
 
 ### Unit 2 · The core of a sentence (subject + predicate)
+- ✅ **Subject & Predicate** — concept lesson: find the who/what, then the
+  action word, and watch the two-color split appear. Reuses Unit 1's colors
+  (subject core = a noun/pronoun, predicate core = the verb).
 - ✅ **Subject & Predicate Splitter** — drag the dividing line; every sentence
   has a *who/what* and a *what-about-it*.
 - ✅ **Sentence Builder** — compose a grammatical sentence from a word bank;

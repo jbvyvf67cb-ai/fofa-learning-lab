@@ -322,6 +322,28 @@
         { w: "Three",   pos: "adjective" },   { w: "noisy",  pos: "adjective" },
         { w: "crows",   pos: "noun" },        { w: "suddenly", pos: "adverb" },
         { w: "flew",    pos: "verb" },        { w: "away",   pos: "adverb" } ] },
+    { text: "She quickly grabbed the red umbrella.",
+      tokens: [
+        { w: "She",      pos: "pronoun" },   { w: "quickly", pos: "adverb" },
+        { w: "grabbed",  pos: "verb" },      { w: "the",     pos: "article" },
+        { w: "red",      pos: "adjective" }, { w: "umbrella",pos: "noun" } ] },
+    { text: "They quietly followed him into the dark cave.",
+      tokens: [
+        { w: "They",     pos: "pronoun" },   { w: "quietly", pos: "adverb" },
+        { w: "followed", pos: "verb" },      { w: "him",     pos: "pronoun" },
+        { w: "into",     pos: "preposition" },{ w: "the",    pos: "article" },
+        { w: "dark",     pos: "adjective" }, { w: "cave",    pos: "noun" } ] },
+    { text: "We happily shared the warm cookies.",
+      tokens: [
+        { w: "We",       pos: "pronoun" },   { w: "happily", pos: "adverb" },
+        { w: "shared",   pos: "verb" },      { w: "the",     pos: "article" },
+        { w: "warm",     pos: "adjective" }, { w: "cookies", pos: "noun" } ] },
+    { text: "He carefully placed it on the table.",
+      tokens: [
+        { w: "He",       pos: "pronoun" },   { w: "carefully", pos: "adverb" },
+        { w: "placed",   pos: "verb" },      { w: "it",      pos: "pronoun" },
+        { w: "on",       pos: "preposition" },{ w: "the",    pos: "article" },
+        { w: "table",    pos: "noun" } ] },
   ];
 
   /* Teaching copy for each part-of-speech lesson. `blurb`, `color`, `label`,
@@ -338,6 +360,17 @@
         { test: "Put “the” or “a” in front of it.", ex: "the castle, a puppy — sounds right, so it's a noun." },
         { test: "Can there be more than one?", ex: "one crow → two crows. Nouns can usually be counted or made plural." },
         { test: "Can you point to it or name it?", ex: "a thing you can see (ladder) or an idea you can name (courage)." },
+      ],
+      example: 1,
+    },
+    pronoun: {
+      task: "Tap every pronoun.",
+      intro: "A pronoun is a small word that stands in for a noun, so you don't have to repeat it. Instead of “Maria lost Maria's keys,” we say “She lost her keys.”",
+      nudge: "Look for a word that replaces a naming word — like she, they, it, we, or him.",
+      spot: [
+        { test: "Ask “is it standing in for a noun?”", ex: "“She” takes the place of a name like Maria." },
+        { test: "Learn the common ones.", ex: "I, you, he, she, it, we, they — and him, her, them." },
+        { test: "Swap it back for a noun.", ex: "They ran → The children ran. If it fits, it's a pronoun." },
       ],
       example: 1,
     },
@@ -395,6 +428,52 @@
       subject: "She", predicate: "smiled.", splitIndex: 1 },
     { text: "A tiny robot on the shelf blinked twice.",
       subject: "A tiny robot on the shelf", predicate: "blinked twice.", splitIndex: 6 },
+  ];
+
+  /* Subject & Predicate concept lesson. Each token knows which half it lives in
+     (`half`: subject | predicate) and whether it is the bare core of that half
+     (`head`: the simple subject = the main noun/pronoun; the simple predicate =
+     the main verb). Subject words come first and are contiguous, so the split
+     point is simply where the predicate begins. Colors/pos reuse Unit 1. */
+  const SUBJECT_PREDICATE = [
+    { text: "The curious child flew a bright kite.",
+      tokens: [
+        { w: "The",     pos: "article",   half: "subject" },
+        { w: "curious", pos: "adjective", half: "subject" },
+        { w: "child",   pos: "noun",      half: "subject",   head: true },
+        { w: "flew",    pos: "verb",      half: "predicate", head: true },
+        { w: "a",       pos: "article",   half: "predicate" },
+        { w: "bright",  pos: "adjective", half: "predicate" },
+        { w: "kite",    pos: "noun",      half: "predicate" } ] },
+    { text: "She smiled.",
+      tokens: [
+        { w: "She",     pos: "pronoun",   half: "subject",   head: true },
+        { w: "smiled",  pos: "verb",      half: "predicate", head: true } ] },
+    { text: "The old wooden bridge creaked loudly.",
+      tokens: [
+        { w: "The",     pos: "article",   half: "subject" },
+        { w: "old",     pos: "adjective", half: "subject" },
+        { w: "wooden",  pos: "adjective", half: "subject" },
+        { w: "bridge",  pos: "noun",      half: "subject",   head: true },
+        { w: "creaked", pos: "verb",      half: "predicate", head: true },
+        { w: "loudly",  pos: "adverb",    half: "predicate" } ] },
+    { text: "Three noisy crows landed on the fence.",
+      tokens: [
+        { w: "Three",   pos: "adjective",   half: "subject" },
+        { w: "noisy",   pos: "adjective",   half: "subject" },
+        { w: "crows",   pos: "noun",        half: "subject",   head: true },
+        { w: "landed",  pos: "verb",        half: "predicate", head: true },
+        { w: "on",      pos: "preposition", half: "predicate" },
+        { w: "the",     pos: "article",     half: "predicate" },
+        { w: "fence",   pos: "noun",        half: "predicate" } ] },
+    { text: "They quietly opened the heavy door.",
+      tokens: [
+        { w: "They",    pos: "pronoun",   half: "subject",   head: true },
+        { w: "quietly", pos: "adverb",    half: "predicate" },
+        { w: "opened",  pos: "verb",      half: "predicate", head: true },
+        { w: "the",     pos: "article",   half: "predicate" },
+        { w: "heavy",   pos: "adjective", half: "predicate" },
+        { w: "door",    pos: "noun",      half: "predicate" } ] },
   ];
 
   /* Sentence Builder: pick one from each column. Subject + verb are required;
@@ -649,7 +728,7 @@
     // Unit 1
     WORD_FORMS, DISGUISES, SPOT_SENTENCES, POS_LESSONS,
     // Unit 2
-    CORE_SENTENCES, BUILDER, FRAGMENTS,
+    CORE_SENTENCES, SUBJECT_PREDICATE, BUILDER, FRAGMENTS,
     // Unit 3
     OBJECTS, OBJECT_ROLES, PHRASE_TYPES, PHRASES, CLAUSES,
     // Unit 4

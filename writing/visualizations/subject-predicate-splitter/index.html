@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subject &amp; Predicate Splitter — Writing Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3E%C2%B6%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Click the gap where a sentence splits into its complete subject and complete predicate.">
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <style>
+    .stage { margin-top: 22px; }
+
+    .topbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+    .stat { display: flex; flex-direction: column; line-height: 1.1; }
+    .stat b { font-family: var(--font); font-size: 22px; }
+    .stat span { font-size: 12px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .08em; }
+
+    /* --- Sentence stage ----------------------------------------------------- */
+    .sentence-row {
+      display: flex; flex-wrap: wrap; align-items: stretch; justify-content: center;
+      gap: 0; padding: 40px 16px 30px; margin-top: 4px;
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      background: var(--panel);
+    }
+    .word {
+      font-family: var(--font); font-size: clamp(19px, 3.4vw, 28px);
+      padding: 7px 6px; border-radius: 7px; white-space: nowrap;
+      align-self: center;
+      transition: background .35s ease, color .3s ease, transform .25s ease;
+    }
+    .word.reveal-in { animation: settle .35s ease; }
+    @keyframes settle { 0% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
+
+    .gap {
+      position: relative; width: 20px; align-self: stretch;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer; padding: 0; margin: 0;
+      border-radius: 6px;
+    }
+    .gap .bar {
+      width: 3px; height: 58%; border-radius: 3px;
+      background: var(--line); opacity: .65;
+      transition: width .15s ease, height .15s ease, background .15s ease, opacity .15s ease;
+    }
+    .gap:hover .bar { background: var(--accent); opacity: 1; }
+    .gap:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .gap.active .bar { width: 4px; height: 88%; background: var(--accent-warm); opacity: 1; }
+    .gap.active::before {
+      content: "▾"; position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      color: var(--accent-warm); font-size: 14px; line-height: 1;
+    }
+    .gap.correct .bar { background: var(--good); width: 4px; height: 92%; }
+    .gap.correct::before { content: "✓"; color: var(--good); }
+    .gap.wrong .bar { background: var(--bad); animation: shakeGap .35s ease; }
+    .gap.wrong::before { content: "✗"; color: var(--bad); }
+    .gap[disabled] { cursor: default; }
+    @keyframes shakeGap {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .pick-caption { min-height: 22px; margin: 12px 2px 0; font-size: 14px; }
+    .status-msg { min-height: 26px; margin-top: 4px; font-weight: 700; text-align: center; }
+    .status-msg.good { color: var(--good); }
+    .status-msg.bad { color: var(--bad); }
+
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+
+    /* --- Reveal panel --------------------------------------------------------- */
+    .reveal-labels { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .reveal-note {
+      margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm);
+      background: var(--panel-2); border: 1px solid var(--line);
+      font-size: 14px; color: var(--ink-soft);
+    }
+    .reveal-note b { color: var(--ink); }
+
+    /* --- Legend --------------------------------------------------------------- */
+    .legend { display: flex; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="../../" style="color:inherit"><span class="glyph">¶</span> Writing&nbsp;Lab</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stage">
+      <div class="eyebrow">Unit 2 · Subject &amp; predicate</div>
+      <h1 style="font-family:var(--font); margin:.2em 0 .1em">Subject &amp; Predicate Splitter</h1>
+      <p class="muted" style="margin-top:0; max-width:60ch">
+        Every sentence is built from two halves: a <b>complete subject</b> (who or
+        what it's about) and a <b>complete predicate</b> (what the subject does or
+        is). Click the gap between the words where the subject ends and the
+        predicate begins — or use <b>← / →</b> to slide the divider and
+        <b>Enter</b> to check.
+      </p>
+
+      <section class="panel pad">
+        <div class="topbar">
+          <div class="legend">
+            <span class="chip"><span class="dot" id="legendNoun"></span> Complete subject</span>
+            <span class="chip"><span class="dot" id="legendVerb"></span> Complete predicate</span>
+          </div>
+          <div class="spacer"></div>
+          <div class="stat"><b id="progress">1 / 6</b><span>Sentence</span></div>
+          <div class="stat"><b id="solvedCount">0</b><span>Solved</span></div>
+        </div>
+
+        <div class="sentence-row" id="sentenceRow" aria-label="Click a gap to place the subject/predicate divider"></div>
+
+        <p class="pick-caption muted" id="pickCaption" aria-live="polite">&nbsp;</p>
+        <div class="status-msg" id="statusMsg" aria-live="polite">&nbsp;</div>
+
+        <div id="revealBox" hidden>
+          <div class="reveal-labels">
+            <span class="chip"><span class="dot" id="revealNounDot"></span> Complete subject: <span id="revealSubject" style="margin-left:4px"></span></span>
+            <span class="chip"><span class="dot" id="revealVerbDot"></span> Complete predicate: <span id="revealPredicate" style="margin-left:4px"></span></span>
+          </div>
+          <div class="reveal-note">
+            <b>Complete subject</b> — every word that tells who or what the
+            sentence is about. <b>Complete predicate</b> — every word that tells
+            what the subject does or is. Together, they make one complete thought.
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn ghost" id="prevBtn" type="button">← Previous</button>
+          <button class="btn primary" id="checkBtn" type="button">Check</button>
+          <button class="btn ghost" id="nextBtn" type="button">Next sentence →</button>
+          <div class="spacer"></div>
+          <button class="btn ghost" id="resetBtn" type="button">Reset this sentence</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      Sentences and colors come from the shared dataset in
+      <code>assets/data/grammar.js</code>. &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/data/grammar.js"></script>
+  <script>
+    const { PARTS, CORE_SENTENCES } = WL_GRAMMAR;
+    const SUBJ_COLOR = PARTS.noun.color;
+    const PRED_COLOR = PARTS.verb.color;
+
+    document.getElementById("legendNoun").style.background = SUBJ_COLOR;
+    document.getElementById("legendVerb").style.background = PRED_COLOR;
+    document.getElementById("revealNounDot").style.background = SUBJ_COLOR;
+    document.getElementById("revealVerbDot").style.background = PRED_COLOR;
+
+    const el = {
+      row: document.getElementById("sentenceRow"),
+      pick: document.getElementById("pickCaption"),
+      status: document.getElementById("statusMsg"),
+      reveal: document.getElementById("revealBox"),
+      revealSubject: document.getElementById("revealSubject"),
+      revealPredicate: document.getElementById("revealPredicate"),
+      progress: document.getElementById("progress"),
+      solvedCount: document.getElementById("solvedCount"),
+      prev: document.getElementById("prevBtn"),
+      next: document.getElementById("nextBtn"),
+      check: document.getElementById("checkBtn"),
+      reset: document.getElementById("resetBtn"),
+    };
+
+    let idx = 0;
+    let words = [];
+    let candidate = 1;
+    let solved = false;
+    let wrongFlash = false;
+    const solvedSet = new Set();
+
+    function loadSentence(i) {
+      idx = i;
+      const s = CORE_SENTENCES[idx];
+      words = s.text.split(" ");
+      candidate = Math.max(1, Math.min(words.length - 1, Math.round(words.length / 2)));
+      solved = false;
+      wrongFlash = false;
+      el.reveal.hidden = true;
+      el.status.textContent = " ";
+      el.status.className = "status-msg";
+      el.progress.textContent = `${idx + 1} / ${CORE_SENTENCES.length}`;
+      el.solvedCount.textContent = String(solvedSet.size);
+      render();
+    }
+
+    function render() {
+      el.row.innerHTML = "";
+      words.forEach((w, i) => {
+        const wordEl = document.createElement("span");
+        wordEl.className = "word";
+        wordEl.textContent = w;
+        if (solved) {
+          if (i < candidate) {
+            wordEl.style.background = SUBJ_COLOR;
+            wordEl.style.color = "#10131f";
+          } else {
+            wordEl.style.background = PRED_COLOR;
+            wordEl.style.color = "#10131f";
+          }
+        }
+        el.row.appendChild(wordEl);
+
+        if (i < words.length - 1) {
+          const split = i + 1;
+          const gap = document.createElement("button");
+          gap.type = "button";
+          gap.className = "gap";
+          gap.dataset.split = String(split);
+          gap.setAttribute(
+            "aria-label",
+            `Place divider after "${w}" — ${split} word${split === 1 ? "" : "s"} in the subject`
+          );
+          if (split === candidate) gap.classList.add("active");
+          if (solved && split === candidate) gap.classList.add("correct");
+          if (wrongFlash && split === candidate) gap.classList.add("wrong");
+          if (solved) gap.disabled = true;
+          gap.addEventListener("click", () => {
+            setCandidate(split);
+            checkAnswer();
+          });
+          gap.addEventListener("keydown", onGapKeydown);
+          el.row.appendChild(gap);
+        }
+      });
+      updateCaption();
+    }
+
+    function onGapKeydown(e) {
+      if (solved) return;
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        moveCandidate(-1);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        moveCandidate(1);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        checkAnswer();
+      }
+    }
+
+    function moveCandidate(delta) {
+      wrongFlash = false;
+      setCandidate(candidate + delta);
+      render();
+      const btn = el.row.querySelector(`.gap[data-split="${candidate}"]`);
+      if (btn) btn.focus();
+    }
+
+    function setCandidate(n) {
+      candidate = Math.max(1, Math.min(words.length - 1, n));
+    }
+
+    function updateCaption() {
+      if (solved) {
+        el.pick.textContent = " ";
+        return;
+      }
+      const subj = words.slice(0, candidate).join(" ");
+      el.pick.textContent = `Subject so far: "${subj}" (${candidate} word${candidate === 1 ? "" : "s"})`;
+    }
+
+    function checkAnswer() {
+      if (solved) return;
+      const s = CORE_SENTENCES[idx];
+      wrongFlash = false;
+      if (candidate === s.splitIndex) {
+        solved = true;
+        solvedSet.add(idx);
+        el.solvedCount.textContent = String(solvedSet.size);
+        el.status.textContent = "✓ Right where it splits!";
+        el.status.className = "status-msg good";
+        el.revealSubject.textContent = `"${s.subject}"`;
+        el.revealPredicate.textContent = `"${s.predicate}"`;
+        el.reveal.hidden = false;
+        render();
+        const words2 = el.row.querySelectorAll(".word");
+        words2.forEach((w) => w.classList.add("reveal-in"));
+      } else {
+        wrongFlash = true;
+        el.status.textContent = "Not quite — the subject is who or what the sentence is about. Try again.";
+        el.status.className = "status-msg bad";
+        render();
+      }
+    }
+
+    el.prev.addEventListener("click", () => {
+      loadSentence((idx - 1 + CORE_SENTENCES.length) % CORE_SENTENCES.length);
+    });
+    el.next.addEventListener("click", () => {
+      loadSentence((idx + 1) % CORE_SENTENCES.length);
+    });
+    el.check.addEventListener("click", checkAnswer);
+    el.reset.addEventListener("click", () => loadSentence(idx));
+
+    loadSentence(0);
+  </script>
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../assets/js/wl-nav.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

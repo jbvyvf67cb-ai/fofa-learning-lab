@@ -24,6 +24,7 @@
       "lessons": [
         { "module": "sentence-anatomy",           "slug": "sentence-anatomy",           "title": "Sentence Anatomy",        "url": "writing/visualizations/sentence-anatomy/",           "gate": { "type": "visit" } },
         { "module": "nouns",                      "slug": "nouns",                      "title": "Nouns",                   "url": "writing/visualizations/nouns/",                      "gate": { "type": "visit" } },
+        { "module": "pronouns",                   "slug": "pronouns",                   "title": "Pronouns",                "url": "writing/visualizations/pronouns/",                   "gate": { "type": "visit" } },
         { "module": "verbs",                      "slug": "verbs",                      "title": "Verbs",                   "url": "writing/visualizations/verbs/",                      "gate": { "type": "visit" } },
         { "module": "adjectives",                 "slug": "adjectives",                 "title": "Adjectives",              "url": "writing/visualizations/adjectives/",                 "gate": { "type": "visit" } },
         { "module": "adverbs",                    "slug": "adverbs",                    "title": "Adverbs",                 "url": "writing/visualizations/adverbs/",                    "gate": { "type": "visit" } },

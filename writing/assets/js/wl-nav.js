@@ -12,26 +12,39 @@
 (function () {
   "use strict";
 
-  // Canonical Unit 1 path: intro → learn each part of speech → practice games.
+  // Canonical path. Unit 1 (intro → learn each part of speech → practice games)
+  // is public; Unit 2 is marked beta and only chains forward when the page is
+  // opened with ?beta=1, so the public path still ends cleanly at Unit 1.
   var SEQUENCE = [
-    { slug: "sentence-anatomy",          title: "Sentence Anatomy" },
-    { slug: "nouns",                     title: "Nouns" },
-    { slug: "verbs",                     title: "Verbs" },
-    { slug: "adjectives",                title: "Adjectives" },
-    { slug: "adverbs",                   title: "Adverbs" },
-    { slug: "word-sort",                 title: "Word Sort" },
-    { slug: "parts-of-speech-detective", title: "Part-of-Speech Detective" },
-    { slug: "word-shape-lab",            title: "Word-Shape Lab" },
+    { slug: "sentence-anatomy",           title: "Sentence Anatomy" },
+    { slug: "nouns",                      title: "Nouns" },
+    { slug: "pronouns",                   title: "Pronouns" },
+    { slug: "verbs",                      title: "Verbs" },
+    { slug: "adjectives",                 title: "Adjectives" },
+    { slug: "adverbs",                    title: "Adverbs" },
+    { slug: "word-sort",                  title: "Word Sort" },
+    { slug: "parts-of-speech-detective",  title: "Part-of-Speech Detective" },
+    { slug: "word-shape-lab",             title: "Word-Shape Lab" },
+    { slug: "subject-predicate",          title: "Subject & Predicate",          beta: true },
+    { slug: "subject-predicate-splitter", title: "Subject & Predicate Splitter", beta: true },
+    { slug: "sentence-builder",           title: "Sentence Builder",             beta: true },
+    { slug: "complete-or-fragment",       title: "Complete or Fragment?",        beta: true },
   ];
 
   var m = location.pathname.match(/\/visualizations\/([^\/]+)\//);
   if (!m) return;
   var slug = m[1];
   var i = SEQUENCE.findIndex(function (s) { return s.slug === slug; });
-  if (i === -1) return;              // page not in the Unit 1 track
+  if (i === -1) return;              // page not in the track
 
+  var betaOn = new URLSearchParams(location.search).get("beta") === "1";
+  var q = betaOn ? "?beta=1" : "";
   var prev = i > 0 ? SEQUENCE[i - 1] : null;
-  var next = i < SEQUENCE.length - 1 ? SEQUENCE[i + 1] : null;
+  var rawNext = i < SEQUENCE.length - 1 ? SEQUENCE[i + 1] : null;
+  // A beta next only counts as a "real" next when we're browsing in beta.
+  var next = (rawNext && (betaOn || !rawNext.beta)) ? rawNext : null;
+  // Reaching a beta boundary on the public path = end of Unit 1.
+  var atUnit1End = !next && rawNext && rawNext.beta && !betaOn;
 
   injectStyles();
 
@@ -49,20 +62,24 @@
   right.className = "wl-next-right";
 
   if (prev) {
-    right.appendChild(el('<a class="wl-prevlink" href="../' + prev.slug + '/">‹ ' + esc(prev.title) + '</a>'));
+    right.appendChild(el('<a class="wl-prevlink" href="../' + prev.slug + '/' + q + '">‹ ' + esc(prev.title) + '</a>'));
   }
 
   if (next) {
     right.appendChild(el(
-      '<a class="wl-next-btn" href="../' + next.slug + '/">' +
+      '<a class="wl-next-btn" href="../' + next.slug + '/' + q + '">' +
         '<span class="wl-next-kicker">Next lesson</span>' +
         '<span class="wl-next-label">' + esc(next.title) + ' &nbsp;›</span>' +
       '</a>'));
   } else {
-    // End of Unit 1 — send them back to the lab, with a nod.
+    // End of the visible path — send them back to the lab, with a nod that
+    // reflects where they are (end of Unit 1, or end of the beta preview).
+    var kicker = atUnit1End ? "You finished Unit&nbsp;1 🎉"
+               : SEQUENCE[i].beta ? "End of the preview 🎉"
+               : "You finished Unit&nbsp;1 🎉";
     right.appendChild(el(
       '<a class="wl-next-btn" href="../../">' +
-        '<span class="wl-next-kicker">You finished Unit&nbsp;1 🎉</span>' +
+        '<span class="wl-next-kicker">' + kicker + '</span>' +
         '<span class="wl-next-label">Back to Writing&nbsp;Lab &nbsp;›</span>' +
       '</a>'));
   }
