@@ -81,7 +81,7 @@ function main() {
   catalog.subjects.writing = {
     title: "Writing",
     basePath: "writing/visualizations",
-    note: "Interactive activities report an outcome via Fofa.report(); open-ended prompts are graded via Fofa.grade() + the HA grading webhook.",
+    note: "Interactive activities report an outcome via Fofa.report() -> FofaAccount.progress(); quizzes and open-ended prompts are graded server-side via POST /api/fofa/quiz.",
     rubrics: "quizzes/writing/rubrics.json",
     modules: []
   };

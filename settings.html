@@ -21,10 +21,10 @@
       <div class="eyebrow">For grown-ups</div>
       <h1 style="font-size:clamp(28px,5vw,42px)">Connect to Home Assistant</h1>
       <p>
-        The lab runs entirely in the browser, so it never holds any API key. Instead it
-        <strong>sends results to a Home Assistant webhook</strong> — the webhook URL is the only
-        secret, and it lives on this device only. Home Assistant records the measurables and, for
-        open-ended work, uses its Claude key to grade and send feedback back.
+        The lab runs entirely in the browser, so it never holds any API key. Your child logs in, and
+        progress, lesson gating, and quiz grading all run <strong>server-side in Home Assistant</strong>
+        (which holds the Claude key). Point the lab at your Home Assistant here; leave it blank to run
+        in on-device demo mode.
       </p>
     </section>
 
@@ -33,26 +33,12 @@
 
       <label class="fofa-field" for="backend">Home Assistant base URL <span class="fofa-muted">(accounts, cross-device progress &amp; gating)</span></label>
       <input class="fofa-input" id="backend" placeholder="https://your-ha.example  (blank = demo mode on this device)" autocomplete="off" inputmode="url">
-      <p class="fofa-help">Where the <code>fofa</code> integration lives (see <a href="docs/BACKEND-CONTRACT.md">the backend contract</a>). Leave blank to run in on-device demo mode. When set, the login screen and progress talk to Home Assistant.</p>
-
-      <hr style="border:none;border-top:1px solid var(--line);margin:20px 0">
-      <p class="fofa-muted" style="font-size:13px;margin:0 0 6px">The fields below are the older fire-and-forget webhook path (optional; superseded by the base URL above).</p>
-
-      <label class="fofa-field" for="child">Child's name <span class="fofa-muted">(shown on the lab, sent with results)</span></label>
-      <input class="fofa-input" id="child" placeholder="e.g. Fofa" autocomplete="off">
-
-      <label class="fofa-field" for="webhook">Home Assistant webhook URL <span class="fofa-muted">(results are POSTed here)</span></label>
-      <input class="fofa-input" id="webhook" placeholder="https://your-ha.example/api/webhook/fofa_measurable_xxxxx" autocomplete="off" inputmode="url">
-      <p class="fofa-help">In Home Assistant, create an automation triggered by a <b>Webhook</b> and paste its URL here. The random webhook id keeps it private.</p>
-
-      <label class="fofa-field" for="grade">Grading webhook URL <span class="fofa-muted">(optional — returns a score for open-ended work)</span></label>
-      <input class="fofa-input" id="grade" placeholder="https://your-ha.example/api/webhook/fofa_grade_xxxxx" autocomplete="off" inputmode="url">
-      <p class="fofa-help">A second webhook, configured in HA to <b>respond</b> with JSON <code>{ "score", "max", "feedback" }</code> after Claude grades the response. Leave blank to skip AI grading.</p>
+      <p class="fofa-help">Where the <code>fofa</code> integration lives (see <a href="docs/BACKEND-CONTRACT.md">the backend contract</a>). When set, login, progress, and grading all talk to Home Assistant.</p>
 
       <div class="row" style="margin-top:22px">
         <button class="fofa-btn primary" id="save">Save</button>
         <button class="fofa-btn" id="test">Send test result</button>
-        <button class="fofa-btn" id="clear">Disconnect</button>
+        <button class="fofa-btn" id="clear">Use demo mode</button>
       </div>
       <p class="fofa-help" id="msg" aria-live="polite"></p>
     </section>
@@ -67,8 +53,8 @@
     </section>
 
     <p class="fofa-muted" style="margin-top:18px">
-      Setting up the Home Assistant side? The full contract (webhook payloads, grading API, and the
-      quiz manifest) is in <a href="docs/BACKEND-CONTRACT.md">docs/BACKEND-CONTRACT.md</a>.
+      Setting up the Home Assistant side? The full contract (login, progress, quiz grading, gating,
+      and the quiz manifest) is in <a href="docs/BACKEND-CONTRACT.md">docs/BACKEND-CONTRACT.md</a>.
     </p>
   </main>
 
@@ -83,11 +69,7 @@
     var msg = $("msg");
 
     function reflect() {
-      var c = Fofa.config;
       $("backend").value = FofaAccount.backendUrl();
-      $("child").value = c.child || "";
-      $("webhook").value = c.webhookUrl || "";
-      $("grade").value = c.gradeUrl || "";
       var connected = !!FofaAccount.backendUrl();
       var pill = $("statePill");
       pill.className = "fofa-pill " + (connected ? "on" : "off");
@@ -107,11 +89,6 @@
 
     $("save").onclick = function () {
       FofaAccount.setBackendUrl($("backend").value.trim());
-      Fofa.setConfig({
-        child: $("child").value.trim(),
-        webhookUrl: $("webhook").value.trim(),
-        gradeUrl: $("grade").value.trim()
-      });
       msg.textContent = "Saved." + (FofaAccount.backendUrl() ? "" : " (Demo mode — blank base URL.)");
       reflect();
     };
@@ -119,18 +96,17 @@
     $("test").onclick = function () {
       msg.textContent = "Sending…";
       Fofa.report({ subject: "settings", module: "connection-test", activity: "test", kind: "quiz", score: 1, max: 1, detail: { note: "Test from Settings page" } })
-        .then(function (r) {
-          msg.textContent = r.sent
-            ? "Test result sent to Home Assistant ✓ (and saved locally)."
-            : "Saved locally. " + (Fofa.config.webhookUrl ? ("Webhook did not accept it: " + r.error) : "No webhook configured yet.");
+        .then(function () {
+          msg.textContent = FofaAccount.backendUrl()
+            ? "Test result recorded via Home Assistant ✓"
+            : "Recorded on this device (demo mode).";
           renderProgress();
         });
     };
 
     $("clear").onclick = function () {
       FofaAccount.setBackendUrl("");
-      Fofa.setConfig({ child: "", webhookUrl: "", gradeUrl: "" });
-      msg.textContent = "Disconnected. The lab runs in on-device demo mode.";
+      msg.textContent = "Now in on-device demo mode.";
       reflect();
     };
 
