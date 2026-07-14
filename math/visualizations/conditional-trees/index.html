@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 6 · Conditional Probability &amp; Trees — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Lesson 6: when one event changes the next. Draw without replacement, build a probability tree, multiply along the branches and add across them." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%E2%9A%AC%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+  <style>
+    .marble { display:inline-block; width:26px; height:26px; border-radius:50%; flex:none;
+      box-shadow: inset -3px -3px 5px rgba(0,0,0,.28), inset 2px 2px 4px rgba(255,255,255,.4); }
+    .marble.r { background: radial-gradient(circle at 34% 30%, #ff9fb0, #e5556f); }
+    .marble.b { background: radial-gradient(circle at 34% 30%, #a9bcff, #5b7bf0); }
+    .bag { display:flex; flex-wrap:wrap; gap:8px; padding:14px; border:1px dashed var(--line); border-radius:12px; background:var(--bg-soft); min-height:56px; align-items:center; }
+    .whatif { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+    @media (max-width:620px){ .whatif { grid-template-columns:1fr; } }
+    .wcard { border:1px solid var(--line); border-radius:11px; padding:12px 14px; background:var(--panel); }
+    .wcard h4 { margin:0 0 8px; font-size:.9rem; }
+    .wcard .rem { display:flex; gap:5px; flex-wrap:wrap; margin:8px 0; }
+    .wcard .marble { width:18px; height:18px; }
+    .wcard .p { font-family:var(--mono); color:var(--accent-2); font-weight:700; }
+    .stepper2 { display:flex; align-items:center; gap:6px; }
+    .stepper2 .v { font-family:var(--mono); min-width:22px; text-align:center; }
+    .tree6-wrap { overflow-x:auto; }
+    .tree6 text { font-family:var(--mono); }
+    .evbtns { display:flex; gap:8px; flex-wrap:wrap; }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">⚬ Lesson 6 · Conditional Probability</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Probability · Lesson 6 of 7</div>
+      <h1>Conditional Probability &amp; Trees</h1>
+      <div class="tag">Coins and dice never remember. But a bag of marbles does — draw one and the next chances change. A tree keeps track.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">Every chance so far came from things with <b>no memory</b>: a die doesn't care what you rolled
+      last. But pull a marble from a bag and <b>don't put it back</b> — now the bag has changed, so the next
+      draw's chances change too. That "it depends on what already happened" is
+      <span class="term">conditional probability</span>.</p>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> The second draw depends on the first</h2>
+      <p class="say">Here's a bag of marbles. Look at what the chance of drawing <b>red</b> becomes <em>after</em> a
+        first marble is taken out and kept.</p>
+      <div class="viz">
+        <div class="controls" style="gap:16px">
+          <span class="stepper2"><span class="lbl">Red</span><button class="ghost pillbtn" data-adj="r-">−</button><span class="v" id="rv"></span><button class="ghost pillbtn" data-adj="r+">+</button></span>
+          <span class="stepper2"><span class="lbl">Blue</span><button class="ghost pillbtn" data-adj="b-">−</button><span class="v" id="bv"></span><button class="ghost pillbtn" data-adj="b+">+</button></span>
+        </div>
+        <div class="bag" id="bag" style="margin-top:12px"></div>
+        <div class="pform" id="beforeP" style="margin-top:12px"></div>
+        <div class="whatif">
+          <div class="wcard" id="wIfRed"></div>
+          <div class="wcard" id="wIfBlue"></div>
+        </div>
+        <div class="cap" id="s1cap"></div>
+      </div>
+      <div class="big-note">Same bag, two different next-chances — it <b>depends</b> on the first draw. (Put the
+        marble back instead — “with replacement” — and the second draw is unchanged: that's the independent case
+        from the dice and coins.)</div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> The probability tree</h2>
+      <p class="say">Draw <b>two</b> marbles (keeping the first). A <b>tree</b> lays out every path. The number on
+        each branch is its chance, and to get a whole outcome you <b>multiply along the path</b>. Click a leaf.</p>
+      <div class="viz">
+        <div class="tree6-wrap"><div id="tree6" class="tree6"></div></div>
+        <div class="pform" id="treeOut" style="margin-top:10px"></div>
+        <div class="cap" id="treeCap">The four leaf-chances always add up to <b>1</b> — something must happen.</div>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> Multiply along, add across</h2>
+      <p class="say">To find the chance of an <b>event</b> (which might happen several ways), find every leaf that
+        counts and <b>add</b> their chances. Pick an event:</p>
+      <div class="viz">
+        <div class="evbtns" id="evbtns"></div>
+        <div class="tree6-wrap" style="margin-top:12px"><div id="tree6b" class="tree6"></div></div>
+        <div class="pform" id="evOut" style="margin-top:10px"></div>
+        <div class="cap">Multiply <b>along</b> each branch to get a leaf; add <b>across</b> the leaves that match the event.</div>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step">
+      <h2><span class="n">4</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>Last stop: <b>Monty Hall</b> — a game show where conditional probability breaks everyone's intuition, and
+        counting the sample space settles it.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="conditional-trees.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

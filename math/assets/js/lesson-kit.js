@@ -44,6 +44,16 @@ const Lesson = {
     return el;
   },
 
+  // a coin token showing H or T
+  coin(face, size) {
+    const c = document.createElement("div");
+    c.className = "coin" + (face === "T" ? " t" : "");
+    c.style.width = c.style.height = size + "px";
+    c.style.fontSize = (size * 0.42) + "px";
+    c.textContent = face;
+    return c;
+  },
+
   // a tiny die (for grid cells)
   miniDie(value) {
     const d = document.createElement("div");

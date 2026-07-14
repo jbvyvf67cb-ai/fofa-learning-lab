@@ -204,5 +204,5 @@ window.addEventListener("DOMContentLoaded", () => {
   stepTree();
   stepAtLeastOne();
   buildChecks();
-  Lesson.setup({ module: "coins", next: null });
+  Lesson.setup({ module: "coins", next: { title: "Combinations", url: "../combinations/" } });
 });

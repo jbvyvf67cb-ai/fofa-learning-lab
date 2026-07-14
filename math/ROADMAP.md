@@ -31,15 +31,15 @@ The first three lessons are the fundamentals, taught deliberately slowly on the 
    - The sample space **doubles** with each coin → a drawn **tree** of 2^N sequences (the grid could
      only reach two dimensions; the tree keeps going).
    - **"At least one"** = 1 − P(none): count the single all-Tails way to fail and subtract.
-5. **Lesson 5 · Combinations — when order doesn't matter**
-   - Choosing vs. arranging; (1,4) and (4,1) as the *same* pick.
-   - "How many ways to get exactly k Heads in n flips?" → Pascal's triangle by counting; "n choose k".
-6. **Lesson 6 · Conditional Probability & Trees**
-   - Dependent events; drawing without replacement; tree diagrams; multiply along the branches.
-7. **Lesson 7 · Monty Hall — should you switch?**
-   - Conditional probability's showpiece: enumerate the tiny 3-door sample space, then simulate
-     switch-vs-stay hundreds of times and watch it converge to 2/3 vs 1/3 (reusing Lesson 1's
-     convergence viz). Counting beats intuition.
+5. **Lesson 5 · Combinations** ✅ *built* — when order doesn't matter.
+   - Group coin sequences by # Heads → the bin sizes are the combinations C(n,k).
+   - Pascal's triangle by counting (each entry = sum of the two above); "choose which k of n are Heads".
+6. **Lesson 6 · Conditional Probability & Trees** ✅ *built* — when one event changes the next.
+   - Draw marbles without replacement → the 2nd draw's odds change (conditional probability).
+   - A probability tree: multiply along a path; add across the leaves that make up an event.
+7. **Lesson 7 · Monty Hall** ✅ *built* — counting beats intuition.
+   - Enumerate the tiny 3-door sample space (switch wins 2 of 3); a playable game; and a simulation
+     of switch-vs-stay that converges to 2/3 vs 1/3.
    - *(Optional bonus, a separate counting/information strand: the 21-card "guess your card" trick —
      deterministic base-3 narrowing, 27 → 9 → 3 → 1, not probability but a lovely contrast to it.)*
 

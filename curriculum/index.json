@@ -39,7 +39,10 @@
         { "module": "single-die",         "slug": "single-die",            "title": "The Single Die",              "url": "math/visualizations/single-die/",             "gate": { "type": "quiz", "min": 0.6 } },
         { "module": "two-dice",           "slug": "two-dice",              "title": "Two Dice & the Sample Space", "url": "math/visualizations/two-dice/",               "gate": { "type": "quiz", "min": 0.6 } },
         { "module": "sums-permutations",  "slug": "sums-and-permutations", "title": "Sums & Permutations",         "url": "math/visualizations/sums-and-permutations/",  "gate": { "type": "quiz", "min": 0.6 } },
-        { "module": "coins",              "slug": "coins",                 "title": "Coins & \"At Least One\"",    "url": "math/visualizations/coins/",                  "gate": { "type": "quiz", "min": 0.6 } }
+        { "module": "coins",              "slug": "coins",                 "title": "Coins & \"At Least One\"",    "url": "math/visualizations/coins/",                  "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "combinations",       "slug": "combinations",          "title": "Combinations",                "url": "math/visualizations/combinations/",           "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "conditional-trees",  "slug": "conditional-trees",     "title": "Conditional Probability & Trees", "url": "math/visualizations/conditional-trees/",  "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "monty-hall",         "slug": "monty-hall",            "title": "Monty Hall",                  "url": "math/visualizations/monty-hall/",             "gate": { "type": "quiz", "min": 0.6 } }
       ]
     },
     "reading": { "title": "Reading", "status": "coming-soon", "lessons": [] }

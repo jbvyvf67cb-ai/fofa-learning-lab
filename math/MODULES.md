@@ -41,9 +41,9 @@ probability is counting outcomes in a sample space you can see; statistics is co
 | **2** | Two Dice & the Sample Space | `two-dice` | the 6×6 = 36 grid drawn and counted; every square equally likely; P(one pair) = 1/36; multiplication (6×6) seen as grid area | ✅ built |
 | **3** | Sums & Permutations | `sums-and-permutations` | mark the squares that make a total → count/36; permutations = ordered pairs mirrored across the diagonal; the distribution is just how many squares sit on each sum-stripe | ✅ built |
 | **4** | Coins & "At Least One" | `coins` | the complement rule P(not A)=1−P(A) as a green/red bar; the sample space doubling into a tree of 2^N sequences; the "at least one" shortcut (1 − P(none)) | ✅ built |
-| **5** | Combinations — order doesn't matter | *(new)* | choosing vs. arranging; "how many ways to get exactly k Heads?"; Pascal's triangle by counting; "n choose k" | planned |
-| **6** | Conditional Probability & Trees | *(new)* | dependent events; without replacement; tree diagrams | planned |
-| **7** | Monty Hall — should you switch? | *(new)* | conditional probability; enumerate the 3-door sample space; simulate switch vs. stay → converges to 2/3 vs 1/3 | planned |
+| **5** | Combinations | `combinations` | group coin sequences by # Heads → the bin sizes are C(n,k); Pascal's triangle (each = sum of two above); "choose which k of n flips are Heads" | ✅ built |
+| **6** | Conditional Probability & Trees | `conditional-trees` | draw marbles without replacement → the 2nd draw's odds change; a probability tree (multiply along a path); add across the leaves of an event | ✅ built |
+| **7** | Monty Hall — should you switch? | `monty-hall` | enumerate the 3-door sample space (switch wins 2/3); playable game; simulate switch vs. stay → converges to 2/3 vs 1/3 | ✅ built |
 | **S1–S4** | Statistics | *(new)* | mean/median/mode; spread; histograms; expected value | planned |
 
 ## Why this format (design intent)

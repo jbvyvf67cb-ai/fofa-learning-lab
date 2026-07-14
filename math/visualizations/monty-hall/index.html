@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 7 · Monty Hall — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Lesson 7: the Monty Hall puzzle. Count the tiny 3-door sample space, play it, then simulate hundreds of games and watch switching win 2/3 of the time." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%9A%97%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+  <style>
+    .doors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .door { position: relative; aspect-ratio: 3/4; border-radius: 12px; border: 2px solid var(--line);
+      background: linear-gradient(180deg, #3a2f22, #2a2119); display: grid; place-items: center; font-size: 2.6rem;
+      cursor: pointer; transition: transform .1s, border-color .1s; user-select: none; }
+    .door:hover { transform: translateY(-2px); }
+    .door .dn { position: absolute; top: 6px; left: 0; right: 0; text-align: center; font-family: var(--mono);
+      font-size: .8rem; color: var(--ink-dim); }
+    .door.picked { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,156,255,.25); }
+    .door.open { background: var(--bg-soft); border-color: var(--line); cursor: default; }
+    .door.win { border-color: var(--good); box-shadow: 0 0 0 3px rgba(86,211,160,.3); }
+    .door.dimmed { opacity: .55; cursor: default; }
+    .cases { display: flex; flex-direction: column; gap: 10px; }
+    .case { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg-soft); }
+    .case.switchwin { border-color: var(--good); background: rgba(86,211,160,.08); }
+    .case .mini { display: flex; gap: 5px; }
+    .md-door { width: 26px; height: 34px; border-radius: 5px; border: 1px solid var(--line); background: #2a2119;
+      display: grid; place-items: center; font-size: 1rem; position: relative; }
+    .md-door.pick { border-color: var(--accent); }
+    .md-door.open { background: var(--bg-soft); }
+    .case .verdict { font-family: var(--mono); font-size: .8rem; text-align: right; }
+    .case .verdict .s { color: var(--ink-dim); } .case .verdict .w { color: var(--good); font-weight: 700; }
+    .simrow { display: grid; grid-template-columns: 64px 1fr 118px; gap: 10px; align-items: center; margin: 10px 0; }
+    .simlab { font-weight: 700; font-size: .9rem; }
+    .simtrack { position: relative; height: 26px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+    .simfill { height: 100%; transition: width .15s ease; }
+    .simfill.sw { background: var(--good); } .simfill.st { background: var(--bad); }
+    .simtarget { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--prob-hi); }
+    .simtarget .t { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: .62rem;
+      color: var(--prob-hi); font-family: var(--mono); white-space: nowrap; }
+    .simval { font-family: var(--mono); font-size: .82rem; color: var(--ink-soft); }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">🚗 Lesson 7 · Monty Hall</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Probability · Lesson 7 of 7</div>
+      <h1>Monty Hall — should you switch?</h1>
+      <div class="tag">A game show puzzle that fools almost everyone. Our tool — counting the sample space — settles it cold.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">Three doors. Behind one is a <b>car</b> 🚗; behind the other two, <b>goats</b> 🐐. You pick a
+      door. The host — who knows where the car is — opens a <b>different</b> door to reveal a goat, then asks:
+      do you want to <b>stay</b> with your door, or <b>switch</b> to the last one? Most people shrug and say
+      "50/50, doesn't matter." Let's count and see.</p>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> Count the whole sample space</h2>
+      <p class="say">There are only <b>three</b> equally-likely cases — where the car actually is. Say you always
+        pick <b>Door 1</b> (it doesn't matter which; the doors are the same by symmetry). Here's what happens in
+        each case:</p>
+      <div class="viz">
+        <div class="cases" id="cases"></div>
+        <div class="big-note" id="caseSummary" style="margin-top:14px"></div>
+      </div>
+      <p class="say">Counting beats intuition: <b>switching wins in 2 of the 3 cases</b>. The reason is the host's
+        help — see Step 3.</p>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> Play a few rounds</h2>
+      <p class="say">Pick a door. The host opens a goat. Then choose to stay or switch, and see what you win.</p>
+      <div class="viz">
+        <div class="doors" id="doors"></div>
+        <div class="controls" style="margin-top:14px">
+          <button id="stayBtn" disabled>Stay</button>
+          <button id="switchBtn" disabled>Switch</button>
+          <button id="newBtn" class="ghost">New game</button>
+          <span class="lbl" id="gameMsg" style="margin-left:auto"></span>
+        </div>
+        <div class="cap" id="tally"></div>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> Let the numbers decide</h2>
+      <p class="say">A few games are noisy. Play <b>hundreds</b> and the truth appears: the switch win-rate marches
+        to <b>2/3</b>, stay to <b>1/3</b> (the dashed marks).</p>
+      <div class="viz">
+        <div class="controls">
+          <button id="sim100">Play 100 each</button>
+          <button id="sim1000" class="ghost">Play 1000 each</button>
+          <button id="simReset" class="ghost">Reset</button>
+          <span class="lbl" id="simN" style="margin-left:auto"></span>
+        </div>
+        <div style="margin-top:22px">
+          <div class="simrow"><span class="simlab" style="color:var(--good)">Switch</span>
+            <div class="simtrack"><div class="simfill sw" id="swFill" style="width:0"></div>
+              <div class="simtarget" style="left:66.67%"><span class="t">2/3</span></div></div>
+            <span class="simval" id="swVal">—</span></div>
+          <div class="simrow"><span class="simlab" style="color:var(--bad)">Stay</span>
+            <div class="simtrack"><div class="simfill st" id="stFill" style="width:0"></div>
+              <div class="simtarget" style="left:33.33%"><span class="t">1/3</span></div></div>
+            <span class="simval" id="stVal">—</span></div>
+        </div>
+        <div class="cap" id="simCap" style="margin-top:14px"></div>
+      </div>
+      <div class="big-note">Why? Your first pick is right only <b>1/3</b> of the time — so <b>2/3</b> of the time the
+        car is behind one of the other two doors. The host then <b>opens the goat</b> among those two, squeezing that
+        whole <b>2/3</b> onto the single door you could switch to. Switching harvests it.</div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step">
+      <h2><span class="n">4</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>🎉 That's the whole probability unit: every answer came from <b>counting the sample space</b> — dice, coins,
+        trees, and now a game show. Next up, Unit B turns the same counting on real <b>data</b> (statistics).</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="monty-hall.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

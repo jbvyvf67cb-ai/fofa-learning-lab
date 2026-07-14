@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5 · Combinations — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Lesson 5: when order doesn't matter. Group coin flips by how many Heads, meet 'n choose k', and build Pascal's triangle by counting." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%E2%96%B3%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+  <style>
+    .bins { display: grid; gap: 10px; }
+    .bin { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg-soft); cursor: pointer; transition: border-color .1s, background .1s; }
+    .bin:hover { border-color: var(--accent); }
+    .bin.on { border-color: var(--prob-hi); background: rgba(255,184,107,.10); }
+    .bin .bh { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--ink-soft); margin-bottom: 8px; }
+    .bin .bh b { color: var(--ink); font-family: var(--mono); }
+    .bin .cnt { margin-left: auto; font-family: var(--mono); color: var(--prob-hi); font-weight: 700; }
+    .bin .seqs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .miniseq { display: flex; gap: 2px; padding: 3px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); }
+
+    .pascal { display: flex; flex-direction: column; align-items: center; gap: 6px; overflow-x: auto; padding: 4px; }
+    .prow { display: flex; gap: 6px; justify-content: center; }
+    .pcell { width: 44px; height: 40px; display: grid; place-items: center; border-radius: 8px; font-family: var(--mono);
+      font-weight: 700; background: var(--bg-soft); border: 1px solid var(--line); color: var(--ink-soft); cursor: pointer; font-size: .9rem; flex: none; }
+    .pcell:hover { border-color: var(--accent); }
+    .pcell.on { background: var(--prob-hi); color: #06122e; border-color: var(--prob-hi); }
+    .pcell.parent { background: rgba(124,156,255,.25); border-color: var(--accent); color: var(--ink); }
+    .pcell.rowon { border-color: var(--accent-2); }
+    .poslots { display: flex; flex-direction: column; gap: 6px; }
+    .poslot-row { display: flex; gap: 5px; }
+    .slot { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg-soft);
+      display: grid; place-items: center; font-family: var(--mono); font-size: .8rem; color: var(--ink-dim); }
+    .slot.on { background: #e6ad35; color: #4a3800; font-weight: 800; border-color: #e6ad35; }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">△ Lesson 5 · Combinations</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Probability · Lesson 5 of 7</div>
+      <h1>Combinations — when order doesn't matter</h1>
+      <div class="tag">Sometimes you don't care about the order — only <em>how many</em>. Counting those turns into a beautiful triangle.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">In Lesson 3 <b>order mattered</b> — (1,5) and (5,1) were different. But often we only care
+      <b>how many</b>, not the order. Flip 4 coins: if all I ask is "how many Heads?", then
+      <span class="mono">HHTT</span> and <span class="mono">HTHT</span> are the <b>same answer</b> to me. Counting
+      those groups is called a <span class="term">combination</span>.</p>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> Group the flips by how many Heads</h2>
+      <p class="say">Here are all the coin sequences from Lesson 4, sorted into bins by their number of Heads.
+        Click a bin to see the chance of getting exactly that many.</p>
+      <div class="viz">
+        <div class="controls">
+          <span class="lbl">Coins:</span>
+          <span id="binN"></span>
+          <span class="lbl" id="binTotal" style="margin-left:auto"></span>
+        </div>
+        <div class="bins" id="bins" style="margin-top:12px"></div>
+        <div class="pform" id="binOut" style="margin-top:14px"></div>
+        <div class="cap" id="binCap">Click a bin above.</div>
+      </div>
+      <div class="big-note">The bin sizes for 4 coins are <b>1, 4, 6, 4, 1</b>. Those counts — the number of ways to
+        get 0, 1, 2, 3, 4 Heads — are the <b>combinations</b>. We write "the number of ways to get <b>k</b> Heads
+        in <b>n</b> flips" as <span class="mono">C(n, k)</span>, read "<b>n choose k</b>".</div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> Stack the counts → Pascal's triangle</h2>
+      <p class="say">Write each row's counts under the last and something magic appears: every number is the
+        <b>sum of the two just above it</b>. This is <span class="term">Pascal's triangle</span>, and row <b>n</b>
+        is exactly the combinations for <b>n</b> flips.</p>
+      <div class="viz">
+        <div class="pascal" id="pascal"></div>
+        <div class="pform" id="pasOut" style="margin-top:14px"></div>
+        <div class="cap" id="pasCap">Click any number to see what it counts — and the two numbers above that add up to it.</div>
+      </div>
+      <p class="say">Why does adding work? To get <b>k</b> Heads in <b>n</b> flips, look at the <b>last</b> flip: either
+        it's Heads (then you needed k−1 Heads in the first n−1 flips) or Tails (k Heads in the first n−1). Add those
+        two cases → <span class="mono">C(n,k) = C(n−1,k−1) + C(n−1,k)</span>. That's the two-above rule.</p>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> "Choose" = pick which ones</h2>
+      <p class="say">Another way to see <span class="mono">C(n, k)</span>: it's the number of ways to <b>choose which
+        k of the n flips are the Heads</b>. Pick <b>k</b> below and see all the ways to place them.</p>
+      <div class="viz">
+        <div class="controls">
+          <span class="lbl">Choose k =</span>
+          <span id="chooseK"></span>
+          <span class="lbl">Heads among 4 flips</span>
+        </div>
+        <div class="poslots" id="poslots" style="margin-top:12px"></div>
+        <div class="pform" id="chooseOut" style="margin-top:12px"></div>
+        <div class="cap">Each row is one way to choose which flips are Heads. Count the rows — that's <span class="mono">C(4, k)</span>,
+          the same number as the bin and the triangle.</div>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step">
+      <h2><span class="n">4</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>Next: <b>conditional probability</b> — what happens when one event <em>changes</em> the next, and how a
+        probability tree keeps track.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="combinations.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>
