@@ -80,21 +80,41 @@ Architecture doc: **`MODULES.md`**. One module per visualization.
 
 ## 5. Current status — what's built
 
-**7 visualizations, each with a full Learn/Explore/Quiz module (all behind `?beta=1`):**
+**7 visualizations, each with a full Learn/Explore/Quiz module.** The six-module trunk (M1–M6)
+is now **PUBLIC** as a gated learning path; the laser sim and the unbuilt Fork A/B modules stay
+behind `?beta=1`.
 
-| # | Module | Folder | Lessons/Quiz | Notes |
-|---|--------|--------|--------------|-------|
-| M1 | Atomic Structure | `element-explorer` | 8 / 11 | **PUBLIC** on landing page. Existence badge (nature/lab/theoretical/impossible), band-of-stability chart, ion cycler, Z up to 1000 (systematic IUPAC names). |
-| M2 | Isotopes & Atomic Mass | `isotopes` | 3 / 8 | weighted-average mass; 17 elements w/ exact isotope masses. |
-| M3 | Electron Configuration | `electron-configuration` | 5 / 8 | orbital filling, aufbau ladder, exceptions. |
-| M4 | Periodic Table | `periodic-table` | 5 / 8 | all 118; colour-by-trend, highlight group/period/block. |
-| M5 | Chemical Bonding | `bonding` | 6 / 8 | ionic/covalent/metallic, polarity, molecule gallery. |
-| M6 | Molecular Shape (VSEPR) | `vsepr` | 4 / 7 | electron domains → 3D shape → polarity (vector sum). |
-| Adv | Laser on Diamond | `laser-diamond` | 4 / 7 | thermal-physics sim; the two-threshold / boundary insight. |
+| # | Module | Folder | Lessons/Quiz | Status | Notes |
+|---|--------|--------|--------------|--------|-------|
+| M1 | Atomic Structure | `element-explorer` | 8 / 11 | **public** | Existence badge (nature/lab/theoretical/impossible), band-of-stability chart, ion cycler, Z up to 1000 (systematic IUPAC names). |
+| M2 | Isotopes & Atomic Mass | `isotopes` | 3 / 8 | **public** | weighted-average mass; 17 elements w/ exact isotope masses. |
+| M3 | Electron Configuration | `electron-configuration` | 5 / 8 | **public** | orbital filling, aufbau ladder, exceptions. |
+| M4 | Periodic Table | `periodic-table` | 5 / 8 | **public** | all 118; colour-by-trend, highlight group/period/block. |
+| M5 | Chemical Bonding | `bonding` | 6 / 8 | **public** | ionic/covalent/metallic, polarity, molecule gallery. |
+| M6 | Molecular Shape (VSEPR) | `vsepr` | 4 / 7 | **public** | electron domains → 3D shape → polarity (vector sum). |
+| Adv | Laser on Diamond | `laser-diamond` | 4 / 7 | beta | thermal-physics sim; the two-threshold / boundary insight. |
 
-**Landing page (`index.html`):** shows ONLY the Element Explorer publicly; everything else
-(M2–M6 + Advanced) is inside `.beta-only` divs revealed when `?beta=1` (a small script toggles a
-`body.beta` class). Keep the public page minimal unless told otherwise.
+**The trunk order shown on the landing (M1→M2→M3→M4→M5→M6) matches `curriculum/index.json`.**
+
+**Landing page (`index.html`):** the six trunk cards render publicly under **"Your learning path"**,
+in curriculum order. Fork A, Fork B, and the Advanced laser sim stay inside a `.beta-only` div
+revealed only when `?beta=1` (a small script toggles a `body.beta` class).
+
+### Locking structure (complete a lesson before the next)
+Sequential gating is driven by the repo-root `curriculum/index.json` + the shared account layer,
+NOT by anything science-specific:
+- `curriculum/index.json` lists each subject's lessons in order with a `gate` (science uses
+  `{ type:"quiz", min:0.8 }` — score ≥80% on a module's quiz to complete it).
+- The module shell (`module-shell.js`) now **always runs** (the old `?beta=1` gate was removed) so
+  a public page's quiz reports results via `Fofa.report` → `FofaAccount.progress`.
+- `fofa-gate.js` (on the landing) locks/badges each card — **Start / Next / 🔒 Locked / ✓ Done** —
+  so a module is only clickable once the previous one is complete.
+- `fofa-lesson-guard.js` (on every module page) blocks a locked lesson with a 🔒 overlay even if
+  its URL is typed directly, so the lock can't be bypassed.
+- In mock mode (no Home Assistant backend) state is computed client-side from recorded results;
+  with the real `fofa` HA integration it's server-authoritative.
+- **Verify the lock** with `node <scratch>/verify.js`-style Playwright driving, or manually: log in
+  (mock creds `fofa` / `learn`), confirm M2–M6 show 🔒, pass M1's quiz, confirm M2 unlocks.
 
 **Key design decisions the user made along the way:**
 - Public landing page = M1 only; rest gated behind `?beta=1`.

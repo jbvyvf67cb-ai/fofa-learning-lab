@@ -10,12 +10,12 @@
     "science": {
       "title": "Science",
       "lessons": [
-        { "module": "m1-atomic-structure",  "slug": "element-explorer",        "title": "Atomic Structure",        "url": "science/visualizations/element-explorer/?beta=1",       "gate": { "type": "quiz", "min": 0.8 } },
-        { "module": "m2-isotopes",           "slug": "isotopes",                "title": "Isotopes & Atomic Mass",  "url": "science/visualizations/isotopes/?beta=1",               "gate": { "type": "quiz", "min": 0.8 } },
-        { "module": "m3-electron-config",    "slug": "electron-configuration",  "title": "Electron Configuration",  "url": "science/visualizations/electron-configuration/?beta=1", "gate": { "type": "quiz", "min": 0.8 } },
-        { "module": "m4-periodic-table",     "slug": "periodic-table",          "title": "Periodic Table",          "url": "science/visualizations/periodic-table/?beta=1",         "gate": { "type": "quiz", "min": 0.8 } },
-        { "module": "m5-bonding",            "slug": "bonding",                 "title": "Chemical Bonding",        "url": "science/visualizations/bonding/?beta=1",                "gate": { "type": "quiz", "min": 0.8 } },
-        { "module": "m6-vsepr",              "slug": "vsepr",                   "title": "Molecular Shape (VSEPR)", "url": "science/visualizations/vsepr/?beta=1",                  "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m1-atomic-structure",  "slug": "element-explorer",        "title": "Atomic Structure",        "url": "science/visualizations/element-explorer/",       "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m2-isotopes",           "slug": "isotopes",                "title": "Isotopes & Atomic Mass",  "url": "science/visualizations/isotopes/",               "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m3-electron-config",    "slug": "electron-configuration",  "title": "Electron Configuration",  "url": "science/visualizations/electron-configuration/", "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m4-periodic-table",     "slug": "periodic-table",          "title": "Periodic Table",          "url": "science/visualizations/periodic-table/",         "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m5-bonding",            "slug": "bonding",                 "title": "Chemical Bonding",        "url": "science/visualizations/bonding/",                "gate": { "type": "quiz", "min": 0.8 } },
+        { "module": "m6-vsepr",              "slug": "vsepr",                   "title": "Molecular Shape (VSEPR)", "url": "science/visualizations/vsepr/",                  "gate": { "type": "quiz", "min": 0.8 } },
         { "module": "adv-laser-diamond",     "slug": "laser-diamond",           "title": "Laser on Diamond",        "url": "science/visualizations/laser-diamond/?beta=1",          "gate": { "type": "quiz", "min": 0.8 } }
       ]
     },

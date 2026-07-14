@@ -2,7 +2,8 @@
    module-shell.js — shared Learn / Explore / Quiz shell
    ------------------------------------------------------------
    Wraps any visualization page in a three-tab module UI.
-   • Gated on ?beta=1 — otherwise the page is the plain viz.
+   • Always active: the shell is the module. Lesson access is governed by the
+     curriculum lock (fofa-lesson-guard.js), not by a ?beta flag.
    • Reads a global `MODULE = { id, title, intro, lessons[], quiz[] }`
      supplied by each viz's module.js.
    • The page must mark its existing viz container with id="explorePanel".
@@ -12,7 +13,6 @@
    ============================================================ */
 (function () {
   "use strict";
-  if (new URLSearchParams(location.search).get("beta") !== "1") return;  // gated
 
   document.addEventListener("DOMContentLoaded", () => {
     if (typeof MODULE === "undefined") return;

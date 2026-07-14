@@ -38,6 +38,9 @@ async function run(page) {
     // both work fine in real browsers, so ignore those artifacts.
     if (msg.includes("Could not parse CSS stylesheet")) return;
     if (msg.includes("scrollIntoView is not a function")) return;
+    // The module shell now runs on every load (no ?beta gate); switching tabs
+    // calls window.scrollTo, which jsdom stubs out but real browsers implement.
+    if (msg.includes("scrollTo")) return;
     // The Fofa lesson guard redirects a logged-out load to the login page;
     // jsdom has no navigation, but it works in real browsers (verified via
     // Playwright), so ignore this jsdom-only stub too.
