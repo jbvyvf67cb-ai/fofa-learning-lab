@@ -189,5 +189,5 @@ window.addEventListener("DOMContentLoaded", () => {
   stepPerm();
   stepDist();
   buildChecks();
-  Lesson.setup({ module: "sums-permutations", next: null });
+  Lesson.setup({ module: "sums-permutations", next: { title: "Coins & “At Least One”", url: "../coins/" } });
 });

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 4 · Coins &amp; “At Least One” — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Lesson 4: the complement rule (P(not A) = 1 − P(A)), how the sample space doubles into a tree with each coin, and the 'at least one' shortcut." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%AA%99%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">🪙 Lesson 4 · Coins &amp; “At Least One”</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Probability · Lesson 4 of 6</div>
+      <h1>Coins &amp; “At Least One”</h1>
+      <div class="tag">A coin is just a 2-sided die — but it's the perfect tool for three new moves: the flip-it-around trick, a sample space that doubles, and “at least one”.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">A coin has two outcomes — <b>Heads</b> or <b>Tails</b> — each with probability <b>1/2</b>.
+      That's all it is: the simplest possible random thing, a die with two faces. But that simplicity lets
+      us learn three powerful ideas the dice couldn't show us easily.</p>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> The flip-it-around trick (the complement)</h2>
+      <p class="say">Here's the coin's sample space — just two outcomes:</p>
+      <div class="viz">
+        <div class="coin-row" id="coinSS" style="justify-content:center"></div>
+      </div>
+      <p class="say">Since <b>something</b> must happen, the chances of all outcomes always add up to <b>1</b>
+        (that's 100%). So if you know the chance of a thing, you instantly know the chance of it
+        <b>not</b> happening — just subtract from 1:</p>
+      <div class="big-note"><b>P(not A) = 1 − P(A)</b> &nbsp;— the <span style="color:var(--accent-2)">complement</span> rule.</div>
+      <p class="say">This works for anything, not just coins. Pick an event on a die below (the green faces).
+        The <span style="color:var(--good)">green</span> part is your event; the <span style="color:var(--bad)">red</span>
+        part is "not it". They always fill the whole bar — together they make <b>1</b>.</p>
+      <div class="viz">
+        <div class="coin-row" id="compRow"></div>
+        <div class="controls" style="margin:14px 0 6px">
+          <span class="lbl">Quick events:</span>
+          <button class="ghost pillbtn" data-ev="6">Roll a 6</button>
+          <button class="ghost pillbtn" data-ev="even">An even number</button>
+          <button class="ghost pillbtn" data-ev="gt2">More than 2</button>
+        </div>
+        <div class="cbar" id="compBar"></div>
+        <div class="pform" id="compOut" style="margin-top:12px"></div>
+        <div class="cap" id="compCap"></div>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> Each coin doubles the outcomes (a tree)</h2>
+      <p class="say">With two dice we drew a 6×6 <b>grid</b> — but that only worked because it was flat (two
+        dice = two directions). Coins let us keep going: each new coin just <b>splits every outcome in two</b>
+        — Heads or Tails — so the sample space grows as a <b>tree</b>.</p>
+      <div class="viz">
+        <div class="controls">
+          <span class="lbl">Number of coins:</span>
+          <span id="treeN"></span>
+          <button id="flipTree" style="margin-left:auto">🪙 Flip them</button>
+        </div>
+        <div class="tree-wrap" style="margin-top:14px"><div id="tree"></div></div>
+        <div class="pform" id="treeCount" style="margin-top:8px"></div>
+        <div class="cap" id="treeCap">Follow any path from the top down to a leaf — that's one possible result,
+          like <span class="mono">H,T,H</span>. Count the leaves at the bottom: that's the whole sample space.</div>
+      </div>
+      <div class="big-note">Each coin <b>doubles</b> the outcomes: <b>2 → 4 → 8 → 16</b>. That's the same
+        “multiply” rule as the dice grid (2 × 2 × 2 …), now drawn as a tree. With <b>N</b> coins there are
+        <b>2<sup>N</sup></b> equally-likely sequences.</div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> “At least one” — the trick pays off</h2>
+      <p class="say">Now a question that looks hard: flip several coins — what's the chance of getting
+        <b>at least one Heads</b>? Listing every winning sequence is a pain. But flip it around: the
+        <b>only</b> way to fail is to get <b>no Heads at all</b> (every coin Tails) — that's just <b>one</b>
+        sequence. So:</p>
+      <div class="big-note">P(at least one Heads) = <b>1 − P(no Heads)</b> = 1 − (1/2)<sup>N</sup></div>
+      <div class="viz">
+        <div class="controls">
+          <span class="lbl">Coins flipped:</span>
+          <input type="range" id="alN" min="1" max="8" value="3" style="max-width:220px" />
+          <b id="alNlab" class="mono"></b>
+        </div>
+        <div id="alList" class="seq-list" style="margin:14px 0"></div>
+        <div style="margin:6px 0 4px;font-size:.86rem;color:var(--ink-soft)">Chance of <b>at least one Heads</b>:</div>
+        <div class="pbar"><div class="fill" id="alFill"></div></div>
+        <div class="pform" id="alOut" style="margin-top:12px"></div>
+        <div class="cap" id="alCap"></div>
+      </div>
+      <p class="say">Notice how fast it climbs toward <b>certain</b>: with more coins, getting <em>zero</em>
+        Heads becomes almost impossible, so "at least one" becomes almost sure. Counting the <b>one</b> way to
+        lose and subtracting is far easier than counting all the ways to win.</p>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step">
+      <h2><span class="n">4</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>Next: <b>combinations</b> — when we flip coins and ask “how many ways to get <em>exactly</em> 2 Heads?”,
+        the counts turn out to be Pascal's triangle.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="coins.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

@@ -26,14 +26,22 @@ The first three lessons are the fundamentals, taught deliberately slowly on the 
    - **Mark** the squares that add to a total → count ÷ 36 (a find-the-squares game).
    - **Permutations**: (1,5) and (5,1) are different squares — mirror pairs across the diagonal.
    - The distribution is just **how many squares sit on each sum-stripe**; the "bell" is counting.
-4. **Lesson 4 · Coins, Spinners & "At Least One"**
-   - Complement rule P(not A) = 1 − P(A); the "at least one" trick (1 − P(none)).
-   - OR for mutually exclusive events; when you can/can't just add.
+4. **Lesson 4 · Coins & "At Least One"** ✅ *built* — three new moves on the simplest random thing.
+   - **Complement** rule P(not A) = 1 − P(A), shown as a green/red bar that always fills to 1.
+   - The sample space **doubles** with each coin → a drawn **tree** of 2^N sequences (the grid could
+     only reach two dimensions; the tree keeps going).
+   - **"At least one"** = 1 − P(none): count the single all-Tails way to fail and subtract.
 5. **Lesson 5 · Combinations — when order doesn't matter**
    - Choosing vs. arranging; (1,4) and (4,1) as the *same* pick.
-   - Build Pascal's triangle by counting; "n choose k".
+   - "How many ways to get exactly k Heads in n flips?" → Pascal's triangle by counting; "n choose k".
 6. **Lesson 6 · Conditional Probability & Trees**
    - Dependent events; drawing without replacement; tree diagrams; multiply along the branches.
+7. **Lesson 7 · Monty Hall — should you switch?**
+   - Conditional probability's showpiece: enumerate the tiny 3-door sample space, then simulate
+     switch-vs-stay hundreds of times and watch it converge to 2/3 vs 1/3 (reusing Lesson 1's
+     convergence viz). Counting beats intuition.
+   - *(Optional bonus, a separate counting/information strand: the 21-card "guess your card" trick —
+     deterministic base-3 narrowing, 27 → 9 → 3 → 1, not probability but a lovely contrast to it.)*
 
 ### Unit B — Statistics (describe real data with the same counting)
 5. **S1 · Describing Data** — mean, median, mode, range (drag points, watch them move).
