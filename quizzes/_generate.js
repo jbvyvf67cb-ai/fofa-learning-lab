@@ -18,6 +18,7 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const SCI_DIR = path.join(ROOT, "science", "visualizations");
 const OUT_SCI = path.join(__dirname, "science");
+const OUT_MATH = path.join(__dirname, "math");
 
 function loadModule(jsPath) {
   const src = fs.readFileSync(jsPath, "utf8");
@@ -86,7 +87,30 @@ function main() {
     modules: []
   };
 
-  catalog.subjects.math = { title: "Math", status: "coming-soon", modules: [] };
+  // ---- Math ----
+  // Math is guided-lesson content (no per-module `module.js` quiz banks), so its
+  // graded quizzes are AUTHORED directly as JSON under quizzes/math/*.json and are
+  // the source of truth. This step only catalogs them into index.json — it never
+  // overwrites the authored files.
+  const math = { title: "Math", basePath: "math/visualizations", modules: [] };
+  if (fs.existsSync(OUT_MATH)) {
+    const mfiles = fs.readdirSync(OUT_MATH).filter((f) => f.endsWith(".json")).sort();
+    for (const f of mfiles) {
+      const doc = JSON.parse(fs.readFileSync(path.join(OUT_MATH, f), "utf8"));
+      const questions = doc.questions || [];
+      math.modules.push({
+        id: doc.id, slug: doc.slug, title: doc.title,
+        quiz: `quizzes/math/${f}`,
+        count: questions.length,
+        gradeable: questions.filter((q) => !q.interactiveOnly).length,
+        types: [...new Set(questions.map((q) => q.type))]
+      });
+      console.log("  math:", doc.id, "->", questions.length, "questions (authored)");
+    }
+  }
+  if (math.modules.length === 0) math.status = "coming-soon";
+  catalog.subjects.math = math;
+
   catalog.subjects.reading = { title: "Reading", status: "coming-soon", modules: [] };
 
   fs.writeFileSync(path.join(__dirname, "index.json"), JSON.stringify(catalog, null, 2) + "\n");

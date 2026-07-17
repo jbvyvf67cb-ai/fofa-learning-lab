@@ -1,0 +1,123 @@
+{
+  "authored": true,
+  "subject": "math",
+  "slug": "unit-a-probability",
+  "id": "unit-a-probability",
+  "title": "Unit A · Probability — Unit Quiz",
+  "source": "authored (math is guided-lesson content, not module.js)",
+  "page": "math/visualizations/unit-a-probability/",
+  "passMin": 0.7,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "numeric",
+      "prompt": "A fair 10-sided die. What is the probability of rolling a 7, written as a percent? (whole number)",
+      "answer": 10,
+      "tolerance": 0,
+      "explain": "One face out of ten → 1/10 = 0.10 = 10%."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "On a fair 6-sided die, what is the probability of rolling an even number?",
+      "choices": ["1/6", "2/6", "3/6 = 1/2", "5/6"],
+      "answer": 2,
+      "explain": "Three faces are even (2, 4, 6) out of six → 3/6 = 1/2."
+    },
+    {
+      "id": "q3",
+      "type": "numeric",
+      "prompt": "You roll two 6-sided dice. How many equally-likely outcomes are there in all?",
+      "answer": 36,
+      "tolerance": 0,
+      "explain": "6 × 6 = 36 (each of die A's 6 outcomes pairs with die B's 6)."
+    },
+    {
+      "id": "q4",
+      "type": "mc",
+      "prompt": "What is the probability of rolling the exact pair (2, 2) with two dice?",
+      "choices": ["1/6", "1/12", "1/36", "2/36"],
+      "answer": 2,
+      "explain": "One square out of the 36 equally-likely ones → 1/36."
+    },
+    {
+      "id": "q5",
+      "type": "numeric",
+      "prompt": "With two dice, how many different (ordered) ways can you roll a sum of 5?",
+      "answer": 4,
+      "tolerance": 0,
+      "explain": "(1,4), (2,3), (3,2), (4,1) → 4 ways."
+    },
+    {
+      "id": "q6",
+      "type": "mc",
+      "prompt": "Which total is the MOST likely when rolling two dice?",
+      "choices": ["2", "6", "7", "12"],
+      "answer": 2,
+      "explain": "7 has the most ways to make it (6 of them) → 6/36 = 1/6."
+    },
+    {
+      "id": "q7",
+      "type": "tf",
+      "prompt": "When counting the ways to make a sum, (2,5) and (5,2) count as the same outcome.",
+      "answer": false,
+      "explain": "They are two different rolls (order matters), so we count both."
+    },
+    {
+      "id": "q8",
+      "type": "mc",
+      "prompt": "On a fair die, what is the probability of NOT rolling a 6?",
+      "choices": ["1/6", "1/2", "5/6", "6/6"],
+      "answer": 2,
+      "explain": "Complement rule: 1 − P(6) = 1 − 1/6 = 5/6."
+    },
+    {
+      "id": "q9",
+      "type": "mc",
+      "prompt": "Flip 3 coins. What is the probability of getting AT LEAST ONE Heads?",
+      "choices": ["1/8", "1/2", "7/8", "3/8"],
+      "answer": 2,
+      "explain": "1 − P(no Heads) = 1 − 1/8 = 7/8 (only TTT has no Heads)."
+    },
+    {
+      "id": "q10",
+      "type": "numeric",
+      "prompt": "How many ways are there to get exactly 2 Heads in 4 coin flips? (that's C(4,2))",
+      "answer": 6,
+      "tolerance": 0,
+      "explain": "C(4,2) = 6 — the middle number of row 4 of Pascal's triangle."
+    },
+    {
+      "id": "q11",
+      "type": "mc",
+      "prompt": "A bag has 3 red and 2 blue marbles. You draw one red and KEEP it. What is the probability the next marble is also red?",
+      "choices": ["3/5", "2/4 = 1/2", "3/4", "2/5"],
+      "answer": 1,
+      "explain": "After removing a red, 2 red remain of 4 marbles → 2/4 = 1/2 (the bag changed)."
+    },
+    {
+      "id": "q12",
+      "type": "mc",
+      "prompt": "In the Monty Hall game, what is your probability of winning the car if you ALWAYS switch?",
+      "choices": ["1/2", "1/3", "2/3", "3/4"],
+      "answer": 2,
+      "explain": "Switching wins in 2 of the 3 equally-likely cases → 2/3."
+    },
+    {
+      "id": "q13",
+      "type": "free",
+      "prompt": "In your own words, explain why a total of 7 is more likely than a total of 2 when you roll two dice.",
+      "rubric": "Full marks: the answer says probability = (ways to make the total) ÷ 36 (or 'favourable outcomes ÷ total'), and that 7 has more ways/combinations (six: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1) while 2 has only one way (1+1). Partial: mentions 7 has more combinations but doesn't tie it to counting out of 36. Award 0 if it only says '7 is lucky' or gives no counting reason.",
+      "max": 2,
+      "explain": "P(sum) = (ways to make it) ÷ 36. Seven has 6 ways; two has only 1 (1+1). More ways → more likely."
+    },
+    {
+      "id": "q14",
+      "type": "free",
+      "prompt": "Explain, in your own words, why switching doors wins about 2/3 of the time in the Monty Hall problem.",
+      "rubric": "Full marks: notes that the first pick is right only 1/3 of the time, so 2/3 of the time the car is behind one of the other doors; the host then opens the goat among those, concentrating that 2/3 onto the single remaining door, so switching wins 2/3. Partial: says switching wins 2/3 and staying 1/3 without the 'first pick is 1/3' reasoning, or enumerates the 3 cases correctly. Award 0 for '50/50' or no reasoning.",
+      "max": 2,
+      "explain": "Your first pick is right 1/3 of the time; the other 2/3 gets concentrated onto the one door you can switch to."
+    }
+  ]
+}

@@ -49,7 +49,8 @@
         { "module": "coins",              "slug": "coins",                 "title": "Coins & \"At Least One\"",    "url": "math/visualizations/coins/",                  "gate": { "type": "quiz", "min": 0.6 } },
         { "module": "combinations",       "slug": "combinations",          "title": "Combinations",                "url": "math/visualizations/combinations/",           "gate": { "type": "quiz", "min": 0.6 } },
         { "module": "conditional-trees",  "slug": "conditional-trees",     "title": "Conditional Probability & Trees", "url": "math/visualizations/conditional-trees/",  "gate": { "type": "quiz", "min": 0.6 } },
-        { "module": "monty-hall",         "slug": "monty-hall",            "title": "Monty Hall",                  "url": "math/visualizations/monty-hall/",             "gate": { "type": "quiz", "min": 0.6 } }
+        { "module": "monty-hall",         "slug": "monty-hall",            "title": "Monty Hall",                  "url": "math/visualizations/monty-hall/",             "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "unit-a-probability", "slug": "unit-a-probability",    "title": "Unit A Quiz · Probability",   "url": "math/visualizations/unit-a-probability/",     "gate": { "type": "quiz", "min": 0.7 } }
       ]
     },
     "reading": { "title": "Reading", "status": "coming-soon", "lessons": [] }

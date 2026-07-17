@@ -55,6 +55,32 @@ probability is counting outcomes in a sample space you can see; statistics is co
   a total's probability is that total's share of the flat grid. The "bell" shape is revealed as
   nothing more than how many equally-likely squares add up to each number.
 
+## End-of-unit graded quizzes
+
+Each unit ends with a **graded quiz** that is scored server-side by Home Assistant (objective
+questions by rule, written questions by Claude) — the browser never grades. Unit A ships one:
+
+- **Quiz bank (authored, source of truth):** `quizzes/math/unit-a-probability.json` — questions with
+  answer keys in the manifest shape from [`docs/BACKEND-CONTRACT.md`](../docs/BACKEND-CONTRACT.md) §4
+  (`mc`/`tf`/`numeric`/`free`; `free` carries a `rubric` + `max`). Math is guided-lesson content with
+  no `module.js`, so these are hand-authored JSON (unlike science, which is generated from `module.js`).
+  `node quizzes/_generate.js` **catalogs** `quizzes/math/*.json` into `quizzes/index.json` without
+  overwriting them.
+- **Quiz page:** `math/visualizations/unit-a-probability/` — sets `window.QUIZ = { subject, module,
+  quizId, passMin }` and includes the shared client (`fofa-account.js`), the math **quiz shell**
+  (`math/assets/js/quiz-shell.js`), and `fofa-lesson-guard.js`.
+- **Quiz shell:** `math/assets/js/quiz-shell.js` renders the questions, collects answers, and submits
+  via `FofaAccount.quiz()` (the Lab-owned client → `POST /api/fofa/quiz`, or the mock grader). It
+  renders the returned per-question results + score and never grades locally. Reusable for future unit
+  quizzes — just add a bank JSON + a page that sets `window.QUIZ`.
+- **Gating & stars:** the quiz is a `curriculum/index.json` lesson (`unit-a-probability`, gate
+  `quiz` min 0.7) placed after the last content lesson, so it unlocks only when the unit is finished;
+  passing marks it complete and earns quiz stars per the curriculum `stars` policy — automatically.
+
+**To add a Unit B quiz:** author `quizzes/math/unit-b-*.json`, run the generator, add a
+`math/visualizations/unit-b-*/` page setting `window.QUIZ`, and a `curriculum` entry after Unit B's
+last lesson.
+
 ## How to add Lesson 4+
 1. `math/visualizations/<slug>/` with `index.html` (the steps + prose) and `<slug>.js` (the
    interactives + `Lesson.check(...)` calls), linking `../../assets/css/lesson.css` and the shared

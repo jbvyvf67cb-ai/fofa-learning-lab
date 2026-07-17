@@ -102,14 +102,29 @@
     "writing": {
       "title": "Writing",
       "basePath": "writing/visualizations",
-      "note": "Interactive activities report an outcome via Fofa.report(); open-ended prompts are graded via Fofa.grade() + the HA grading webhook.",
+      "note": "Interactive activities report an outcome via Fofa.report() -> FofaAccount.progress(); quizzes and open-ended prompts are graded server-side via POST /api/fofa/quiz.",
       "rubrics": "quizzes/writing/rubrics.json",
       "modules": []
     },
     "math": {
       "title": "Math",
-      "status": "coming-soon",
-      "modules": []
+      "basePath": "math/visualizations",
+      "modules": [
+        {
+          "id": "unit-a-probability",
+          "slug": "unit-a-probability",
+          "title": "Unit A · Probability — Unit Quiz",
+          "quiz": "quizzes/math/unit-a-probability.json",
+          "count": 14,
+          "gradeable": 14,
+          "types": [
+            "numeric",
+            "mc",
+            "tf",
+            "free"
+          ]
+        }
+      ]
     },
     "reading": {
       "title": "Reading",

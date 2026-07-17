@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unit A Quiz · Probability — Math · Fofa Learning Lab</title>
+  <meta name="description" content="The graded end-of-unit quiz for Unit A: Probability. Answers are sent to Home Assistant for grading." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%E2%9C%93%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">✓ Unit A Quiz · Probability</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Unit A assessment</div>
+      <h1>Unit A Quiz — Probability</h1>
+      <div class="tag">One quiz covering all seven probability lessons. Answer every question, then submit — it's graded and saved.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">This is the <b>graded quiz</b> for Unit A. It pulls from everything you've learned:
+      single dice, the two-dice grid, sums &amp; permutations, coins and “at least one”, combinations,
+      conditional probability, and Monty Hall. Answer all <b>14</b> questions and press
+      <b>Submit for grading</b> — your answers are sent to <b>Home Assistant</b>, which grades them
+      (including the written questions) and saves your score. You need <b>70%</b> to pass, and you can
+      retake it.</p>
+
+    <div id="quiz-root"></div>
+
+    <footer class="footer" style="max-width:760px">
+      <p>Objective questions are graded instantly; written answers are read by an AI grader on the
+        Home-Assistant side. Nothing is graded in your browser.</p>
+    </footer>
+  </main>
+
+  <script>
+    window.QUIZ = { subject: "math", module: "unit-a-probability", quizId: "unit-a-probability", passMin: 0.7 };
+  </script>
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/quiz-shell.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>
