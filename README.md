@@ -63,6 +63,9 @@ Settings → Pages → Source = "GitHub Actions".
 
 ## For the next session
 
-Start with [`HANDOFF.md`](./HANDOFF.md) — it explains the architecture, the unification mechanism,
-the measurables engine, and how to add a subject, module, or quiz. Each merged subject also keeps
-its own original `HANDOFF/MODULES/ROADMAP` under its folder.
+Several Claude Code sessions build this repo in parallel — start with
+[`docs/MULTI-SESSION.md`](./docs/MULTI-SESSION.md) (who owns what + shared-branch rules), then
+[`HANDOFF.md`](./HANDOFF.md) (architecture, how to add a subject/module/quiz). The Home-Assistant
+backend is built in a separate private session against
+[`docs/BACKEND-CONTRACT.md`](./docs/BACKEND-CONTRACT.md). Each merged subject also keeps its own
+original `HANDOFF/MODULES/ROADMAP` under its folder.

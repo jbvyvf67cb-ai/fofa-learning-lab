@@ -1,8 +1,13 @@
 # HANDOFF — Fofa Learning Lab
 
 **Purpose:** cold-start briefing for a fresh Claude Code session. Read this first, then
+[`docs/MULTI-SESSION.md`](./docs/MULTI-SESSION.md) (which session are you? what may you edit?) and
 [`docs/BACKEND-CONTRACT.md`](./docs/BACKEND-CONTRACT.md) for the Home Assistant contract. Each merged
 subject also has its own original handoff under `science/HANDOFF.md` and `writing/HANDOFF.md`.
+
+> **Multiple Claude Code sessions build this repo in parallel** (an overall/front-end session, a
+> private Home-Assistant backend session, and per-subject content sessions). Before editing, read
+> [`docs/MULTI-SESSION.md`](./docs/MULTI-SESSION.md) for who owns what and the shared-branch rules.
 
 ## 1. What this is
 
