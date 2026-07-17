@@ -1,0 +1,94 @@
+{
+  "generated": false,
+  "subject": "writing",
+  "id": "parts-of-speech",
+  "slug": "parts-of-speech-quiz",
+  "title": "Parts of Speech · Checkpoint",
+  "unit": "Unit 1",
+  "intro": "The end-of-unit check. Answer all ten. Score 80% or higher (8 of 10) to pass and finish Unit 1. You can reset and try again.",
+  "pass": 0.8,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mc",
+      "prompt": "Which word is the NOUN?  “The brave firefighter climbed quickly.”",
+      "choices": ["brave", "firefighter", "climbed", "quickly"],
+      "answer": 1,
+      "explain": "“firefighter” names a person — that's a noun."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "Which word is the VERB?  “A curious kitten chased the ball.”",
+      "choices": ["curious", "kitten", "chased", "ball"],
+      "answer": 2,
+      "explain": "“chased” is the action — the verb."
+    },
+    {
+      "id": "q3",
+      "type": "mc",
+      "prompt": "Which word is the ADJECTIVE?  “The ancient castle stood silently.”",
+      "choices": ["ancient", "castle", "stood", "silently"],
+      "answer": 0,
+      "explain": "“ancient” describes the castle — which kind? That's an adjective."
+    },
+    {
+      "id": "q4",
+      "type": "mc",
+      "prompt": "Which word is the ADVERB?  “She gently closed the door.”",
+      "choices": ["She", "gently", "closed", "door"],
+      "answer": 1,
+      "explain": "“gently” tells HOW she closed it — that's an adverb."
+    },
+    {
+      "id": "q5",
+      "type": "mc",
+      "prompt": "Which word is the PRONOUN?  “They found a map under the table.”",
+      "choices": ["They", "found", "under", "table"],
+      "answer": 0,
+      "explain": "“They” stands in for a noun (some people) — that's a pronoun."
+    },
+    {
+      "id": "q6",
+      "type": "tf",
+      "prompt": "In “The dog barked loudly,” the word “loudly” is an adjective.",
+      "answer": false,
+      "explain": "“loudly” describes the verb barked (how it barked), so it's an adverb, not an adjective."
+    },
+    {
+      "id": "q7",
+      "type": "tf",
+      "prompt": "A pronoun takes the place of a noun.",
+      "answer": true,
+      "explain": "Right — instead of repeating a name, we use she, they, it, and so on."
+    },
+    {
+      "id": "q8",
+      "type": "tap",
+      "prompt": "Tap the ADJECTIVE in the sentence.",
+      "sentence": ["The", "happy", "puppy", "barked", "loudly"],
+      "answer": 1,
+      "explain": "“happy” describes the puppy — an adjective."
+    },
+    {
+      "id": "q9",
+      "type": "tap",
+      "prompt": "Tap the VERB in the sentence.",
+      "sentence": ["Three", "noisy", "crows", "suddenly", "flew", "away"],
+      "answer": 4,
+      "explain": "“flew” is the action — the verb."
+    },
+    {
+      "id": "q10",
+      "type": "mc",
+      "prompt": "One word, different jobs. In which sentence is “light” an ADJECTIVE?",
+      "choices": [
+        "She switched off the light.",
+        "He packed a light jacket.",
+        "They light the candles at dusk."
+      ],
+      "answer": 1,
+      "explain": "In “a light jacket,” light describes the jacket (how heavy) — an adjective. In the others it's a noun, then a verb."
+    }
+  ]
+}

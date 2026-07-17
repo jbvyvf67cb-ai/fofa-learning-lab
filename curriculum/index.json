@@ -37,7 +37,8 @@
         { "module": "adverbs",                    "slug": "adverbs",                    "title": "Adverbs",                 "url": "writing/visualizations/adverbs/",                    "gate": { "type": "visit" } },
         { "module": "word-sort",                  "slug": "word-sort",                  "title": "Word Sort",               "url": "writing/visualizations/word-sort/",                  "gate": { "type": "complete" } },
         { "module": "parts-of-speech-detective",  "slug": "parts-of-speech-detective",  "title": "Part-of-Speech Detective","url": "writing/visualizations/parts-of-speech-detective/",  "gate": { "type": "complete" } },
-        { "module": "word-shape-lab",             "slug": "word-shape-lab",             "title": "Word-Shape Lab",          "url": "writing/visualizations/word-shape-lab/",             "gate": { "type": "visit" } }
+        { "module": "word-shape-lab",             "slug": "word-shape-lab",             "title": "Word-Shape Lab",          "url": "writing/visualizations/word-shape-lab/",             "gate": { "type": "visit" } },
+        { "module": "parts-of-speech-quiz",       "slug": "parts-of-speech-quiz",       "title": "Parts of Speech · Checkpoint", "url": "writing/visualizations/parts-of-speech-quiz/",  "gate": { "type": "quiz", "min": 0.8 } }
       ]
     },
     "math": {

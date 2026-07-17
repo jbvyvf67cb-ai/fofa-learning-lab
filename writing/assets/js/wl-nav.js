@@ -25,6 +25,7 @@
     { slug: "word-sort",                  title: "Word Sort" },
     { slug: "parts-of-speech-detective",  title: "Part-of-Speech Detective" },
     { slug: "word-shape-lab",             title: "Word-Shape Lab" },
+    { slug: "parts-of-speech-quiz",       title: "Parts of Speech · Checkpoint" },
     { slug: "subject-predicate",          title: "Subject & Predicate",          beta: true },
     { slug: "subject-predicate-splitter", title: "Subject & Predicate Splitter", beta: true },
     { slug: "sentence-builder",           title: "Sentence Builder",             beta: true },

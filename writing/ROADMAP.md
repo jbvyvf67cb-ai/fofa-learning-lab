@@ -29,6 +29,9 @@ established here.
 - ✅ **Word-Shape Lab** — turn a noun into a verb into an adjective
   (*beauty → beautify → beautiful*) and watch the sentence adapt.
 
+- ✅ **Parts of Speech · Checkpoint** — a graded end-of-unit quiz. Pass at 80%
+  to complete Unit 1; hard-gates entry to Unit 2, like the science quizzes.
+
 ### Unit 2 · The core of a sentence (subject + predicate)
 - ✅ **Subject & Predicate** — concept lesson: find the who/what, then the
   action word, and watch the two-color split appear. Reuses Unit 1's colors
@@ -83,6 +86,15 @@ and taken in any order.
   chooser; outline-to-draft scaffolder.
 
 ---
+
+## Graded checkpoints
+The grammar trunk (Units 1–4) has right answers, so each unit ends with one
+**objective, auto-graded checkpoint quiz** that hard-gates the next unit at 80%
+— shared engine in `assets/js/wl-quiz.js`, questions in `quizzes/writing/`.
+The style & writing-mode branches are craft (no single right answer), so those
+are graded by **AI-scored rubric prompts** (`quizzes/writing/rubrics.json`,
+`grade` gate) instead. Unit 1's checkpoint ships; Units 2–4 get theirs as they
+leave the preview.
 
 ## Cross-cutting systems (build as needed)
 - **Progress map** — a visual trunk-and-branches tree the learner walks.
