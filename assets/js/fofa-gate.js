@@ -47,6 +47,7 @@
       "font:600 13px/1 var(--font-ui,sans-serif);background:rgba(29,34,56,.9);border:1px solid var(--line);" +
       "border-radius:999px;padding:6px 10px;color:var(--ink);backdrop-filter:blur(6px)}" +
       ".fofa-userchip a{color:var(--accent);cursor:pointer}" +
+      ".fofa-userchip .fofa-stars{color:var(--warn,#ffc857);font-weight:700}" +
       ".fofa-lock{position:relative}" +
       ".fofa-lock.is-locked{opacity:.55;filter:grayscale(.4)}" +
       ".fofa-badge{position:absolute;top:8px;right:8px;z-index:2;font-size:12px;font-weight:700;" +
@@ -64,13 +65,20 @@
   function injectUserChip() {
     var chip = document.createElement("div");
     chip.className = "fofa-userchip";
-    chip.innerHTML = "👤 " + (FofaAccount.student() || "Student") + " · <a id='fofaLogout'>Log out</a>";
+    chip.innerHTML = "👤 " + (FofaAccount.student() || "Student") +
+      "<span class='fofa-stars' id='fofaStars'></span> · <a id='fofaLogout'>Log out</a>";
     document.body.appendChild(chip);
     chip.querySelector("#fofaLogout").addEventListener("click", function () {
       FofaAccount.logout();
       location.replace(SITE_ROOT + "login.html");
     });
+    // Show the student's running star total (from the backend `state`). Paint the
+    // cached total instantly, then refresh from the server.
+    var cached = FofaAccount.cachedState && FofaAccount.cachedState();
+    if (cached && typeof cached.totalStars === "number") setStars(cached.totalStars);
+    FofaAccount.state().then(function (st) { if (st && typeof st.totalStars === "number") setStars(st.totalStars); });
   }
+  function setStars(n) { var el = document.getElementById("fofaStars"); if (el) el.textContent = " · ⭐ " + n; }
 
   function note(text) {
     var n = document.querySelector(".fofa-locknote");
