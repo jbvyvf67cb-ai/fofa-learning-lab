@@ -1,0 +1,30 @@
+{
+  "total_words": 30681,
+  "source": "Kuperman, Stadthagen-Gonzalez & Brysbaert (2012), AoA of 30k English words (BRM), merged w/ SUBTLEX-US frequency; kid-safety filtered.",
+  "axes": {
+    "grade_band": "1=Kindergarten .. 7=Advanced, from age-of-acquisition (years)",
+    "difficulty": "1 (easy) .. 10 (hard): overall 'level' of the word \u2014 how advanced, long, and rare it is (bee-style ramp). Composite of AoA, length, syllables, rarity.",
+    "trickiness": "1 (regular) .. 10 (trap): misspelling risk even when you know the word \u2014 double/silent letters, ambiguous suffixes, ie/ei, sound-spell gap. Short-but-tricky words (rhythm, necessary) score high here."
+  },
+  "by_band": {
+    "Kindergarten": 950,
+    "Grades 1-2": 2419,
+    "Grades 3-4": 4442,
+    "Grades 5-6": 6748,
+    "Grades 7-8": 7612,
+    "High School": 5764,
+    "Advanced": 2746
+  },
+  "by_difficulty": {
+    "1": 3069,
+    "2": 3068,
+    "3": 3068,
+    "4": 3068,
+    "5": 3068,
+    "6": 3068,
+    "7": 3068,
+    "8": 3068,
+    "9": 3068,
+    "10": 3068
+  }
+}
