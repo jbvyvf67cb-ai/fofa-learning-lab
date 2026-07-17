@@ -100,6 +100,10 @@ lesson unlocks only when the previous one is `complete`, where "complete" can me
   integration (client contract is identical).
 - **Recording:** `Fofa.report()` forwards to `FofaAccount.progress()` when present, so completing a
   science quiz or a writing activity advances gating. Exploration lessons report a `visit` on load.
+- **Stars (rewards):** Home Assistant awards stars — 5 per non-quiz lesson completed, and
+  `round(grade × 20)` for a quiz — per the `stars` policy in `curriculum/index.json` (contract §4b).
+  The lab only sends completion signals + quiz answers; it reads `stars`/`totalStars` back to show
+  the student. The authoritative tally lives in HA and feeds the parent dashboard ("Mr Banagrams").
 - **Module-level enforcement:** [`assets/js/fofa-lesson-guard.js`](./assets/js/fofa-lesson-guard.js)
   is included on all 24 module pages. It requires login and, if the server says the lesson is
   `locked`, blocks the page with an overlay (and a way back to the subject) — so a locked lesson

@@ -190,14 +190,38 @@ These files are **GENERATED** from the science `module.js` quiz banks by `node q
 — edit the `module.js`, not the JSON. The server holds these (with answers); the client only ever
 sends answers.
 
+## 4b. Stars (rewards) — Home Assistant awards them
+
+**Home Assistant computes and stores stars; the lab does not.** The lab only sends completion
+signals (`/progress`) and quiz answers (`/quiz`) — HA decides the stars from the policy in
+[`curriculum/index.json`](../curriculum/index.json) → `stars`:
+
+- **Non-quiz lesson completed** (a `visit`/`complete`/`grade` gate satisfied) → `stars.lessonComplete`
+  (default **5**).
+- **Quiz submitted** → `round((score / max) * stars.quizMax)` (default `quizMax` **20**), so a perfect
+  quiz = 20 and e.g. 85% = 17. Awarded on grade regardless of whether the gate's `min` was met
+  (stars reward effort/grade; the gate separately controls unlocking).
+- **Keep best** per lesson; a lesson may override with its own flat numeric `stars`.
+
+Expose stars so the lab and the parent dashboard can show the same numbers:
+- add `stars` to each `state.lessons[key]` (best earned for that lesson) and a `totalStars` on
+  `state`;
+- include `stars` (earned this submission) in the `POST /api/fofa/quiz` response.
+
+The client already sends everything HA needs — **no client change is required to grade or award
+stars.** (The lab reads `stars` back only to display them to the student; the authoritative tally
+lives in HA, which is what the parent dashboard/rewards read.)
+
 ---
 
 ## 5. What each side builds
 
 - **HA session (`fofa` integration):** the endpoints in §2–§4 (`login`, `state`, `progress`, and the
   unified `quiz`), an accounts store (hashed passwords), per-student progress storage, server-side
-  gating computed from `curriculum/index.json`, and the Claude grading call for `free` questions
-  (text now; vision-ready for `image` later). Add `cors_allowed_origins`. Expose HA over HTTPS.
+  gating computed from `curriculum/index.json`, the Claude grading call for `free` questions
+  (text now; vision-ready for `image` later), and **stars** per §4b (compute, keep best, expose in
+  `state`/`quiz`). This tally is what the parent dashboard ("Mr Banagrams") reads for rewards. Add
+  `cors_allowed_origins`. Expose HA over HTTPS.
 - **This repo (web app):** a login screen; `assets/js/fofa-account.js` (login, token handling,
   `state`/`progress`/`quiz` calls, offline cache + a **mock backend** that grades from the quiz
   manifest so it runs pre-integration); the quiz shell posts answers to `quiz` and renders `results`

@@ -136,10 +136,18 @@
       default:         return false;
     }
   }
+  function starsFor(L, complete, best, max, attempts, sp) {
+    // Mirror the star policy in curriculum/index.json (§4b of the contract).
+    if (typeof L.stars === "number") return complete ? L.stars : 0;
+    var isQuiz = L.gate && (L.gate.type === "quiz" || L.gate.type === "grade");
+    if (isQuiz) return (max > 0 && attempts) ? Math.round((best / max) * (sp.quizMax || 20)) : 0;
+    return complete ? (sp.lessonComplete || 5) : 0;
+  }
   function mockState() {
     return curriculum().then(function (c) {
       var rows = mockResults();
-      var lessons = {};
+      var sp = c.stars || {};
+      var lessons = {}, totalStars = 0;
       Object.keys(c.subjects).forEach(function (subj) {
         var list = (c.subjects[subj].lessons) || [];
         var prevComplete = true; // first lesson always unlocked
@@ -150,15 +158,18 @@
           var max = mine.reduce(function (m, r) { return (r.max != null && r.max > m) ? r.max : m; }, 0);
           var complete = gateSatisfied(L.gate, mine);
           var unlocked = (i === 0) || prevComplete;
+          var stars = starsFor(L, complete, best, max, mine.length, sp);
+          totalStars += stars;
           lessons[key] = {
             status: complete ? "complete" : (unlocked ? "unlocked" : "locked"),
-            best: best, max: max, attempts: mine.length,
+            best: best, max: max, attempts: mine.length, stars: stars,
             last: mine.length ? mine[mine.length - 1].ts : null
           };
           prevComplete = complete;
         });
       });
-      var st = { ok: true, student: student() || "Fofa", curriculumVersion: c.version || "mock", lessons: lessons };
+      var st = { ok: true, student: student() || "Fofa", curriculumVersion: c.version || "mock",
+                 totalStars: totalStars, lessons: lessons };
       writeJSON(K.state, st);
       return st;
     });
@@ -198,7 +209,13 @@
         results.push(Object.assign({ id: a.id, earned: earned, of: of }, (a.type === "free" ? {} : { correct: correct }), extra));
       });
       mockRecord({ subject: sub.subject, module: sub.module, activity: "quiz", kind: "quiz", score: score, max: max });
-      return mockState().then(function (state) { return { ok: true, score: score, max: max, results: results, state: state }; });
+      return curriculum().then(function (c) {
+        var quizMax = (c.stars && c.stars.quizMax) || 20;
+        var stars = max > 0 ? Math.round((score / max) * quizMax) : 0;
+        return mockState().then(function (state) {
+          return { ok: true, score: score, max: max, stars: stars, results: results, state: state };
+        });
+      });
     }).catch(function (e) { return { ok: false, error: String(e.message || e) }; });
   }
 

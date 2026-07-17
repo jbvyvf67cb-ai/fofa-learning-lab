@@ -6,6 +6,13 @@
     "grade":    "an AI-graded (free-form) result where score / max >= `min`.",
     "visit":    "the lesson page was opened at least once (pure-exploration lessons with no score)."
   },
+  "stars": {
+    "note": "Home Assistant awards the stars (the lab only sends completion signals and quiz answers). Non-quiz lesson completion earns `lessonComplete` stars. A quiz earns round(grade * quizMax) stars, where grade = score/max, capped at quizMax. Best result per lesson is kept. A lesson may override with its own numeric `stars` (flat award) — otherwise these defaults apply.",
+    "lessonComplete": 5,
+    "quizMax": 20,
+    "quizFormula": "round((score / max) * quizMax)",
+    "keepBest": true
+  },
   "subjects": {
     "science": {
       "title": "Science",

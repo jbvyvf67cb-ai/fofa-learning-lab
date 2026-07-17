@@ -249,7 +249,8 @@
     if (res.score > prog.quizBest) { prog.quizBest = res.score; saveProg(prog); }
     updateProgress();
     const foot = root.querySelector(".quiz-foot");
-    foot.innerHTML = `<span class="quiz-msg">Scored ${res.score} / ${res.max}.</span> <button id="quizRetake" class="ghost">Retake</button>`;
+    const stars = (typeof res.stars === "number") ? ` &nbsp;·&nbsp; ⭐ ${res.stars} star${res.stars === 1 ? "" : "s"} earned` : "";
+    foot.innerHTML = `<span class="quiz-msg">Scored ${res.score} / ${res.max}.${stars}</span> <button id="quizRetake" class="ghost">Retake</button>`;
     foot.querySelector("#quizRetake").onclick = () => renderQuiz(root);
   }
 })();
