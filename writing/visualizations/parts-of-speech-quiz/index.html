@@ -22,14 +22,15 @@
   <footer class="site-foot">
     <div class="wrap">
       Questions come from <code>quizzes/writing/parts-of-speech.json</code>; your
-      score is recorded through the same progress pipeline every lesson uses.
+      answers are graded server-side (Home Assistant) — the same path science and
+      math use — and count toward gating and stars.
       &nbsp;·&nbsp; <a href="../../">Back to Writing Lab</a>
     </div>
   </footer>
 
   <script src="../../../assets/js/fofa-account.js"></script>
-  <script>window.WL_QUIZ = "parts-of-speech";</script>
-  <script src="../../assets/js/wl-quiz.js"></script>
+  <script>window.WL_QUIZ = { quizId: "parts-of-speech", module: "parts-of-speech-quiz", passMin: 0.8 };</script>
+  <script src="../../assets/js/quiz-shell.js"></script>
   <script src="../../assets/js/wl-nav.js"></script>
   <script src="../../../assets/js/fofa-lesson-guard.js"></script>
 </body>

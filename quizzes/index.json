@@ -102,17 +102,20 @@
     "writing": {
       "title": "Writing",
       "basePath": "writing/visualizations",
-      "note": "Interactive activities report an outcome via Fofa.report() -> FofaAccount.progress(); quizzes and open-ended prompts are graded server-side via POST /api/fofa/quiz. Objective end-of-unit checkpoints are auto-graded like science and gate the next unit.",
+      "note": "Interactive activities report an outcome via Fofa.report() -> FofaAccount.progress(); checkpoint quizzes and open-ended prompts are graded server-side via POST /api/fofa/quiz.",
       "rubrics": "quizzes/writing/rubrics.json",
       "modules": [
         {
           "id": "parts-of-speech",
           "slug": "parts-of-speech-quiz",
-          "title": "Unit 1 · Parts of Speech Checkpoint",
+          "title": "Parts of Speech · Checkpoint",
           "quiz": "quizzes/writing/parts-of-speech.json",
           "count": 10,
           "gradeable": 10,
-          "types": ["mc", "tf", "tap"]
+          "types": [
+            "mc",
+            "tf"
+          ]
         }
       ]
     },

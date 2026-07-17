@@ -89,8 +89,10 @@ and taken in any order.
 
 ## Graded checkpoints
 The grammar trunk (Units 1–4) has right answers, so each unit ends with one
-**objective, auto-graded checkpoint quiz** that hard-gates the next unit at 80%
-— shared engine in `assets/js/wl-quiz.js`, questions in `quizzes/writing/`.
+**objective checkpoint quiz** that hard-gates the next unit at 80%. Questions
+are authored in `quizzes/writing/`, and answers are graded **server-side** via
+the shared `FofaAccount.quiz()` contract (the browser never grades) — rendered
+by `writing/assets/js/quiz-shell.js`, the same path science and math use.
 The style & writing-mode branches are craft (no single right answer), so those
 are graded by **AI-scored rubric prompts** (`quizzes/writing/rubrics.json`,
 `grade` gate) instead. Unit 1's checkpoint ships; Units 2–4 get theirs as they

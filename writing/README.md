@@ -24,7 +24,7 @@ built and playable. Twenty-three interactive modules, no dependencies.
 - **Word Sort** — drop words into the right part-of-speech bucket; get ten right in a row.
 - **Part-of-Speech Detective** — one spelling, many disguises: see how a word's job changes with use.
 - **Word-Shape Lab** — morph one root across parts of speech (beauty → beautify → beautiful → beautifully).
-- **Parts of Speech · Checkpoint** — a graded end-of-unit quiz (multiple-choice, true/false, tap-the-word). Score 80% to complete Unit 1; it hard-gates the next unit, the same way science quizzes do.
+- **Parts of Speech · Checkpoint** — a graded end-of-unit quiz (multiple-choice + true/false). Answers are graded server-side (the same `FofaAccount.quiz()` path science and math use); score 80% to complete Unit 1 and hard-gate the next unit.
 
 **Unit 2 · Subject & predicate**
 - **Subject & Predicate** — the concept lesson: find the who/what, then the action, and watch the two-color split appear, with a hint on every wrong tap.
@@ -83,7 +83,7 @@ assets/
   data/grammar.js          Authoritative dataset (parts of speech, sentences)
   js/pos-lesson.js         Shared engine for the noun/verb/adjective/adverb lessons
   js/wl-nav.js             Shared "what's next" sequential lesson navigation
-  js/wl-quiz.js            Shared engine for graded end-of-unit checkpoint quizzes
+  js/quiz-shell.js         Checkpoint-quiz shell (submits answers to the server-graded FofaAccount.quiz)
 visualizations/
   <slug>/index.html        One self-contained folder per experience (23 of them)
 .github/workflows/pages.yml  Automatic GitHub Pages deploy (no build step)

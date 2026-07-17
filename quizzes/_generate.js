@@ -76,16 +76,36 @@ function main() {
   catalog.subjects.science = sci;
 
   // ---- Writing ----
-  // Writing modules are interactive games/exploration, not multiple-choice quiz
-  // banks, so their measurable is the activity outcome (see docs/BACKEND-CONTRACT.md).
-  // Open-ended writing is graded by Claude via Home Assistant using a rubric.
-  catalog.subjects.writing = {
+  // Most writing modules are interactive games/exploration whose measurable is
+  // the activity outcome. But end-of-unit CHECKPOINTS are AUTHORED quiz banks
+  // under quizzes/writing/*.json (same as math), graded server-side. Catalog
+  // any authored quiz here (rubrics.json is the open-ended rubric set, not a
+  // quiz bank, so it's skipped). This step never overwrites the authored files.
+  const writing = {
     title: "Writing",
     basePath: "writing/visualizations",
-    note: "Interactive activities report an outcome via Fofa.report() -> FofaAccount.progress(); quizzes and open-ended prompts are graded server-side via POST /api/fofa/quiz.",
+    note: "Interactive activities report an outcome via Fofa.report() -> FofaAccount.progress(); checkpoint quizzes and open-ended prompts are graded server-side via POST /api/fofa/quiz.",
     rubrics: "quizzes/writing/rubrics.json",
     modules: []
   };
+  const OUT_WRITING = path.join(__dirname, "writing");
+  if (fs.existsSync(OUT_WRITING)) {
+    const wfiles = fs.readdirSync(OUT_WRITING)
+      .filter((f) => f.endsWith(".json") && f !== "rubrics.json").sort();
+    for (const f of wfiles) {
+      const doc = JSON.parse(fs.readFileSync(path.join(OUT_WRITING, f), "utf8"));
+      const questions = doc.questions || [];
+      writing.modules.push({
+        id: doc.id, slug: doc.slug, title: doc.title,
+        quiz: `quizzes/writing/${f}`,
+        count: questions.length,
+        gradeable: questions.filter((q) => !q.interactiveOnly).length,
+        types: [...new Set(questions.map((q) => q.type))]
+      });
+      console.log("  writing:", doc.id, "->", questions.length, "questions (authored)");
+    }
+  }
+  catalog.subjects.writing = writing;
 
   // ---- Math ----
   // Math is guided-lesson content (no per-module `module.js` quiz banks), so its

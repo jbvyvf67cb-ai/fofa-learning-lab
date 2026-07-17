@@ -1,12 +1,13 @@
 {
-  "generated": false,
+  "authored": true,
   "subject": "writing",
-  "id": "parts-of-speech",
   "slug": "parts-of-speech-quiz",
+  "id": "parts-of-speech",
   "title": "Parts of Speech · Checkpoint",
   "unit": "Unit 1",
-  "intro": "The end-of-unit check. Answer all ten. Score 80% or higher (8 of 10) to pass and finish Unit 1. You can reset and try again.",
-  "pass": 0.8,
+  "page": "writing/visualizations/parts-of-speech-quiz/",
+  "intro": "The end-of-unit check. Answer all ten, then submit for grading. Score 80% or higher (8 of 10) to pass and finish Unit 1. You can try again.",
+  "passMin": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -64,18 +65,18 @@
     },
     {
       "id": "q8",
-      "type": "tap",
-      "prompt": "Tap the ADJECTIVE in the sentence.",
-      "sentence": ["The", "happy", "puppy", "barked", "loudly"],
-      "answer": 1,
+      "type": "mc",
+      "prompt": "Which word is the ADJECTIVE?  “The happy puppy barked loudly.”",
+      "choices": ["happy", "puppy", "barked", "loudly"],
+      "answer": 0,
       "explain": "“happy” describes the puppy — an adjective."
     },
     {
       "id": "q9",
-      "type": "tap",
-      "prompt": "Tap the VERB in the sentence.",
-      "sentence": ["Three", "noisy", "crows", "suddenly", "flew", "away"],
-      "answer": 4,
+      "type": "mc",
+      "prompt": "Which word is the VERB?  “Three noisy crows suddenly flew away.”",
+      "choices": ["noisy", "crows", "suddenly", "flew"],
+      "answer": 3,
       "explain": "“flew” is the action — the verb."
     },
     {
