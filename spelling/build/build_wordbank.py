@@ -222,3 +222,69 @@ summary = {
 json.dump(summary, open(OUT_SUMMARY, "w"), indent=2)
 print(f"wrote {len(rows)} words -> {os.path.relpath(OUT_CSV, HERE)}")
 print("by grade band:", summary["by_band"])
+
+
+# ---------------------------------------------------------------------------
+# practice-pool.json — the compact word set the adaptive practice app loads.
+# The app dictates words aloud and asks the child to spell them, so the pool is
+# curated for that: words a child could plausibly KNOW (high pct_known), with
+# HOMOPHONES removed (spelling "their" from audio alone is unfair), capped per
+# difficulty level so the JSON stays small and the ladder is evenly filled.
+# ---------------------------------------------------------------------------
+OUT_POOL = os.path.join(HERE, "..", "data", "practice-pool.json")
+
+# Common homophones / near-homophones — both members excluded so audio is unambiguous.
+HOMOPHONES = set("""
+to too two there their theyre your youre its it whos whose
+hear here buy by bye know no knows nose knight night
+write right rite wright sea see week weak plain plane pair pear pare
+bear bare board bored break brake cell sell cent scent sent
+deer dear die dye fair fare find fined flour flower for four fore
+great grate hair hare hall haul heal heel hole whole hour our
+made maid mail male main mane meat meet one won peace piece
+plain plane rain rein reign read red road rode rowed role roll
+sail sale scene seen sew so sow some sum son sun stair stare
+steal steel tail tale their there threw through tide tied toe tow
+wait weight ware wear where way weigh whey weather whether which witch
+wood would prince prints principal principle profit prophet cite site sight
+allowed aloud ate eight berry bury blew blue brake break ceiling sealing
+chews choose coarse course days daze faint feint feat feet flee flea
+gnu new knew genes jeans lead led loan lone maize maze meddle medal
+morning mourning muscle mussel none nun oar or ore pail pale
+patience patients peak peek pedal peddle plum plumb poor pour pore
+rap wrap real reel ring wring root route sole soul sole
+stationary stationery straight strait suite sweet threw through
+vain vein vane wail whale waist waste war wore yoke yolk
+""".split())
+
+pool_by_level = {}
+for r in rows:
+    w = r["word"]
+    if w in HOMOPHONES:
+        continue
+    if (r["pct_known"] or 0) < 0.85:        # must be a word a kid could know
+        continue
+    pool_by_level.setdefault(r["difficulty"], []).append(r)
+
+PER_LEVEL = 550
+pool = []
+for lvl in range(1, 11):
+    cand = pool_by_level.get(lvl, [])
+    cand.sort(key=lambda r: -r["freq_pm"])   # bias toward words kids actually meet
+    for r in cand[:PER_LEVEL]:
+        pool.append({
+            "w": r["word"], "d": r["difficulty"], "t": r["trickiness"],
+            "y": r["syllables"] or 1,
+            "p": "|".join(tags(r["word"])),
+        })
+
+json.dump({
+    "meta": {
+        "count": len(pool),
+        "note": "Adaptive spelling practice pool. d=difficulty 1-10, t=trickiness 1-10, "
+                "y=syllables, p=pattern tags. Homophones removed; pct_known>=0.85.",
+    },
+    "words": pool,
+}, open(OUT_POOL, "w"), separators=(",", ":"))
+print(f"wrote {len(pool)} practice words -> {os.path.relpath(OUT_POOL, HERE)} "
+      f"({os.path.getsize(OUT_POOL)//1024} KB)")

@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adaptive Spelling Bee — Fofa Learning Lab</title>
+  <meta name="description" content="Hear a word and spell it. The difficulty adapts to your performance — an endless, personalised spelling bee.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23ff9ec4%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27 font-family=%27Georgia,serif%27%3EAa%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/css/base.css">
+</head>
+<body class="fofa-page">
+  <div class="sp-crumb">
+    <div class="wrap">
+      <a href="../">← Spelling</a>
+      <span class="sep">/ Adaptive Spelling Bee</span>
+    </div>
+  </div>
+
+  <main class="wrap sp-app">
+    <!-- live status: a neutral level that climbs, plus streak & words mastered -->
+    <div class="sp-status">
+      <div class="sp-stat">
+        <div class="sp-ring" id="ring"><span id="ringNum">1</span></div>
+        <div class="lab">Your level</div>
+      </div>
+      <div class="sp-stat"><div class="val" id="streak">0</div><div class="lab">Streak</div></div>
+      <div class="sp-stat"><div class="val" id="mastered">0</div><div class="lab">Words mastered</div></div>
+      <div class="sp-stat"><div class="val" id="progress">1/10</div><div class="lab">This round</div></div>
+    </div>
+
+    <!-- the stage: shown while spelling a word -->
+    <section class="sp-stage" id="stage" hidden>
+      <div class="sp-prompt" id="prompt">Listen, then type what you hear.</div>
+
+      <div id="listenBox">
+        <button class="sp-hear" id="hearBtn">🔊 Hear the word</button>
+        <div class="sp-controls">
+          <button class="sp-mini" id="againBtn">↻ Again</button>
+          <button class="sp-mini" id="slowBtn">🐢 Slower</button>
+          <button class="sp-mini" id="showBtn">👁 Show me</button>
+        </div>
+      </div>
+
+      <div id="flashBox" hidden>
+        <div class="sp-flash" id="flashWord"></div>
+        <div class="sp-controls"><button class="sp-mini" id="reflashBtn">👁 Show again</button></div>
+      </div>
+
+      <div class="sp-inputrow">
+        <input class="sp-input" id="answer" type="text" autocomplete="off" autocapitalize="off"
+               autocorrect="off" spellcheck="false" placeholder="type here" aria-label="Spell the word">
+        <div><button class="sp-submit" id="checkBtn">Check</button></div>
+      </div>
+
+      <div class="sp-feedback" id="feedback"></div>
+    </section>
+
+    <!-- start / mode / round summary -->
+    <section class="sp-stage" id="startCard">
+      <div class="sp-prompt">Ready to practise? The word is read aloud — you spell it.</div>
+      <button class="sp-hear" id="startBtn">🐝 Start spelling</button>
+      <div class="sp-controls" style="margin-top:16px">
+        <span class="sp-toggle" id="modeToggle" role="group" aria-label="Practice mode">
+          <button data-mode="listen" class="on">🔊 Listen</button>
+          <button data-mode="flash">👁 Flash</button>
+        </span>
+      </div>
+      <div class="sp-note" id="modeNote"></div>
+    </section>
+
+    <section class="sp-summary" id="summary" hidden></section>
+
+    <p class="sp-note">Your level is saved on this device, so every visit picks up exactly where you
+      left off. Powered by a bank of 30,000+ difficulty-rated words.</p>
+  </main>
+
+  <script src="../../assets/js/fofa-account.js"></script>
+  <script src="../../assets/js/fofa-measure.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    var $ = function (id) { return document.getElementById(id); };
+    var STORE = "fofa:spelling:v1";
+    var ROUND = 10;
+
+    // ---- persistent adaptive state ------------------------------------------
+    var S = load();
+    function load() {
+      var d = {};
+      try { d = JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) {}
+      return {
+        ability: typeof d.ability === "number" ? d.ability : 2.0, // 1..10, drives word choice
+        seen:    d.seen    || {},   // word -> times shown
+        mastered:d.mastered|| {},   // word -> times correct (distinct keys = mastered count)
+        review:  d.review  || [],   // [{w,d,t,y,p,due}] spaced-repetition queue for missed words
+        step:    d.step    || 0,     // monotonic word counter (drives review "due")
+        bestStreak: d.bestStreak || 0
+      };
+    }
+    function save() {
+      try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {}
+    }
+
+    // ---- pool ---------------------------------------------------------------
+    var byLevel = {}, ready = false, POOL = [];
+    fetch("../data/practice-pool.json").then(function (r) { return r.json(); }).then(function (j) {
+      POOL = j.words;
+      for (var i = 0; i < POOL.length; i++) {
+        (byLevel[POOL[i].d] = byLevel[POOL[i].d] || []).push(POOL[i]);
+      }
+      ready = true;
+    }).catch(function () {
+      $("modeNote").textContent = "Couldn't load the word list. Please refresh.";
+    });
+
+    // challenge of a word: its level, nudged up a little when it's a spelling trap
+    function challenge(o) { return Math.max(1, Math.min(10.5, o.d + (o.t - 5) * 0.12)); }
+
+    // ---- word selection: near-ability, prefer unseen, interleave review -----
+    var current = null, lastWord = null;
+    function pickWord() {
+      S.step++;
+      // 1) due review word (spaced repetition) ~55% of the time when one is due
+      var due = S.review.filter(function (x) { return x.due <= S.step; });
+      if (due.length && Math.random() < 0.55) {
+        due.sort(function (a, b) { return a.due - b.due; });
+        var pick = due[0];
+        S.review = S.review.filter(function (x) { return x !== pick; });
+        if (pick.w !== lastWord) return pick;
+      }
+      // 2) a fresh word whose challenge sits at the learner's edge
+      var lo = S.ability - 1.0, hi = S.ability + 1.3;
+      var target = Math.max(1, Math.min(10, Math.round(S.ability)));
+      var levels = [target];
+      for (var off = 1; off <= 9; off++) { levels.push(target + off); levels.push(target - off); }
+      var best = null, bestSeen = Infinity;
+      for (var li = 0; li < levels.length; li++) {
+        var arr = byLevel[levels[li]]; if (!arr) continue;
+        // scan a shuffled window so we don't always serve the same frequent words
+        var startIx = (Math.random() * arr.length) | 0;
+        for (var k = 0; k < arr.length; k++) {
+          var o = arr[(startIx + k) % arr.length];
+          var c = challenge(o);
+          if (c < lo || c > hi || o.w === lastWord) continue;
+          var seen = S.seen[o.w] || 0;
+          if (seen === 0) return o;              // unseen at the right level → perfect
+          if (seen < bestSeen) { best = o; bestSeen = seen; }
+        }
+        if (best) return best;                   // else least-seen near the edge
+      }
+      // 3) absolute fallback: anything near the target level
+      var any = byLevel[target] || POOL;
+      return any[(Math.random() * any.length) | 0];
+    }
+
+    // ---- Elo-style ability update ------------------------------------------
+    function updateAbility(o, correct, helped) {
+      if (helped && correct) return;             // a peek doesn't earn a level rise
+      var c = challenge(o);
+      var expected = 1 / (1 + Math.pow(10, (c - S.ability) / 2.0));
+      S.ability += 0.45 * ((correct ? 1 : 0) - expected);
+      S.ability = Math.max(1, Math.min(10, S.ability));
+    }
+
+    // ---- speech -------------------------------------------------------------
+    var speechOK = ("speechSynthesis" in window), voice = null, gestured = false;
+    function pickVoice() {
+      if (!speechOK) return;
+      var vs = speechSynthesis.getVoices();
+      voice = vs.filter(function (v) { return /^en(-|_|$)/i.test(v.lang); })
+                .sort(function (a, b) { return (b.default ? 1 : 0) - (a.default ? 1 : 0); })[0] || vs[0] || null;
+    }
+    if (speechOK) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+    function say(word, rate) {
+      if (!speechOK) return;
+      try {
+        speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(word);
+        u.lang = "en-US"; u.rate = rate || 0.9; if (voice) u.voice = voice;
+        speechSynthesis.speak(u);
+      } catch (e) {}
+    }
+
+    // ---- round bookkeeping --------------------------------------------------
+    var mode = "listen", inRound = 0, roundCorrect = 0, roundMissed = [], abilityAtRoundStart = S.ability;
+
+    function masteredCount() { return Object.keys(S.mastered).length; }
+    function paintStatus() {
+      var lvl = S.ability;
+      $("ring").style.setProperty("--p", (lvl / 10 * 100).toFixed(0));
+      $("ringNum").textContent = Math.round(lvl);
+      $("streak").textContent = streak;
+      $("mastered").textContent = masteredCount();
+      $("progress").textContent = Math.min(inRound + 1, ROUND) + "/" + ROUND;
+    }
+
+    var streak = 0;
+
+    // ---- flow ---------------------------------------------------------------
+    function beginRound() {
+      inRound = 0; roundCorrect = 0; roundMissed = []; abilityAtRoundStart = S.ability;
+      $("startCard").hidden = true; $("summary").hidden = true; $("stage").hidden = false;
+      nextWord();
+    }
+
+    function nextWord() {
+      if (!ready) { setTimeout(nextWord, 120); return; }
+      current = pickWord();
+      lastWord = current.w;
+      S.seen[current.w] = (S.seen[current.w] || 0) + 1;
+      save();
+      // reset UI
+      $("feedback").innerHTML = "";
+      var inp = $("answer"); inp.value = ""; inp.className = "sp-input"; inp.disabled = false;
+      $("checkBtn").disabled = false; $("checkBtn").textContent = "Check";
+      paintStatus();
+
+      if (mode === "flash" || !speechOK) {
+        $("listenBox").hidden = true; $("flashBox").hidden = false;
+        $("prompt").textContent = "Look carefully, then spell it from memory.";
+        flash();
+      } else {
+        $("listenBox").hidden = false; $("flashBox").hidden = true;
+        $("prompt").textContent = "Listen, then type what you hear.";
+        if (gestured) say(current.w);           // autospeak once the user has interacted
+      }
+      inp.focus();
+    }
+
+    function flash() {
+      var el = $("flashWord"); el.textContent = current.w; el.dataset.word = current.w;
+      var w = current.w;
+      // hold longer for longer words so there's time to take it in, then cover it
+      var hold = 1500 + current.w.length * 120;
+      setTimeout(function () { if (el.dataset.word === w && el.textContent === w) el.textContent = "• • •"; }, hold);
+    }
+
+    function check() {
+      if (!current || $("answer").disabled) return;
+      var attempt = $("answer").value.trim().toLowerCase();
+      if (!attempt) { $("answer").focus(); return; }
+      var answer = current.w.toLowerCase();
+      var correct = attempt === answer;
+      var helped = current._helped === true;
+
+      updateAbility(current, correct, helped);
+      $("answer").disabled = true; $("checkBtn").disabled = true;
+
+      if (correct) {
+        streak++; if (streak > S.bestStreak) S.bestStreak = streak;
+        if (!helped) S.mastered[current.w] = (S.mastered[current.w] || 0) + 1;
+        roundCorrect++;
+        $("answer").classList.add("ok");
+        $("feedback").innerHTML = '<div class="sp-verdict ok">✓ ' +
+          (helped ? "Right — try the next one without a peek!" : pick(["Correct!", "Nailed it!", "Yes!", "Perfect!"])) + "</div>";
+        finishItem(700, true);
+      } else {
+        streak = 0;
+        $("answer").classList.add("no");
+        // re-queue the missed word for spaced review
+        var item = { w: current.w, d: current.d, t: current.t, y: current.y, p: current.p,
+                     due: S.step + 3 + ((Math.random() * 3) | 0) };
+        S.review.push(item);
+        roundMissed.push(current.w);
+        $("feedback").innerHTML =
+          '<div class="sp-verdict no">✗ Not quite</div>' +
+          '<div class="sp-reveal">' + diffReveal(attempt, answer) + '</div>' +
+          '<div class="sp-your">you wrote: <s>' + escapeHtml($("answer").value.trim() || "—") + '</s></div>' +
+          hintsHtml(current) +
+          '<div style="margin-top:14px"><button class="sp-submit" id="nextBtn">Next word →</button></div>';
+        $("nextBtn").addEventListener("click", function () { finishItem(0, false); });
+      }
+      paintStatus();
+      save();
+    }
+
+    function finishItem(delay, auto) {
+      current._helped = false;
+      inRound++;
+      var done = inRound >= ROUND;
+      var go = function () { done ? endRound() : nextWord(); };
+      if (auto) setTimeout(go, delay); else go();
+    }
+
+    function endRound() {
+      $("stage").hidden = true;
+      var delta = S.ability - abilityAtRoundStart;
+      var arrow = delta > 0.15 ? '<span style="color:var(--good)">▲ leveled up</span>'
+                : delta < -0.15 ? '<span style="color:var(--warn)">▼ eased off</span>'
+                : '<span style="color:var(--ink-mute)">— holding steady</span>';
+      var reviewHtml = roundMissed.length
+        ? '<p>Words to give another go:</p><ul class="sp-review">' +
+            uniq(roundMissed).map(function (w) { return "<li>" + escapeHtml(w) + "</li>"; }).join("") + "</ul>"
+        : '<p>A clean round — no misspellings! 🎉</p>';
+      $("summary").innerHTML =
+        "<h2>Round done — " + roundCorrect + " / " + ROUND + " right</h2>" +
+        '<div class="sp-prompt">Your level: <strong>' + Math.round(S.ability) + "</strong> · " + arrow +
+          " · best streak " + S.bestStreak + "</div>" +
+        reviewHtml +
+        '<button class="sp-again-btn" id="againRound">Keep going →</button>';
+      $("summary").hidden = false;
+      $("againRound").addEventListener("click", beginRound);
+      paintStatus();
+
+      // report the round to the backend (progress + stars + gating), fire-and-forget
+      if (window.Fofa) {
+        Fofa.report({ subject: "spelling", module: "practice", activity: "spelling-bee",
+          kind: "game", score: roundCorrect, max: ROUND,
+          detail: { level: Math.round(S.ability * 10) / 10, missed: uniq(roundMissed) } });
+      }
+      save();
+    }
+
+    // ---- diff reveal: mark letters you missed / had extra --------------------
+    function diffReveal(attempt, answer) {
+      var L = lcs(attempt, answer);          // indices into answer that were matched
+      var out = "";
+      for (var i = 0; i < answer.length; i++) {
+        out += L.b[i] ? escapeHtml(answer[i]) : '<span class="ins">' + escapeHtml(answer[i]) + "</span>";
+      }
+      return out;
+    }
+    function lcs(a, b) {
+      var n = a.length, m = b.length, dp = [];
+      for (var i = 0; i <= n; i++) { dp[i] = []; for (var j = 0; j <= m; j++) dp[i][j] = 0; }
+      for (i = 1; i <= n; i++) for (j = 1; j <= m; j++)
+        dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]);
+      var bMatched = new Array(m).fill(false); i = n; j = m;
+      while (i > 0 && j > 0) {
+        if (a[i - 1] === b[j - 1]) { bMatched[j - 1] = true; i--; j--; }
+        else if (dp[i - 1][j] >= dp[i][j - 1]) i--; else j--;
+      }
+      return { b: bMatched };
+    }
+
+    // ---- pattern hints (teach the trap) ------------------------------------
+    var PAT_LABEL = { "double-letter": "double letter", "ie/ei": "ie / ei rule",
+      "silent-k": "silent k", "silent-w": "silent w", "silent-b": "silent b", "silent-n": "silent n",
+      "silent-p": "silent p", "gh": "tricky gh", "sc": "sc sound", "rh": "rh start", "gn": "gn start",
+      "-tion": "-tion ending", "-sion": "-sion ending", "-ious": "-ious ending", "-eous": "-eous ending",
+      "-able": "-able ending", "-ible": "-ible ending", "-ance": "-ance ending", "-ence": "-ence ending",
+      "-ough": "the -ough trap" };
+    function hintsHtml(o) {
+      var chips = ['<span class="sp-chip">' + o.y + " syllable" + (o.y === 1 ? "" : "s") + "</span>"];
+      (o.p ? o.p.split("|") : []).forEach(function (p) {
+        if (PAT_LABEL[p]) chips.push('<span class="sp-chip pat">' + PAT_LABEL[p] + "</span>");
+      });
+      return '<div class="sp-hints">' + chips.join("") + "</div>";
+    }
+
+    // ---- helpers ------------------------------------------------------------
+    function pick(a) { return a[(Math.random() * a.length) | 0]; }
+    function uniq(a) { return a.filter(function (x, i) { return a.indexOf(x) === i; }); }
+    function escapeHtml(s) { return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+    // ---- wire up ------------------------------------------------------------
+    $("startBtn").addEventListener("click", function () { gestured = true; beginRound(); });
+    $("hearBtn").addEventListener("click", function () { gestured = true; say(current && current.w); });
+    $("againBtn").addEventListener("click", function () { say(current && current.w); });
+    $("slowBtn").addEventListener("click", function () { say(current && current.w, 0.6); });
+    $("showBtn").addEventListener("click", function () { peek(); });
+    $("reflashBtn").addEventListener("click", function () { current._helped = true; flash(); });
+    $("checkBtn").addEventListener("click", check);
+    $("answer").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); $("answer").disabled ? null : check(); }
+    });
+    Array.prototype.forEach.call($("modeToggle").children, function (btn) {
+      btn.addEventListener("click", function () {
+        mode = btn.getAttribute("data-mode");
+        Array.prototype.forEach.call($("modeToggle").children, function (b) { b.classList.toggle("on", b === btn); });
+      });
+    });
+
+    function peek() {
+      if (!current) return;
+      current._helped = true;
+      var fb = $("feedback");
+      fb.innerHTML = '<div class="sp-reveal">' + escapeHtml(current.w) + "</div>";
+      setTimeout(function () { if (fb.querySelector(".sp-reveal")) fb.innerHTML = ""; }, 1500);
+    }
+
+    // If speech isn't available, default to flash mode and say so.
+    if (!speechOK) {
+      mode = "flash";
+      Array.prototype.forEach.call($("modeToggle").children, function (b) {
+        b.classList.toggle("on", b.getAttribute("data-mode") === "flash");
+        if (b.getAttribute("data-mode") === "listen") b.disabled = true;
+      });
+      $("modeNote").textContent = "Audio isn't available in this browser, so we'll flash each word for you to memorise.";
+    }
+    paintStatus();
+  })();
+  </script>
+</body>
+</html>

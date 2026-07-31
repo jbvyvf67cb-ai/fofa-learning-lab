@@ -34,6 +34,7 @@
   --subj-writing:  #c792ea;
   --subj-math:     #7c9cff;
   --subj-reading:  #ffb86b;
+  --subj-spelling: #ff9ec4;
 
   /* --- Type: one display serif + one UI sans, shared everywhere ---------- */
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
