@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S3 · Histograms — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Statistics S3: bin data into bars. Roll two dice thousands of times and watch the Lesson-3 triangle appear; learn to read the shape of data." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">📊 S3 · Histograms</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Unit B · Statistics · Lesson 3 of 4</div>
+      <h1>Histograms &amp; the Shape of Data</h1>
+      <div class="tag">With a handful of numbers you can list them all. With thousands, you <em>bin</em> them into bars — and the shape tells a story.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">A <span class="term">histogram</span> sorts data into <b>bins</b> (ranges) and draws a bar for
+      each — the <b>taller the bar, the more values landed in that bin</b>. Let's build one from something we already
+      understand: the <b>sum of two dice</b>.</p>
+
+    <!-- STEP 1 build it -->
+    <section class="step">
+      <h2><span class="n">1</span> Build a histogram by counting</h2>
+      <p class="say">Each bar is one possible sum (2 to 12). Every roll drops into its bar. Roll a few — it's lumpy.
+        Roll thousands — a clear shape emerges.</p>
+      <div class="viz">
+        <div class="controls">
+          <button id="roll100">Roll ×100</button>
+          <button id="roll1000" class="ghost">Roll ×1000</button>
+          <button id="rollReset" class="ghost">Clear</button>
+          <span class="lbl" id="rollTotal" style="margin-left:auto"></span>
+        </div>
+        <div class="hist" id="hist" style="margin-top:14px"></div>
+        <div class="hist-axis" id="axis"></div>
+        <div class="cap" id="cap">Press <b>Roll ×1000</b> a few times and watch the bars settle into a shape.</div>
+      </div>
+    </section>
+
+    <!-- STEP 2 the shape -->
+    <section class="step">
+      <h2><span class="n">2</span> The shape is the Lesson-3 triangle</h2>
+      <p class="say">That peak at <b>7</b> with slopes down to <b>2</b> and <b>12</b> is exactly the counting picture
+        from Lesson 3 — 7 has the most ways to make it, 2 and 12 the fewest. A histogram of <b>real rolls</b> grows
+        into the <b>theory</b> we counted. This hump-in-the-middle shape is called <span class="term">symmetric</span>
+        (or "bell-shaped") — common whenever lots of small random things add up.</p>
+    </section>
+
+    <!-- STEP 3 skew -->
+    <section class="step">
+      <h2><span class="n">3</span> Not everything is symmetric — skew</h2>
+      <p class="say">Many real data sets lean to one side. If most values are small with a few big ones trailing off
+        to the right (like "number of pets per family"), we call it <span class="term">right-skewed</span>. The
+        reverse is left-skewed. The shape instantly tells you where the data piles up.</p>
+      <div class="viz">
+        <div class="controls" id="shapeBtns"></div>
+        <div class="hist" id="shapeHist" style="margin-top:14px"></div>
+        <div class="cap" id="shapeCap"></div>
+      </div>
+    </section>
+
+    <!-- STEP 4 checks -->
+    <section class="step">
+      <h2><span class="n">4</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+    <footer class="footer" style="max-width:760px">
+      <p>Last stat lesson: putting probability and data together to decide if a game is <b>fair</b> — expected value.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="histograms.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

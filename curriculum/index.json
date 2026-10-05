@@ -51,7 +51,12 @@
         { "module": "combinations",       "slug": "combinations",          "title": "Combinations",                "url": "math/visualizations/combinations/",           "gate": { "type": "quiz", "min": 0.6 } },
         { "module": "conditional-trees",  "slug": "conditional-trees",     "title": "Conditional Probability & Trees", "url": "math/visualizations/conditional-trees/",  "gate": { "type": "quiz", "min": 0.6 } },
         { "module": "monty-hall",         "slug": "monty-hall",            "title": "Monty Hall",                  "url": "math/visualizations/monty-hall/",             "gate": { "type": "quiz", "min": 0.6 } },
-        { "module": "unit-a-probability", "slug": "unit-a-probability",    "title": "Unit A Quiz · Probability",   "url": "math/visualizations/unit-a-probability/",     "gate": { "type": "quiz", "min": 0.7 } }
+        { "module": "unit-a-probability", "slug": "unit-a-probability",    "title": "Unit A Quiz · Probability",   "url": "math/visualizations/unit-a-probability/",     "gate": { "type": "quiz", "min": 0.7 } },
+        { "module": "describing-data",    "slug": "describing-data",       "title": "Describing Data",             "url": "math/visualizations/describing-data/",        "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "spread",             "slug": "spread",                "title": "Spread",                      "url": "math/visualizations/spread/",                 "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "histograms",         "slug": "histograms",            "title": "Histograms",                  "url": "math/visualizations/histograms/",             "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "expected-value",     "slug": "expected-value",        "title": "Expected Value",              "url": "math/visualizations/expected-value/",         "gate": { "type": "quiz", "min": 0.6 } },
+        { "module": "unit-b-statistics",  "slug": "unit-b-statistics",     "title": "Unit B Quiz · Statistics",    "url": "math/visualizations/unit-b-statistics/",      "gate": { "type": "quiz", "min": 0.7 } }
       ]
     },
     "reading": { "title": "Reading", "status": "coming-soon", "lessons": [] }

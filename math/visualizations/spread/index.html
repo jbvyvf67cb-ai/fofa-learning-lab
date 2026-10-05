@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S2 · Spread — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Statistics S2: two data sets can share the same average yet look completely different. Measure spread with range, typical distance from the mean, and a box plot." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%E2%86%94%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+  <style>
+    .boxplot { position: relative; height: 56px; margin: 6px 0; }
+    .bp-line { position: absolute; top: 27px; height: 2px; background: var(--ink-mute); }
+    .bp-box { position: absolute; top: 12px; height: 30px; background: rgba(124,156,255,.22); border: 1.5px solid var(--accent); border-radius: 5px; }
+    .bp-med { position: absolute; top: 12px; height: 30px; width: 2px; background: var(--good); }
+    .bp-cap { position: absolute; top: 44px; transform: translateX(-50%); font-family: var(--mono); font-size: .64rem; color: var(--ink-dim); }
+    .bp-whisk { position: absolute; top: 20px; height: 14px; width: 2px; background: var(--ink-mute); }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">↔ S2 · Spread</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Unit B · Statistics · Lesson 2 of 4</div>
+      <h1>Spread</h1>
+      <div class="tag">Two teams can have the same <em>average</em> score and play nothing alike. Spread measures how bunched-up or scattered the data is.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">Press the two buttons below. <b>Both data sets have the exact same mean (10)</b> — but one is
+      tightly bunched and the other is all over the place. The average alone can't tell them apart. We need to
+      measure the <span class="term">spread</span>.</p>
+
+    <div class="viz">
+      <div class="controls">
+        <button id="bunched" class="ghost pillbtn on">Bunched</button>
+        <button id="spread" class="ghost pillbtn">Spread out</button>
+        <span class="lbl" style="margin-left:auto">…or drag the dots yourself</span>
+      </div>
+      <div class="numline" id="nl" style="margin-top:10px"></div>
+      <div class="statrow">
+        <div class="statchip mean"><div class="lab">Mean</div><div class="val" id="vMean">—</div></div>
+        <div class="statchip range"><div class="lab">Range (max − min)</div><div class="val" id="vRange">—</div></div>
+        <div class="statchip"><div class="lab">Typical distance from mean</div><div class="val" id="vMad" style="color:var(--accent-2)">—</div></div>
+      </div>
+      <div class="cap" id="cap">The faint teal sticks show how far each dot sits from the mean. Longer sticks = more spread.</div>
+    </div>
+
+    <!-- STEP 1 range -->
+    <section class="step">
+      <h2><span class="n">1</span> Range — the simplest spread</h2>
+      <p class="say">The <span class="term">range</span> is just the <b>biggest minus the smallest</b>. Quick to find,
+        but it only looks at the two end values — one far-flung dot blows it up.</p>
+      <div class="big-note">range = largest value − smallest value</div>
+    </section>
+
+    <!-- STEP 2 MAD -->
+    <section class="step">
+      <h2><span class="n">2</span> Typical distance from the middle</h2>
+      <p class="say">A fairer measure asks: <b>on average, how far is each dot from the mean?</b> Those are the teal
+        sticks — average their lengths and you get the "typical distance from the middle." Bunched data → short
+        sticks → small spread. Scattered data → long sticks → big spread. (Grown-ups square these distances to get
+        the famous <i>standard deviation</i>, but the idea is the same: average distance from the center.)</p>
+    </section>
+
+    <!-- STEP 3 boxplot -->
+    <section class="step">
+      <h2><span class="n">3</span> The box plot — where the middle half sits</h2>
+      <p class="say">A <span class="term">box plot</span> is a tidy picture of spread. The line stretches from the
+        <b>smallest to the largest</b>. The <b>box</b> holds the <b>middle half</b> of the data (from the quarter
+        mark to the three-quarter mark), and the green line inside is the <b>median</b>. A short box means the middle
+        of the data is tightly packed.</p>
+      <div class="viz">
+        <div class="boxplot" id="box"></div>
+        <div class="cap" id="boxcap"></div>
+      </div>
+    </section>
+
+    <!-- STEP 4 checks -->
+    <section class="step">
+      <h2><span class="n">4</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+    <footer class="footer" style="max-width:760px">
+      <p>Next: when you have <em>lots</em> of data, you don't plot every dot — you bin them into a <b>histogram</b>.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="spread.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

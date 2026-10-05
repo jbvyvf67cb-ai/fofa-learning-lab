@@ -1,0 +1,107 @@
+{
+  "authored": true,
+  "subject": "math",
+  "slug": "unit-b-statistics",
+  "id": "unit-b-statistics",
+  "title": "Unit B · Statistics — Unit Quiz",
+  "source": "authored (math is guided-lesson content, not module.js)",
+  "page": "math/visualizations/unit-b-statistics/",
+  "passMin": 0.7,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "numeric",
+      "prompt": "Find the mean (average) of 4, 4, 6, 10, 16.",
+      "answer": 8,
+      "tolerance": 0,
+      "explain": "4+4+6+10+16 = 40; 40 ÷ 5 = 8."
+    },
+    {
+      "id": "q2",
+      "type": "mc",
+      "prompt": "What is the median of 4, 4, 6, 10, 16?",
+      "choices": ["4", "6", "8", "10"],
+      "answer": 1,
+      "explain": "Sorted, the middle (3rd of 5) value is 6."
+    },
+    {
+      "id": "q3",
+      "type": "mc",
+      "prompt": "A neighborhood's home prices are mostly ~$300k, but one mansion is $20M. Which is a better 'typical' value?",
+      "choices": ["The mean", "The median", "The mode", "The range"],
+      "answer": 1,
+      "explain": "The median ignores the single huge outlier; the mean gets dragged way up by the mansion."
+    },
+    {
+      "id": "q4",
+      "type": "numeric",
+      "prompt": "A data set's smallest value is 4 and its largest is 19. What is the range?",
+      "answer": 15,
+      "tolerance": 0,
+      "explain": "Range = largest − smallest = 19 − 4 = 15."
+    },
+    {
+      "id": "q5",
+      "type": "mc",
+      "prompt": "Team A scores 20,21,19,20. Team B scores 0,40,39,1. Both average 20. Which has the bigger spread?",
+      "choices": ["Team A", "Team B", "They're equal", "Can't tell from the average"],
+      "answer": 1,
+      "explain": "Team B ranges from 0 to 40; Team A barely moves. Same mean, very different spread."
+    },
+    {
+      "id": "q6",
+      "type": "tf",
+      "prompt": "On a box plot, the box shows the middle half of the data (from the quarter mark to the three-quarter mark).",
+      "answer": true,
+      "explain": "Yes — the box spans Q1 to Q3, the middle 50% of the values."
+    },
+    {
+      "id": "q7",
+      "type": "mc",
+      "prompt": "In a histogram, the height of a bar tells you…",
+      "choices": ["the largest value in that bin", "how many values fell in that bin", "the mean of the data", "nothing"],
+      "answer": 1,
+      "explain": "Bar height = the count of data values in that bin."
+    },
+    {
+      "id": "q8",
+      "type": "mc",
+      "prompt": "Roll two dice many times and make a histogram of the sums. What shape appears?",
+      "choices": ["Flat (all equal)", "A symmetric hump peaking at 7", "Right-skewed", "Random noise"],
+      "answer": 1,
+      "explain": "A symmetric triangle/bell peaking at 7 — 7 has the most ways to be made (the Lesson-3 count)."
+    },
+    {
+      "id": "q9",
+      "type": "numeric",
+      "prompt": "A game pays $10 for Heads and $0 for Tails on a fair coin. What is the expected value per flip, in dollars?",
+      "answer": 5,
+      "tolerance": 0,
+      "explain": "$10 × 1/2 + $0 × 1/2 = $5 (the long-run average)."
+    },
+    {
+      "id": "q10",
+      "type": "mc",
+      "prompt": "That game (expected value $5) costs $5 to play. The game is…",
+      "choices": ["a rip-off", "fair (breaks even in the long run)", "in your favor", "impossible to judge"],
+      "answer": 1,
+      "explain": "Expected win ($5) equals the cost ($5) → fair on average."
+    },
+    {
+      "id": "q11",
+      "type": "free",
+      "prompt": "Explain the difference between the mean and the median, and give one situation where the median is the better summary.",
+      "rubric": "Full marks (2): mean = add all and divide by the count (the average/balance point); median = the middle value when sorted; AND gives a case where the median is better — a data set with an outlier or a skewed set (e.g., incomes/house prices) where one extreme value distorts the mean. Partial (1): correct definitions but no good example, or a correct example with a fuzzy definition. 0: incorrect or missing.",
+      "max": 2,
+      "explain": "Mean = total ÷ count (sensitive to outliers); median = middle value (robust). The median is better for skewed data like incomes or house prices."
+    },
+    {
+      "id": "q12",
+      "type": "free",
+      "prompt": "In your own words, what does 'expected value' mean, and why can a lottery with a huge jackpot still be a bad bet?",
+      "rubric": "Full marks (2): expected value = each payoff weighted by (multiplied by) its probability, summed = the long-run average per play; AND explains the lottery: the jackpot is huge but its probability is so tiny that payoff × probability is small — usually far below the ticket price, so you lose on average. Partial (1): one of the two ideas. 0: 'it's just luck' or no reasoning.",
+      "max": 2,
+      "explain": "Expected value = Σ(payoff × probability) = long-run average. A giant jackpot times a minuscule chance is a tiny expected value, usually less than the ticket costs."
+    }
+  ]
+}

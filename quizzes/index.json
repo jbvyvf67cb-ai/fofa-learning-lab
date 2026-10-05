@@ -136,6 +136,20 @@
             "tf",
             "free"
           ]
+        },
+        {
+          "id": "unit-b-statistics",
+          "slug": "unit-b-statistics",
+          "title": "Unit B · Statistics — Unit Quiz",
+          "quiz": "quizzes/math/unit-b-statistics.json",
+          "count": 12,
+          "gradeable": 12,
+          "types": [
+            "numeric",
+            "mc",
+            "tf",
+            "free"
+          ]
         }
       ]
     },

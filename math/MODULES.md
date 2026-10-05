@@ -44,7 +44,10 @@ probability is counting outcomes in a sample space you can see; statistics is co
 | **5** | Combinations | `combinations` | group coin sequences by # Heads → the bin sizes are C(n,k); Pascal's triangle (each = sum of two above); "choose which k of n flips are Heads" | ✅ built |
 | **6** | Conditional Probability & Trees | `conditional-trees` | draw marbles without replacement → the 2nd draw's odds change; a probability tree (multiply along a path); add across the leaves of an event | ✅ built |
 | **7** | Monty Hall — should you switch? | `monty-hall` | enumerate the 3-door sample space (switch wins 2/3); playable game; simulate switch vs. stay → converges to 2/3 vs 1/3 | ✅ built |
-| **S1–S4** | Statistics | *(new)* | mean/median/mode; spread; histograms; expected value | planned |
+| **S1** | Describing Data | `describing-data` | mean (balance point), median, mode on a draggable number line; outlier contrast | ✅ built |
+| **S2** | Spread | `spread` | range; typical distance from the mean (sticks); same-mean/different-spread; box plot | ✅ built |
+| **S3** | Histograms | `histograms` | bin & count; dice-sum rolls grow into the Lesson-3 triangle; symmetric vs. skewed | ✅ built |
+| **S4** | Expected Value & Fair Games | `expected-value` | EV = Σ(payoff × probability) = long-run average; fair vs. rip-off; simulate to EV | ✅ built |
 
 ## Why this format (design intent)
 - **No tab back-and-forth.** Earlier drafts split teaching and interactive into separate tabs; that
@@ -57,8 +60,10 @@ probability is counting outcomes in a sample space you can see; statistics is co
 
 ## End-of-unit graded quizzes
 
-Each unit ends with a **graded quiz** that is scored server-side by Home Assistant (objective
-questions by rule, written questions by Claude) — the browser never grades. Unit A ships one:
+A quiz is a `curriculum/index.json` lesson placed after the last content lesson of its unit, gated
+`quiz` min 0.7. Two ship today:
+- **Unit A:** `quizzes/math/unit-a-probability.json` + `math/visualizations/unit-a-probability/`.
+- **Unit B:** `quizzes/math/unit-b-statistics.json` + `math/visualizations/unit-b-statistics/`.
 
 - **Quiz bank (authored, source of truth):** `quizzes/math/unit-a-probability.json` — questions with
   answer keys in the manifest shape from [`docs/BACKEND-CONTRACT.md`](../docs/BACKEND-CONTRACT.md) §4

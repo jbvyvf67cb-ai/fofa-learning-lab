@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S1 · Describing Data — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Statistics S1: summarize a set of numbers with the mean (balance point), median (middle), and mode (most common)." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">📊 S1 · Describing Data</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Unit B · Statistics · Lesson 1 of 4</div>
+      <h1>Describing Data</h1>
+      <div class="tag">Probability was about what <em>might</em> happen. Statistics is about numbers we <em>already have</em> — and how to sum them up in one “typical” value.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">Say seven friends each scored some points in a game. That's a <b>data set</b> — just a pile of
+      numbers. Instead of listing all seven, we often want one number that says "this is about typical." There
+      are three famous ones. <b>Drag the dots</b> and watch all three react.</p>
+
+    <!-- the shared interactive -->
+    <div class="viz">
+      <div class="numline" id="nl"></div>
+      <div class="statrow">
+        <div class="statchip mean"><div class="lab">Mean (average)</div><div class="val" id="vMean">—</div></div>
+        <div class="statchip median"><div class="lab">Median (middle)</div><div class="val" id="vMedian">—</div></div>
+        <div class="statchip mode"><div class="lab">Mode (most common)</div><div class="val" id="vMode">—</div></div>
+      </div>
+      <div class="controls">
+        <button id="addOutlier" class="ghost pillbtn">Make one an outlier</button>
+        <button id="reset" class="ghost pillbtn">Reset</button>
+      </div>
+      <div class="cap" id="cap">Drag any dot along the line. Dots that land on the same number stack up.</div>
+    </div>
+
+    <!-- STEP 1 mean -->
+    <section class="step">
+      <h2><span class="n">1</span> Mean — the balance point</h2>
+      <p class="say">The <span class="term">mean</span> (the "average") is what everyone would get if you
+        <b>shared the total equally</b>: add up all the numbers and divide by how many there are. It's also the
+        <b>balance point</b> — the orange ▲ is exactly where the line would balance like a see-saw. Drag a dot far
+        right and watch the balance point slide to follow it.</p>
+      <div class="big-note">mean = (add up all the values) ÷ (how many values)</div>
+    </section>
+
+    <!-- STEP 2 median -->
+    <section class="step">
+      <h2><span class="n">2</span> Median — the one in the middle</h2>
+      <p class="say">Put the numbers <b>in order</b> and the <span class="term">median</span> (green line) is the
+        one <b>right in the middle</b> — as many above it as below. With 7 dots it's the 4th one. (With an even
+        count, it's halfway between the middle two.)</p>
+    </section>
+
+    <!-- STEP 3 mode -->
+    <section class="step">
+      <h2><span class="n">3</span> Mode — the most common</h2>
+      <p class="say">The <span class="term">mode</span> is simply the value that appears <b>most often</b> — the
+        <b>tallest stack</b> of dots. A data set can have no mode (all different) or several.</p>
+    </section>
+
+    <!-- STEP 4 outlier -->
+    <section class="step">
+      <h2><span class="n">4</span> Why have three? Watch an outlier</h2>
+      <p class="say">Press <b>“Make one an outlier”</b> — it flings one dot way out to the edge. Notice the
+        <b style="color:var(--accent)">mean</b> lurches toward it, but the <b style="color:var(--good)">median</b>
+        barely moves. One weird value (a billionaire walking into a room) can drag the <b>average</b> around, while
+        the <b>middle</b> stays honest. That's why we keep more than one.</p>
+    </section>
+
+    <!-- STEP 5 checks -->
+    <section class="step">
+      <h2><span class="n">5</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+    <footer class="footer" style="max-width:760px">
+      <p>Next: data with the same <em>average</em> can still look completely different — that's <b>spread</b>.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="describing-data.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>

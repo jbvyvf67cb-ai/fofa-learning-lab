@@ -156,6 +156,49 @@
   background: var(--panel); border: 1px solid var(--line); color: var(--ink-soft); }
 .lfb.ok { border-color: var(--good); } .lfb.no { border-color: var(--bad); }
 
+/* ---- statistics (Unit B) ---- */
+/* stat readout chips */
+.statrow { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+.statchip { flex: 1; min-width: 120px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; text-align: center; }
+.statchip .lab { font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-dim); }
+.statchip .val { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; margin-top: 2px; }
+.statchip.mean .val { color: var(--accent); } .statchip.median .val { color: var(--good); } .statchip.mode .val { color: var(--prob-hi); }
+.statchip.range .val { color: var(--accent-2); }
+
+/* draggable number line */
+.numline { position: relative; height: 150px; margin: 8px 0 4px; touch-action: none; user-select: none; }
+.nl-track { position: absolute; left: 0; right: 0; top: 96px; height: 3px; background: var(--line); border-radius: 2px; }
+.nl-tick { position: absolute; top: 90px; width: 1px; height: 15px; background: var(--line); }
+.nl-tick .tl { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: .68rem; color: var(--ink-dim); }
+.nl-dot { position: absolute; top: 96px; width: 26px; height: 26px; border-radius: 50%; transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 34% 30%, #a9bcff, var(--die)); border: 2px solid var(--panel); cursor: grab; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+.nl-dot.grab { cursor: grabbing; box-shadow: 0 0 0 4px rgba(124,156,255,.3); z-index: 5; }
+.nl-dot.stacked { box-shadow: 0 2px 6px rgba(0,0,0,.35), 0 0 0 2px var(--prob-hi); }
+.nl-marker { position: absolute; width: 0; height: 0; } /* mean fulcrum */
+.nl-mean { position: absolute; top: 101px; transform: translateX(-50%); color: var(--accent); font-size: 1.3rem; z-index: 3; }
+.nl-mean .cap { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: .66rem; white-space: nowrap; color: var(--accent); }
+.nl-median { position: absolute; top: 60px; bottom: 40px; width: 2px; background: var(--good); transform: translateX(-50%); z-index: 2; }
+.nl-median .cap { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: .66rem; white-space: nowrap; color: var(--good); }
+/* distance-from-mean sticks (spread) */
+.nl-stick { position: absolute; top: 96px; height: 2px; background: var(--accent-2); opacity: .7; transform: translateY(-50%); }
+
+/* generic histogram */
+.hist { display: flex; align-items: flex-end; gap: 3px; height: 180px; border-bottom: 2px solid var(--line); padding-top: 18px; }
+.hist .hb { flex: 1; background: var(--prob); border-radius: 3px 3px 0 0; min-height: 1px; position: relative; transition: height .1s; }
+.hist .hb.on { background: var(--prob-hi); }
+.hist .hb .ct { position: absolute; top: -15px; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: .62rem; color: var(--ink-dim); }
+.hist-axis { display: flex; gap: 3px; margin-top: 4px; }
+.hist-axis span { flex: 1; text-align: center; font-family: var(--mono); font-size: .66rem; color: var(--ink-dim); }
+
+/* expected-value table */
+.evtable { width: 100%; border-collapse: collapse; }
+.evtable th, .evtable td { padding: 7px 8px; border-bottom: 1px solid var(--line); font-size: .9rem; text-align: center; }
+.evtable th { color: var(--ink-dim); font-weight: 600; font-size: .78rem; }
+.evtable .pay { width: 90px; background: var(--bg-soft); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; font-family: var(--mono); text-align: center; }
+.evtable .term { font-family: var(--mono); color: var(--ink-soft); }
+.ev-big { font-family: var(--mono); font-size: 1.6rem; font-weight: 700; }
+.ev-big.pos { color: var(--good); } .ev-big.neg { color: var(--bad); } .ev-big.zero { color: var(--ink-soft); }
+
 /* ---- graded quiz shell (unit assessments) ---- */
 .qz { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin: 14px 0; }
 .qz.locked { opacity: .97; }

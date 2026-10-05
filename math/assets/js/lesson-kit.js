@@ -44,6 +44,73 @@ const Lesson = {
     return el;
   },
 
+  // a draggable number-line of data points. opts:
+  //   { min, max, step, values:[...], tickEvery, draggable, onChange(values) }
+  // returns { values, pctFor(v), redraw(), setValues(v), host }
+  numberLine(mount, opts) {
+    opts = opts || {};
+    var host = typeof mount === "string" ? document.getElementById(mount) : mount;
+    var min = opts.min != null ? opts.min : 0, max = opts.max != null ? opts.max : 20;
+    var step = opts.step || 1, tickEvery = opts.tickEvery || Math.max(1, Math.round((max - min) / 10));
+    var draggable = opts.draggable !== false;
+    var values = (opts.values || []).slice();
+    host.classList.add("numline");
+    host.innerHTML = '<div class="nl-track"></div>';
+    for (var t = min; t <= max; t += tickEvery) {
+      var tk = document.createElement("div"); tk.className = "nl-tick";
+      tk.style.left = pctFor(t) + "%";
+      tk.innerHTML = '<span class="tl">' + t + "</span>";
+      host.appendChild(tk);
+    }
+    var overlay = document.createElement("div"); overlay.style.position = "absolute"; overlay.style.inset = "0";
+    overlay.style.pointerEvents = "none"; overlay.className = "nl-overlay"; host.appendChild(overlay);
+    var dots = [];
+    function pctFor(v) { return (v - min) / (max - min) * 100; }
+    function valueFromClientX(cx) {
+      var r = host.getBoundingClientRect();
+      var p = (cx - r.left) / r.width;
+      var v = min + p * (max - min);
+      v = Math.round(v / step) * step;
+      return Math.max(min, Math.min(max, v));
+    }
+    function makeDot(i) {
+      var d = document.createElement("div"); d.className = "nl-dot"; d.dataset.i = i;
+      if (draggable) {
+        d.addEventListener("pointerdown", function (e) {
+          d.setPointerCapture(e.pointerId); d.classList.add("grab");
+        });
+        d.addEventListener("pointermove", function (e) {
+          if (!d.classList.contains("grab")) return;
+          values[+d.dataset.i] = valueFromClientX(e.clientX);
+          redraw();
+        });
+        d.addEventListener("pointerup", function (e) { d.classList.remove("grab"); d.releasePointerCapture(e.pointerId); });
+      }
+      return d;
+    }
+    function redraw() {
+      // sync dot elements to values length
+      while (dots.length < values.length) { var d = makeDot(dots.length); dots.push(d); host.appendChild(d); }
+      while (dots.length > values.length) { host.removeChild(dots.pop()); }
+      // stack dots that share a value
+      var seen = {};
+      dots.forEach(function (d, i) {
+        var v = values[i]; var k = String(v);
+        var j = seen[k] || 0; seen[k] = j + 1;
+        d.style.left = pctFor(v) + "%";
+        d.style.top = (96 - j * 24) + "px";
+        d.classList.toggle("stacked", false);
+      });
+      if (opts.onChange) opts.onChange(values, overlay);
+    }
+    redraw();
+    return {
+      get values() { return values; },
+      setValues: function (v) { values = v.slice(); redraw(); },
+      pctFor: pctFor, redraw: redraw, host: host, overlay: overlay,
+    };
+  },
+
   // a coin token showing H or T
   coin(face, size) {
     const c = document.createElement("div");

@@ -43,11 +43,15 @@ The first three lessons are the fundamentals, taught deliberately slowly on the 
    - *(Optional bonus, a separate counting/information strand: the 21-card "guess your card" trick —
      deterministic base-3 narrowing, 27 → 9 → 3 → 1, not probability but a lovely contrast to it.)*
 
-### Unit B — Statistics (describe real data with the same counting)
-5. **S1 · Describing Data** — mean, median, mode, range (drag points, watch them move).
-6. **S2 · Spread** — range, quartiles, box plots, mean absolute deviation.
-7. **S3 · Histograms & the Shape of Data** — bin data into bars; the bell returns.
-8. **S4 · Expected Value & Fair Games** — Σ(payoff × probability); is a bet fair?
+### Unit B — Statistics (describe real data with the same counting) ✅ built
+5. **S1 · Describing Data** ✅ — mean (balance point), median, mode on a draggable number line; outlier contrast.
+6. **S2 · Spread** ✅ — range, typical distance from the mean, and a box plot; same mean / different spread.
+7. **S3 · Histograms & the Shape of Data** ✅ — bin & count; dice-sum rolls grow into the Lesson-3 triangle; symmetric vs. skewed.
+8. **S4 · Expected Value & Fair Games** ✅ — Σ(payoff × probability) = long-run average; fair vs. rip-off; simulate to EV.
+
+Each unit ends with a graded quiz (server-side grading): **Unit A** and **Unit B** quizzes both ship.
+*(Proposed next: **Unit C — How LLMs Work**, applying probability + statistics: next-word prediction,
+tokens, learning by counting, temperature/sampling, and capabilities & limits.)*
 
 ## Bridges between the two halves
 - Lesson 3's dice-sum shape **is** the histogram of S3 — introduce the shape early, name it late.

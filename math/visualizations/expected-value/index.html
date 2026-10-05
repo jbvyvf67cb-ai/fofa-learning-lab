@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S4 · Expected Value — Math · Fofa Learning Lab</title>
+  <meta name="description" content="Statistics S4: expected value = each payoff weighted by its probability = the long-run average. Decide if a game is fair, and simulate to prove it." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%237c9cff%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2716%27 text-anchor=%27middle%27 fill=%27%2310131f%27%3E%F0%9F%92%B0%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../../assets/css/lesson.css" />
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">💰 S4 · Expected Value</span>
+      <a href="../../" style="font-size:.85rem;color:var(--ink-soft)">Math</a>
+      <span class="lt-prog" id="ltProg"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap" style="max-width:760px">
+      <div class="breadcrumb"><a href="../../">← Math</a> · Unit B · Statistics · Lesson 4 of 4</div>
+      <h1>Expected Value &amp; Fair Games</h1>
+      <div class="tag">Here probability and data finally shake hands: weight every payoff by its chance, add them up, and you get the long-run average — the key to spotting a fair game.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+    <p class="say">A carnival game: <b>roll one die</b> and win the dollars shown in the table. It costs money to
+      play. Should you? The answer is the <span class="term">expected value</span> — what you'd win
+      <b>per roll, on average</b>, if you played forever.</p>
+
+    <div class="viz">
+      <table class="evtable">
+        <thead><tr><th>Roll</th><th>Chance</th><th>You win ($)</th><th>payoff × chance</th></tr></thead>
+        <tbody id="evBody"></tbody>
+      </table>
+      <div class="controls" style="margin-top:14px">
+        <span class="lbl">Cost to play $</span>
+        <input class="pay" id="cost" type="number" value="4" step="0.5" style="width:80px" />
+        <button id="resetPay" class="ghost pillbtn" style="margin-left:auto">Reset payoffs</button>
+      </div>
+      <div class="statrow" style="margin-top:14px">
+        <div class="statchip"><div class="lab">Expected win / roll</div><div class="val" id="evWin" style="color:var(--accent)">—</div></div>
+        <div class="statchip"><div class="lab">Net after cost</div><div class="val" id="evNet">—</div></div>
+        <div class="statchip"><div class="lab">Verdict</div><div class="val" id="evVerd" style="font-size:1rem">—</div></div>
+      </div>
+      <div class="controls" style="margin-top:10px">
+        <button id="play1000">Play ×1000</button>
+        <button id="playReset" class="ghost">Reset plays</button>
+        <span class="lbl" id="simOut" style="margin-left:auto"></span>
+      </div>
+      <div class="cap" id="cap">Edit any payoff or the cost and watch the expected value update.</div>
+    </div>
+
+    <!-- STEP 1 -->
+    <section class="step">
+      <h2><span class="n">1</span> Expected value = the long-run average</h2>
+      <p class="say">If you played this game thousands of times, your winnings per game would settle on one number.
+        That number is the <b>expected value</b>. It's not what you get on any single roll — it's the
+        <b>average over the long run</b> (exactly the settling-down you saw with dice and coins).</p>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step">
+      <h2><span class="n">2</span> How to compute it: weight by probability</h2>
+      <p class="say">Multiply <b>each payoff by its probability</b>, then add them all up. Every face of a fair die has
+        chance <span class="mono">1/6</span>, so each term is <span class="mono">payoff × 1/6</span> — the last column.
+        Add the column and you have the expected win per roll.</p>
+      <div class="big-note">expected value = (payoff₁ × chance₁) + (payoff₂ × chance₂) + … </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step">
+      <h2><span class="n">3</span> Fair, favorable, or a rip-off?</h2>
+      <p class="say">Compare the expected win to the <b>cost to play</b>. If they're equal the game is <b>fair</b> (net
+        0). If the expected win is higher, it's <b>in your favor</b>; if lower, the house wins over time — a
+        <b>rip-off</b>. Try setting the cost to make it fair.</p>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step">
+      <h2><span class="n">4</span> Prove it — play a thousand times</h2>
+      <p class="say">Press <b>Play ×1000</b>. Your actual average winnings per roll will home in on the expected value
+        we computed — the long-run average made real.</p>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="step">
+      <h2><span class="n">5</span> Check yourself</h2>
+      <div id="checks"></div>
+    </section>
+
+    <div id="lesson-foot"></div>
+    <footer class="footer" style="max-width:760px">
+      <p>🎉 That's Unit B. You can describe data (center &amp; spread), picture it (histograms), and value a bet
+        (expected value). The graded <b>Unit B quiz</b> is on the Math page.</p>
+    </footer>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../../assets/js/lesson-kit.js"></script>
+  <script src="expected-value.js"></script>
+  <script src="../../../assets/js/fofa-lesson-guard.js"></script>
+</body>
+</html>
