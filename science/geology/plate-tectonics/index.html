@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G4 · Plate Tectonics — Geology · Fofa Learning Lab</title>
+  <meta name="description" content="Geology lesson 4: push plates together, pull them apart or slide them past each other, and watch mountains, trenches, volcanoes and new ocean floor form." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23c8a27a%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27%3E%E2%9B%B0%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/geo.css" />
+  <style>
+    .pick { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; }
+    .pick .grp { display: flex; flex-direction: column; gap: 4px; }
+    .pick .grp > span { font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-mute); }
+    .seg { display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+    .seg button { border: 0; border-radius: 0; padding: 6px 10px; font-size: .86rem; background: var(--panel-2); }
+    .seg button.on { background: var(--accent-2); color: #0b0f1f; font-weight: 700; }
+    svg.xsec { width: 100%; height: auto; display: block; border-radius: 10px; background: #a9d4ff22; }
+    .timeRow { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; margin-top: 8px; font-size: .86rem; }
+    .timeRow .yrs { font-family: var(--mono); color: var(--accent-2); min-width: 92px; text-align: right; }
+    .found { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .found span { background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: .84rem; }
+    .found span.lit { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .bname { font-family: var(--font-display); font-size: 1.2rem; margin-top: 10px; }
+    .bdesc { color: var(--ink-soft); font-size: .92rem; line-height: 1.55; }
+    .seen { font-size: .84rem; color: var(--ink-mute); margin-top: 10px; }
+    .seen b { color: var(--good); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">⛰ G4 · Plate Tectonics</span>
+      <a href="../">Geology</a>
+      <span class="geo-dots" id="geoDots"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../">Science</a> · <a href="../">Geology</a> · Lesson 4 of 6</div>
+      <h1>Plate Tectonics</h1>
+      <div class="tag">The ground under you is moving right now, about as fast as your fingernails grow.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+
+    <section class="step" id="s-intro">
+      <h2><span class="n">1</span> A cracked eggshell</h2>
+      <p class="say">Earth's outer shell (the crust plus the stiff top of the mantle) is cracked into about 15 big pieces
+        called <span class="term">plates</span>. They ride on the hot mantle underneath, which slowly flows (remember
+        lesson 1?). Plates move about <b>2 to 10 centimeters a year</b>.</p>
+      <p class="say">There are two kinds of plate. <b>Oceanic</b> plates are thin and heavy (made of basalt) and sit low,
+        under the oceans. <b>Continental</b> plates are thick and light (lots of granite) and float high, so they make
+        the land. Almost all the exciting geology happens where two plates meet, at a
+        <span class="term">plate boundary</span>.</p>
+    </section>
+
+    <section class="step" id="s-machine" data-gate="Try all 5 kinds of boundary to go on (pull apart, slide past, and 3 kinds of crash).">
+      <h2><span class="n">2</span> The plate machine</h2>
+      <p class="say">Choose the two plates and how they move. Then drag time forward and watch what grows.</p>
+      <div class="viz">
+        <div class="pick">
+          <div class="grp"><span>Left plate</span><div class="seg" id="segL"><button data-v="ocean">Oceanic</button><button data-v="cont">Continental</button></div></div>
+          <div class="grp"><span>Right plate</span><div class="seg" id="segR"><button data-v="ocean">Oceanic</button><button data-v="cont">Continental</button></div></div>
+          <div class="grp"><span>Motion</span><div class="seg" id="segM"><button data-v="apart">← Pull apart →</button><button data-v="together">→ Push together ←</button><button data-v="slide">⇅ Slide past</button></div></div>
+        </div>
+        <svg class="xsec" id="xsec" viewBox="0 0 600 270" role="img" aria-label="Cross-section of two plates at a boundary"></svg>
+        <div class="timeRow"><span>Time</span><input type="range" id="t" min="0" max="100" value="0" aria-label="Time" /><span class="yrs" id="yrs">0 years</span></div>
+        <div class="bname" id="bname"></div>
+        <div class="bdesc" id="bdesc"></div>
+        <div class="found" id="found"></div>
+        <div class="seen" id="seen"></div>
+      </div>
+    </section>
+
+    <section class="step" id="s-map">
+      <h2><span class="n">3</span> Real places</h2>
+      <p class="say">Every one of these is a real plate boundary. Use the machine to figure out what kind each one is.</p>
+      <div id="c1"></div><div id="c2"></div><div id="c3"></div><div id="c4"></div>
+    </section>
+
+    <section class="step" id="s-claude">
+      <h2><span class="n">4</span> Make a prediction for Claude</h2>
+      <p class="say">Geologists don't just explain the past. They predict the future.</p>
+      <div id="task"></div>
+    </section>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../assets/claude-channel.js"></script>
+  <script src="../assets/geo.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    Geo.init({ lesson: "plate-tectonics", title: "Plate tectonics", module: "geo-plate-tectonics" });
+
+    var st = { L: "ocean", R: "cont", M: "together" };
+    var seen = {};
+    try { seen = JSON.parse(localStorage.getItem("geo:plates:seen")) || {}; } catch (e) {}
+
+    function kind() {
+      if (st.M === "apart") return st.L === "cont" && st.R === "cont" ? "rift" : "ridge";
+      if (st.M === "slide") return "transform";
+      if (st.L === "cont" && st.R === "cont") return "collide";
+      if (st.L === "ocean" && st.R === "ocean") return "arc";
+      return "subduct";
+    }
+    var INFO = {
+      ridge:     { name: "Divergent boundary: mid-ocean ridge", desc: "The plates pull apart. Magma rises into the gap, cools, and becomes brand new ocean floor. Over time it builds a long underwater mountain range.", things: ["new ocean floor", "underwater volcanoes", "small earthquakes", "ridge mountains"], seenKey: "apart" },
+      rift:      { name: "Divergent boundary: continental rift", desc: "A continent is being torn in two. The middle sinks into a long rift valley with volcanoes. Pull long enough and the sea floods in: a brand new ocean is born.", things: ["rift valley", "volcanoes", "earthquakes", "a new sea (later)"], seenKey: "apart" },
+      subduct:   { name: "Convergent boundary: subduction", desc: "Heavy oceanic plate dives under the lighter continent. Where it bends down there's a deep trench. As it sinks it melts, and the magma rises to build volcanic mountains on the continent.", things: ["deep trench", "volcanic mountains", "big, deep earthquakes"], seenKey: "subduct" },
+      arc:       { name: "Convergent boundary: island arc", desc: "Two ocean plates crash. The older, heavier one dives under. It melts deep down and the magma builds a curved chain of volcanic islands.", things: ["deep trench", "volcanic islands", "big earthquakes"], seenKey: "arc" },
+      collide:   { name: "Convergent boundary: continental collision", desc: "Two continents crash. Both are too light to sink, so the crust crumples and stacks up into the highest mountains on Earth. No volcanoes, because nothing sinks deep enough to melt.", things: ["huge mountains", "earthquakes", "no volcanoes!"], seenKey: "collide" },
+      transform: { name: "Transform boundary", desc: "The plates grind past each other sideways. They get stuck, stress builds up, then they jump all at once: an earthquake. No crust is made or destroyed, so no volcanoes.", things: ["earthquakes", "offset roads and rivers", "no volcanoes"], seenKey: "slide" }
+    };
+    var NEED = { apart: "pull apart", slide: "slide past", subduct: "ocean meets continent", arc: "ocean meets ocean", collide: "continent meets continent" };
+
+    function wireSeg(id, key) {
+      var seg = document.getElementById(id);
+      [].forEach.call(seg.children, function (b) {
+        b.onclick = function () { st[key] = b.getAttribute("data-v"); document.getElementById("t").value = 0; draw(); };
+      });
+    }
+    wireSeg("segL", "L"); wireSeg("segR", "R"); wireSeg("segM", "M");
+
+    var SEA = 105, MANT = 172;
+    function poly(pts, fill, extra) { return '<polygon points="' + pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '" fill="' + fill + '" ' + (extra || "") + "/>"; }
+    var OC = "#4b5160", CO = "#c8a27a", NEW = "#2f3542", MAG = "#ff8a4c";
+    function slab(x0, x1, type) { return type === "cont" ? poly([[x0, 85], [x1, 85], [x1, 190], [x0, 190]], CO) : poly([[x0, 140], [x1, 140], [x1, 172], [x0, 172]], OC); }
+    function volcano(x, base, h, label) {
+      return poly([[x - 26, base], [x, base - h], [x + 26, base]], "#7a5a44") + '<path d="M' + x + ' ' + (base - h) + ' l -4 -10 l 8 -6" stroke="' + MAG + '" stroke-width="3" fill="none" opacity="' + (h > 10 ? 1 : 0) + '"/>' +
+        '<line x1="' + x + '" y1="' + (base + 4) + '" x2="' + x + '" y2="' + (base + 70) + '" stroke="' + MAG + '" stroke-width="4" stroke-dasharray="4 4" opacity=".85"/>' + (label ? '<text x="' + x + '" y="' + (base - h - 16) + '" fill="#ffd8c2" font-size="11" text-anchor="middle">' + label + '</text>' : "");
+    }
+    function quakes(cx, cy, n, spread, t) {
+      var h = ""; for (var i = 0; i < n; i++) { var a = Math.sin(i * 12.9898 + t * 7) * 43758.5453, r = a - Math.floor(a);
+        h += '<circle cx="' + (cx + (r - .5) * spread) + '" cy="' + (cy + ((i * 37) % 60) - 10) + '" r="' + (3 + (i % 3)) + '" fill="#ffd166" opacity="' + (.35 + .65 * ((i + Math.floor(t * 20)) % 2)) + '"/>'; }
+      return h;
+    }
+
+    function draw() {
+      ["segL", "segR", "segM"].forEach(function (id, k) {
+        var key = ["L", "R", "M"][k];
+        [].forEach.call(document.getElementById(id).children, function (b) { b.className = b.getAttribute("data-v") === st[key] ? "on" : ""; });
+      });
+      var t = +document.getElementById("t").value / 100, K = kind(), I = INFO[K];
+      document.getElementById("yrs").textContent = t === 0 ? "now" : (Math.round(t * 20)).toLocaleString("en-US") + " million yrs";
+      var h = '<rect x="0" y="0" width="600" height="' + SEA + '" fill="#1c2a4a"/>' +
+              '<rect x="0" y="' + SEA + '" width="600" height="' + (MANT - SEA) + '" fill="#1d4f7a"/>' +
+              '<rect x="0" y="' + MANT + '" width="600" height="' + (270 - MANT) + '" fill="#b4542d"/>' +
+              '<text x="10" y="262" fill="#ffd8c2" font-size="11">mantle (hot, slowly flowing)</text>' +
+              '<text x="10" y="' + (SEA - 4) + '" fill="#9fb7d9" font-size="10">sea level</text>';
+      var mirror = K === "subduct" && st.L === "cont";   // draw ocean-left, then flip
+      var g = "";
+      if (K === "ridge" || K === "rift") {
+        var gap = 6 + 120 * t, lx = 300 - gap / 2, rx = 300 + gap / 2;
+        if (K === "ridge") {
+          g += slab(0, lx, st.L) + slab(rx, 600, st.R);
+          var ridgeH = 25 * t;
+          g += poly([[lx, 140], [300, 140 - ridgeH], [rx, 140], [rx, 172], [lx, 172]], NEW);
+          for (var s = 1; s < 6; s++) { var w = gap / 2 * s / 6; g += '<line x1="' + (300 - w) + '" y1="142" x2="' + (300 - w) + '" y2="170" stroke="#5b6378" stroke-width="1"/><line x1="' + (300 + w) + '" y1="142" x2="' + (300 + w) + '" y2="170" stroke="#5b6378" stroke-width="1"/>'; }
+          g += '<path d="M300 205 C 290 190 310 180 300 ' + (172 - ridgeH * .3) + '" stroke="' + MAG + '" stroke-width="6" fill="none"/>';
+          g += quakes(300, 150, 4, 40, t);
+        } else {
+          var sink = 50 * Math.min(1, t * 1.4);
+          g += poly([[0, 85], [lx, 85], [lx + 30, 85 + sink], [lx + 30, 190], [0, 190]], CO);
+          g += poly([[rx - 30, 85 + sink], [rx, 85], [600, 85], [600, 190], [rx - 30, 190]], CO);
+          g += poly([[lx + 30, 85 + sink + 8], [rx - 30, 85 + sink + 8], [rx - 30, 190], [lx + 30, 190]], t > .55 ? NEW : "#a8835f");
+          if (t > .55) g += '<rect x="' + (lx + 30) + '" y="' + SEA + '" width="' + Math.max(0, rx - lx - 60) + '" height="' + (85 + sink + 8 - SEA) + '" fill="#2f6ea5"/>' + (gap > 100 ? '<text x="300" y="' + (SEA + 18) + '" fill="#cfe6ff" font-size="11" text-anchor="middle">new sea!</text>' : "");
+          g += volcano(lx + 18, 85 + sink * .5, 18 * t, "") + quakes(300, 120, 5, gap + 30, t);
+          g += '<text x="300" y="78" fill="#ffe9cc" font-size="11" text-anchor="middle" opacity="' + (t > .15 ? 1 : 0) + '">rift valley</text>';
+        }
+      } else if (K === "subduct" || K === "arc") {
+        var dive = 40 + 160 * t, ang = .55, ex = 300 + Math.cos(ang) * dive, ey = 160 + Math.sin(ang) * dive;
+        g += poly([[0, 140], [290, 140], [300, 146], [ex + 10, ey - 12], [ex - 10, ey + 14], [290, 172], [0, 172]], OC);   // diving ocean plate
+        if (K === "subduct") {
+          var mt = 70 * t;
+          g += poly([[300, 128], [330, 85 - mt * .3], [380, 85 - mt], [440, 85 - mt * .4], [480, 85], [600, 85], [600, 190], [300, 190]], CO);
+          g += volcano(385, 85 - mt * .9, 26 * t, t > .2 ? "volcanic mountains" : "");
+        } else {
+          g += poly([[302, 132], [600, 132], [600, 166], [330, 166]], OC);
+          var isl = 20 + 70 * t;
+          g += poly([[350, 135], [390, 135 - isl], [430, 135]], "#6a4f3e") + '<line x1="390" y1="140" x2="390" y2="215" stroke="' + MAG + '" stroke-width="4" stroke-dasharray="4 4"/>';
+          if (135 - isl < SEA) g += '<text x="390" y="' + (130 - isl) + '" fill="#ffd8c2" font-size="11" text-anchor="middle">volcanic island!</text>';
+        }
+        g += '<path d="M' + (ex - 30) + ' ' + (ey + 4) + ' q 10 -30 0 -60" stroke="' + MAG + '" stroke-width="5" fill="none" opacity="' + Math.min(1, t * 2) + '"/>';
+        g += quakes(330, 170, 6, 80, t);
+      } else if (K === "collide") {
+        var squeeze = 60 * t, mh = 110 * t;
+        var wd = 40 + 130 * t;
+        g += poly([[0, 85], [300 - wd, 85], [300 - wd * .6, 85 - mh * .45], [300 - wd * .3, 85 - mh * .8], [300 - wd * .15, 85 - mh * .7], [300, 85 - mh], [300 + wd * .2, 85 - mh * .75], [300 + wd * .45, 85 - mh * .85], [300 + wd * .7, 85 - mh * .4], [300 + wd, 85], [600, 85], [600, 190], [300 + wd * .5, 190 + mh * .5], [300 - wd * .5, 190 + mh * .5], [0, 190]], CO);
+        g += poly([[300 - wd * .1, 85 - mh * .82], [300, 85 - mh], [300 + wd * .12, 85 - mh * .82]], "#f4f6fb", 'opacity="' + (t > .3 ? 1 : 0) + '"');
+        for (var f = 0; f < 4; f++) g += '<path d="M' + (230 + f * 10) + ' 150 q 30 ' + (-30 * t) + ' 60 0 q 30 ' + (30 * t) + ' 60 0" stroke="#9c7a58" stroke-width="2" fill="none"/>';
+        g += '<text x="' + (300 + wd + 10) + '" y="60" fill="#fff" font-size="11" opacity="' + (t > .2 ? 1 : 0) + '">⛰ huge mountains</text>';
+        g += quakes(300, 130, 5, 120, t);
+      } else {
+        g += '<rect x="0" y="0" width="600" height="270" fill="#5f7a4a"/><rect x="0" y="135" width="600" height="135" fill="#6b8752"/>';
+        g += '<line x1="0" y1="135" x2="600" y2="135" stroke="#2b2b2b" stroke-width="3" stroke-dasharray="10 5"/>';
+        var off = 140 * t;
+        g += '<rect x="' + (280 + off) + '" y="20" width="26" height="115" fill="#3a3a3a"/><rect x="' + (280 - off) + '" y="135" width="26" height="115" fill="#3a3a3a"/>';
+        g += '<line x1="' + (293 + off) + '" y1="25" x2="' + (293 + off) + '" y2="130" stroke="#ffd166" stroke-width="2" stroke-dasharray="8 6"/><line x1="' + (293 - off) + '" y1="140" x2="' + (293 - off) + '" y2="245" stroke="#ffd166" stroke-width="2" stroke-dasharray="8 6"/>';
+        g += '<text x="20" y="60" fill="#fff" font-size="13">plate moves this way →</text><text x="400" y="220" fill="#fff" font-size="13">← plate moves this way</text>';
+        g += '<text x="300" y="265" fill="#e9f5dc" font-size="11" text-anchor="middle">seen from above: the road got split and shifted</text>';
+        g += quakes(300, 125, 6, 500, t);
+        h = "";
+      }
+      if (mirror) g = '<g transform="translate(600,0) scale(-1,1)">' + g + "</g>";
+      h += g;
+      if (K === "subduct" || K === "arc") h += '<text x="' + (mirror ? 308 : 292) + '" y="' + (SEA + 28) + '" fill="#cfe6ff" font-size="11" text-anchor="' + (mirror ? "start" : "end") + '">' + (mirror ? "↓ trench" : "trench ↓") + "</text>";
+      if (K !== "transform") h += '<text x="10" y="18" fill="#cfe6ff" font-size="12">' + (st.L === "cont" ? "continental" : "oceanic") + ' plate</text><text x="590" y="18" fill="#cfe6ff" font-size="12" text-anchor="end">' + (st.R === "cont" ? "continental" : "oceanic") + " plate</text>";
+      document.getElementById("xsec").innerHTML = h;
+      document.getElementById("bname").textContent = I.name;
+      document.getElementById("bdesc").textContent = I.desc;
+      var fd = document.getElementById("found"); fd.innerHTML = "";
+      I.things.forEach(function (x) { var s = document.createElement("span"); s.textContent = x; if (t > .3) s.className = "lit"; fd.appendChild(s); });
+      if (t >= .6) {
+        var key = K === "ridge" || K === "rift" ? "apart" : K === "transform" ? "slide" : K;
+        if (!seen[key]) { seen[key] = 1; try { localStorage.setItem("geo:plates:seen", JSON.stringify(seen)); } catch (e) {} Geo.track("ran the plate machine: " + I.name); }
+      }
+      var have = Object.keys(NEED).filter(function (k) { return seen[k]; });
+      document.getElementById("seen").innerHTML = "Boundaries explored (run time past halfway): " + Object.keys(NEED).map(function (k) { return seen[k] ? "<b>✓ " + NEED[k] + "</b>" : NEED[k]; }).join(" · ");
+      if (have.length === 5) Geo.unlock("s-machine");
+    }
+    document.getElementById("t").addEventListener("input", draw);
+    draw();
+
+    Geo.check(document.getElementById("c1"), {
+      id: "himalaya", q: "The Himalayas, the tallest mountains on Earth, are where India is crashing into Asia. Both are continents. What kind of boundary is it?",
+      choices: ["Two plates pulling apart", "Continent meets continent: they crumple up", "Ocean plate diving under a continent"], answer: 1,
+      explain: "Both continents are too light to sink, so the crust crumples upward. The Himalayas are still growing a few millimeters a year."
+    });
+    Geo.check(document.getElementById("c2"), {
+      id: "andes", q: "Off the coast of South America there's a deep ocean trench, and on land there's a long line of volcanoes (the Andes). What's happening?",
+      choices: ["An ocean plate is diving under the continent", "Two plates are sliding past each other", "Two continents are crashing"], answer: 0,
+      explain: "Trench + volcanoes on the continent = subduction. The diving ocean plate melts and feeds the volcanoes."
+    });
+    Geo.check(document.getElementById("c3"), {
+      id: "san-andreas", q: "In California, the San Andreas Fault has lots of earthquakes but no volcanoes, and some roads and fences across it are shifted sideways. What kind of boundary?",
+      choices: ["Pull apart", "Transform: sliding past each other", "Subduction"], answer: 1,
+      explain: "Sideways grinding makes earthquakes and offsets things, but no crust melts, so there are no volcanoes."
+    });
+    Geo.check(document.getElementById("c4"), {
+      id: "speed", q: "The Atlantic Ocean gets about 2.5 cm wider every year. How much wider does it get in 1 million years?",
+      choices: ["2.5 meters", "250 meters", "25 kilometers"], answer: 2,
+      explain: "2.5 cm × 1,000,000 = 2,500,000 cm = 25,000 m = 25 km. Slow, but over 200 million years that's a whole ocean!"
+    });
+
+    Geo.claudeTask(document.getElementById("task"), {
+      task: "east-africa",
+      prompt: "In East Africa, the African plate is slowly splitting in two along the East African Rift. Predict what that area will look like 10 or 20 million years from now. Explain why, using what you saw in the plate machine.",
+      rubric: "5th grader, prediction + reasoning. GOT IT if he (1) identifies it as plates pulling apart (divergent / rift), (2) predicts the land between sinks into a rift valley that gets wider, (3) predicts the sea floods in and a new ocean or sea forms (bonus: Africa splits, the Horn of Africa becomes separate), and (4) gives a reason based on the mechanism (magma rising, new crust forming, crust stretching and thinning). Volcanoes (like Kilimanjaro) and earthquakes are good extra details. If he says mountains form or one plate dives under, ask him which motion the rift is and what the machine showed for that motion.",
+      context: function () { return { boundaries_explored: Object.keys(seen) }; }
+    });
+  })();
+  </script>
+</body>
+</html>
