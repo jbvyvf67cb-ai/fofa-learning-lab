@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G2 · Minerals — Geology · Fofa Learning Lab</title>
+  <meta name="description" content="Geology lesson 2: test mystery minerals with scratch, streak, magnet and acid, and identify them like a geologist." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23c8a27a%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27%3E%F0%9F%92%8E%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/geo.css" />
+  <style>
+    .bench { display: grid; grid-template-columns: 230px 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 640px) { .bench { grid-template-columns: 1fr; } }
+    .specimens { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .specimens button { padding: 6px 4px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: .8rem; }
+    .specimens button.on { border-color: var(--accent-2); background: rgba(79,214,201,.12); }
+    .specimens button.ok { box-shadow: inset 0 -3px 0 var(--good); }
+    .tools { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+    .tools button { font-size: .85rem; padding: 6px 10px; }
+    .result { min-height: 64px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; gap: 12px; align-items: center; }
+    .result .swatch { width: 54px; height: 18px; border-radius: 4px; border: 1px solid var(--line); flex: none; }
+    .notebook { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: .84rem; }
+    .notebook th, .notebook td { border-bottom: 1px solid var(--line); padding: 5px 6px; text-align: left; vertical-align: top; }
+    .notebook th { color: var(--ink-mute); font-weight: 600; font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; }
+    .notebook td.blank { color: var(--ink-mute); }
+    .idrow { display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+    .idrow select { font: inherit; background: var(--bg-soft); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+    .idfb { font-size: .9rem; margin-top: 6px; }
+    .key { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .key th, .key td { border-bottom: 1px solid var(--line); padding: 6px; text-align: left; }
+    .key th { color: var(--ink-mute); font-size: .74rem; text-transform: uppercase; }
+    .table-scroll { overflow-x: auto; max-width: 100%; }
+    @media (max-width: 520px) { .mohs div { font-size: .55rem; } .mohs-tools span { font-size: .58rem; } }
+    .mohs { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; margin: 10px 0 4px; }
+    .mohs div { overflow: hidden; text-overflow: ellipsis; text-align: center; font-size: .7rem; padding: 6px 1px; border-radius: 6px; background: var(--panel-2); line-height: 1.2; }
+    .mohs div b { display: block; font-family: var(--mono); font-size: .9rem; color: var(--accent-2); }
+    .mohs-tools { position: relative; height: 26px; margin-bottom: 6px; }
+    .mohs-tools span { position: absolute; transform: translateX(-50%); font-size: .7rem; color: var(--accent-warm); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">💎 G2 · Minerals</span>
+      <a href="../">Geology</a>
+      <span class="geo-dots" id="geoDots"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../">Science</a> · <a href="../">Geology</a> · Lesson 2 of 6</div>
+      <h1>Minerals</h1>
+      <div class="tag">Rocks are made of minerals. Become a mineral detective: scratch, streak, fizz and stick your way to the answer.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+
+    <section class="step" id="s-intro">
+      <h2><span class="n">1</span> What's a mineral?</h2>
+      <p class="say">A <span class="term">mineral</span> is a natural, solid, non-living substance with its own exact
+        recipe of atoms, lined up in a repeating pattern called a <b>crystal</b>. Salt is a mineral. So is the quartz in
+        sand. A <b>rock</b> is a mix of minerals: granite is speckled because it's made of quartz, feldspar and mica
+        grains all stuck together.</p>
+      <p class="say">There are thousands of minerals, so geologists identify them with simple tests. The trick is that
+        <b>color can fool you</b>. The same mineral can come in many colors, and different minerals can look alike.</p>
+    </section>
+
+    <section class="step" id="s-tools" data-gate="Try at least 4 different tests on the quartz to go on.">
+      <h2><span class="n">2</span> Learn the tools</h2>
+      <p class="say"><b>Hardness</b> is how hard a mineral is to scratch. Geologists rank it from 1 (softest) to 10
+        (hardest) on the <span class="term">Mohs scale</span>. A harder thing scratches a softer one, never the other way
+        around. You can test it with things you own:</p>
+      <div class="mohs-tools"><span style="left:22%">fingernail 2.5</span><span style="left:32%">penny 3.5</span><span style="left:53%">nail &amp; glass 5.5</span><span style="left:68%">streak plate 6.5</span></div>
+      <div class="mohs">
+        <div><b>1</b>talc</div><div><b>2</b>gypsum</div><div><b>3</b>calcite</div><div><b>4</b>fluorite</div><div><b>5</b>apatite</div>
+        <div><b>6</b>feldspar</div><div><b>7</b>quartz</div><div><b>8</b>topaz</div><div><b>9</b>corundum</div><div><b>10</b>diamond</div>
+      </div>
+      <p class="say"><b>Streak</b> is the color of a mineral's powder when you rub it on a rough white tile. Streak
+        doesn't change the way the outside color can, so it's a great clue. <b>Luster</b> is how it shines: metallic
+        (like metal), glassy, pearly, or dull. And some minerals have a special trick: one sticks to a magnet, one
+        fizzes in vinegar.</p>
+      <div class="viz">
+        <div class="bench">
+          <div style="text-align:center"><svg id="quartzPic" width="150" height="120" viewBox="0 0 150 120"></svg><div style="font-weight:700">Quartz (known)</div></div>
+          <div>
+            <div class="tools" id="quartzTools"></div>
+            <div class="result" id="quartzResult">Pick a test.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="s-lab" data-gate="Identify at least 4 of the 6 mystery minerals to go on.">
+      <h2><span class="n">3</span> The mystery mineral lab</h2>
+      <p class="say">Six mystery minerals, A to F. Pick one, run tests, and your results go in the notebook. When you
+        think you know it, choose its name. Use the <b>key</b> below to match your clues.</p>
+      <div class="viz">
+        <div class="bench">
+          <div class="specimens" id="specimens"></div>
+          <div>
+            <div class="tools" id="tools"></div>
+            <div class="result" id="result">Pick a mystery mineral, then a test.</div>
+            <div class="idrow"><span>I think <b id="curName">A</b> is</span><select id="guess"></select><button class="primary" id="guessBtn">Check</button></div>
+            <div class="idfb" id="idfb"></div>
+          </div>
+        </div>
+        <div class="table-scroll"><table class="notebook" id="notebook"></table></div>
+      </div>
+      <div class="viz">
+        <strong>The key</strong>
+        <div class="table-scroll"><table class="key" id="key"></table></div>
+      </div>
+      <div class="try">Tip: start with the streak and the scratch tests. Save the magnet and vinegar for when two minerals look alike.</div>
+    </section>
+
+    <section class="step" id="s-check">
+      <h2><span class="n">4</span> Quick check</h2>
+      <div id="c1"></div><div id="c2"></div><div id="c3"></div>
+    </section>
+
+    <section class="step" id="s-claude">
+      <h2><span class="n">5</span> Explain it to Claude</h2>
+      <p class="say">Claude can see your notebook. Explain how you solved one of the mysteries.</p>
+      <div id="task"></div>
+    </section>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../assets/claude-channel.js"></script>
+  <script src="../assets/geo.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    Geo.init({ lesson: "minerals", title: "Minerals", module: "geo-minerals" });
+
+    // The key (what he matches against). Hardness on the Mohs scale.
+    var KEY = {
+      quartz:    { name: "Quartz",    h: 7,   streak: "none (harder than the tile)", sc: null,      luster: "glassy",   special: "—", note: "Any color: clear, white, pink, purple" },
+      calcite:   { name: "Calcite",   h: 3,   streak: "white",                       sc: "#f4f4f4", luster: "glassy",   special: "fizzes in vinegar", note: "Often white or honey colored" },
+      gypsum:    { name: "Gypsum",    h: 2,   streak: "white",                       sc: "#f4f4f4", luster: "glassy to pearly", special: "—", note: "White or clear" },
+      talc:      { name: "Talc",      h: 1,   streak: "white",                       sc: "#f4f4f4", luster: "pearly, feels soapy", special: "—", note: "White, gray or pale green" },
+      magnetite: { name: "Magnetite", h: 6,   streak: "black",                       sc: "#1a1a1a", luster: "metallic", special: "sticks to a magnet", note: "Black" },
+      hematite:  { name: "Hematite",  h: 6,   streak: "red-brown",                   sc: "#8a2e1e", luster: "metallic or dull", special: "—", note: "Silver-gray, black or rusty red" },
+      pyrite:    { name: "Pyrite",    h: 6,   streak: "greenish-black",              sc: "#2c3326", luster: "metallic", special: "—", note: "Brassy gold (\"fool's gold\")" },
+      galena:    { name: "Galena",    h: 2.5, streak: "gray",                        sc: "#6d6f74", luster: "metallic", special: "very heavy for its size", note: "Silver-gray cubes" }
+    };
+    var ORDER = ["quartz", "calcite", "gypsum", "talc", "magnetite", "hematite", "pyrite", "galena"];
+    var MYSTERY = [
+      { label: "A", min: "hematite",  fill: "#4a4d55", shine: true },
+      { label: "B", min: "calcite",   fill: "#e8c98a", shine: false },
+      { label: "C", min: "pyrite",    fill: "#c9a640", shine: true },
+      { label: "D", min: "quartz",    fill: "#f2b8c6", shine: false },
+      { label: "E", min: "talc",      fill: "#b9d3b0", shine: false },
+      { label: "F", min: "magnetite", fill: "#26272b", shine: true }
+    ];
+    var TOOLS = [
+      { id: "look",    label: "👀 Look (luster)" },
+      { id: "nail-f",  label: "💅 Fingernail" },
+      { id: "penny",   label: "🪙 Penny" },
+      { id: "steel",   label: "🔩 Steel nail" },
+      { id: "glass",   label: "🪟 Scratch glass" },
+      { id: "streak",  label: "⬜ Streak tile" },
+      { id: "magnet",  label: "🧲 Magnet" },
+      { id: "acid",    label: "🧪 Vinegar" }
+    ];
+    var NOTE = { look: "Luster", "nail-f": "Nail (2.5)", penny: "Penny (3.5)", steel: "Steel (5.5)", glass: "Glass", streak: "Streak", magnet: "Magnet", acid: "Vinegar" };
+
+    function test(minId, tool) {
+      var m = KEY[minId];
+      switch (tool) {
+        case "look":   return { text: "It looks " + m.luster + ".", short: m.luster };
+        case "nail-f": return m.h < 2.5 ? { text: "Your fingernail leaves a scratch! It's softer than 2.5.", short: "scratched" } : { text: "No scratch. It's harder than your fingernail (2.5).", short: "no scratch" };
+        case "penny":  return m.h < 3.5 ? { text: "The penny scratches it. It's softer than 3.5.", short: "scratched" } : { text: "No scratch. It's harder than a penny (3.5).", short: "no scratch" };
+        case "steel":  return m.h < 5.5 ? { text: "The steel nail scratches it. It's softer than 5.5.", short: "scratched" } : { text: "The nail just slides off. It's harder than steel (5.5).", short: "no scratch" };
+        case "glass":  return m.h > 5.5 ? { text: "It scratches the glass! It's harder than 5.5.", short: "scratches glass" } : { text: "It won't scratch the glass. It's softer than 5.5.", short: "no" };
+        case "streak": return m.sc ? { text: "Streak color: " + m.streak + ".", short: m.streak, swatch: m.sc } : { text: "No streak: it's so hard it scratched the tile instead.", short: "none" };
+        case "magnet": return minId === "magnetite" ? { text: "Click! It sticks to the magnet.", short: "sticks!" } : { text: "Nothing happens.", short: "no" };
+        case "acid":   return minId === "calcite" ? { text: "Fizzzz! Tiny bubbles.", short: "fizzes!" } : { text: "No fizz.", short: "no" };
+      }
+    }
+
+    function crystal(svg, fill, shine) {
+      svg.innerHTML = '<polygon points="20,90 40,30 80,12 125,35 135,85 95,108 45,105" fill="' + fill + '" stroke="rgba(0,0,0,.35)" stroke-width="2"/>' +
+        '<polygon points="40,30 80,12 95,55 55,62" fill="rgba(255,255,255,' + (shine ? .35 : .15) + ')"/>' +
+        '<polygon points="95,55 125,35 135,85 95,108" fill="rgba(0,0,0,.18)"/>' +
+        (shine ? '<line x1="58" y1="28" x2="84" y2="20" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>' : "");
+    }
+    function showResult(box, r) {
+      box.innerHTML = "";
+      if (r.swatch) { var s = document.createElement("span"); s.className = "swatch"; s.style.background = r.swatch; box.appendChild(s); }
+      box.appendChild(document.createTextNode(r.text));
+    }
+
+    /* ---------- step 2: practice on quartz ---------- */
+    crystal(document.getElementById("quartzPic"), "#e9eef3", false);
+    var tried = {};
+    TOOLS.forEach(function (t) {
+      var b = document.createElement("button"); b.textContent = t.label;
+      b.onclick = function () {
+        showResult(document.getElementById("quartzResult"), test("quartz", t.id));
+        tried[t.id] = 1;
+        if (Object.keys(tried).length >= 4) { Geo.unlock("s-tools"); Geo.track("practiced 4+ tests on quartz"); }
+      };
+      document.getElementById("quartzTools").appendChild(b);
+    });
+
+    /* ---------- step 3: the lab ---------- */
+    var LKEY = "geo:minerals:lab";
+    var lab; try { lab = JSON.parse(localStorage.getItem(LKEY)) || null; } catch (e) { lab = null; }
+    lab = lab || { results: {}, ids: {}, tries: {} };
+    function saveLab() { try { localStorage.setItem(LKEY, JSON.stringify(lab)); } catch (e) {} }
+    var cur = 0;
+
+    var keyT = document.getElementById("key");
+    keyT.innerHTML = "<tr><th>Mineral</th><th>Hardness</th><th>Streak</th><th>Luster</th><th>Special</th><th>Usual color</th></tr>" +
+      ORDER.map(function (k) { var m = KEY[k]; return "<tr><td><b>" + m.name + "</b></td><td>" + m.h + "</td><td>" + m.streak + "</td><td>" + m.luster + "</td><td>" + m.special + "</td><td>" + m.note + "</td></tr>"; }).join("");
+
+    var guess = document.getElementById("guess");
+    guess.innerHTML = '<option value="">choose…</option>' + ORDER.map(function (k) { return '<option value="' + k + '">' + KEY[k].name + "</option>"; }).join("");
+
+    var specBox = document.getElementById("specimens");
+    MYSTERY.forEach(function (m, i) {
+      var b = document.createElement("button");
+      b.innerHTML = '<svg width="60" height="48" viewBox="0 0 150 120"></svg><span>' + m.label + "</span>";
+      crystal(b.querySelector("svg"), m.fill, m.shine);
+      b.onclick = function () { cur = i; paintLab(); };
+      specBox.appendChild(b);
+    });
+    TOOLS.forEach(function (t) {
+      var b = document.createElement("button"); b.textContent = t.label;
+      b.onclick = function () {
+        var m = MYSTERY[cur], r = test(m.min, t.id);
+        showResult(document.getElementById("result"), r);
+        lab.results[m.label] = lab.results[m.label] || {};
+        lab.results[m.label][t.id] = r.short;
+        saveLab(); paintLab(true);
+      };
+      document.getElementById("tools").appendChild(b);
+    });
+    document.getElementById("guessBtn").onclick = function () {
+      var m = MYSTERY[cur], g = guess.value, fb = document.getElementById("idfb");
+      if (!g) return;
+      var nTests = Object.keys(lab.results[m.label] || {}).length;
+      if (nTests < 2) { fb.style.color = "var(--warn)"; fb.textContent = "Run at least two tests first. A detective needs evidence!"; return; }
+      lab.tries[m.label] = (lab.tries[m.label] || 0) + 1;
+      if (g === m.min) {
+        lab.ids[m.label] = g; fb.style.color = "var(--good)";
+        fb.textContent = "Correct! " + m.label + " is " + KEY[g].name + "." + (lab.tries[m.label] > 1 ? " (" + lab.tries[m.label] + " tries)" : " First try!");
+        Geo.track("identified " + m.label + " as " + KEY[g].name + " in " + lab.tries[m.label] + " tries using " + Object.keys(lab.results[m.label]).join(", "));
+      } else {
+        fb.style.color = "var(--warn)";
+        fb.textContent = "Not quite. Compare your notebook with the " + KEY[g].name + " row in the key. Which clue doesn't match?";
+      }
+      saveLab(); paintLab(true);
+    };
+
+    function paintLab(keepResult) {
+      [].forEach.call(specBox.children, function (b, i) {
+        b.className = (i === cur ? "on" : "") + (lab.ids[MYSTERY[i].label] ? " ok" : "");
+      });
+      document.getElementById("curName").textContent = MYSTERY[cur].label;
+      if (!keepResult) { document.getElementById("result").textContent = "Pick a test."; document.getElementById("idfb").textContent = ""; guess.value = ""; }
+      var nb = document.getElementById("notebook");
+      nb.innerHTML = "<tr><th></th>" + TOOLS.map(function (t) { return "<th>" + NOTE[t.id] + "</th>"; }).join("") + "<th>It's…</th></tr>" +
+        MYSTERY.map(function (m) {
+          var r = lab.results[m.label] || {};
+          return "<tr><td><b>" + m.label + "</b></td>" + TOOLS.map(function (t) { return r[t.id] ? "<td>" + r[t.id] + "</td>" : '<td class="blank">·</td>'; }).join("") +
+            "<td>" + (lab.ids[m.label] ? "<b style='color:var(--good)'>" + KEY[lab.ids[m.label]].name + "</b>" : "?") + "</td></tr>";
+        }).join("");
+      if (Object.keys(lab.ids).length >= 4) Geo.unlock("s-lab");
+    }
+    paintLab();
+
+    /* ---------- checks ---------- */
+    Geo.check(document.getElementById("c1"), {
+      id: "scratch", q: "A mystery mineral scratches glass, but a steel nail can't scratch it. What do you know about its hardness?",
+      choices: ["It's softer than 2.5", "It's between 3.5 and 5.5", "It's harder than 5.5"], answer: 2,
+      explain: "Glass and steel are both about 5.5. If it scratches glass and steel can't scratch it, it's harder than 5.5."
+    });
+    Geo.check(document.getElementById("c2"), {
+      id: "streak-vs-color", q: "Why do geologists trust streak more than color?",
+      choices: ["Streak stays the same even when the outside color changes", "Streak is prettier", "Color is always the same for a mineral"], answer: 0,
+      explain: "Hematite can look silver, black or red on the outside, but its powder is always red-brown."
+    });
+    Geo.check(document.getElementById("c3"), {
+      id: "fools-gold", q: "A gold miner finds a shiny gold-colored nugget. Its streak is greenish-black. Real gold's streak is gold. What did the miner find?",
+      choices: ["Real gold", "Pyrite (fool's gold)", "Calcite"], answer: 1,
+      explain: "The streak gives it away: greenish-black means pyrite. Lots of miners were fooled by its color!"
+    });
+
+    Geo.claudeTask(document.getElementById("task"), {
+      task: "how-i-knew",
+      prompt: "Pick one mystery mineral you identified. Explain how you figured out what it was: which tests you did, what the results told you, and which test was the most useful. Then tell Claude why you can't identify minerals by color alone.",
+      rubric: "5th grader. Compare his explanation with his actual notebook (context.notebook). GOT IT if he (1) names a specimen and the mineral, (2) describes at least two tests with results that really match his notebook and the key, (3) explains how a result ruled other minerals out or pointed to this one (reasoning, not just a list), and (4) says color can fool you (same mineral, many colors; different minerals look alike). Gently correct a test result he misremembers. If he guessed (many tries), ask what clue would have told him first time.",
+      context: function () {
+        var nb = {};
+        MYSTERY.forEach(function (m) { nb[m.label] = { tests: lab.results[m.label] || {}, identified_as: lab.ids[m.label] ? KEY[lab.ids[m.label]].name : null, tries: lab.tries[m.label] || 0, actually: KEY[m.min].name }; });
+        return { notebook: nb };
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
