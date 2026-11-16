@@ -1,3 +1,9 @@
+> **Moved (2026-11-16):** the Learning Lab now lives in the private `claude-fofa` repo under `lab/`
+> and is served at https://jbvyvf67cb-ai.github.io/claude-fofa/lab/ (reached from the Claude Fofa
+> landing page). Claude grades quizzes there; Home Assistant is no longer used. This repo is an
+> archive, and its site redirects every page to the same page in the new lab. **Make new lab
+> changes in claude-fofa.**
+
 # Fofa Learning Lab
 
 An interactive, hands-on learning site for kids — **learn by changing things**. A landing page
