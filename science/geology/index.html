@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geology — Science · Fofa Learning Lab</title>
+  <meta name="description" content="A hands-on geology unit: Earth's layers, minerals, the rock cycle, plate tectonics, earthquakes and fossils, with answers checked by Claude." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23c8a27a%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27%3E%F0%9F%AA%A8%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link rel="stylesheet" href="assets/geo.css" />
+</head>
+<body>
+  <div style="background:var(--panel-2);border-bottom:1px solid var(--line)">
+    <div class="wrap" style="display:flex;align-items:center;gap:10px;height:42px;font-size:14px;max-width:780px">
+      <a href="../../" style="color:var(--ink-soft)">← Fofa&nbsp;Learning&nbsp;Lab</a>
+      <span style="color:var(--ink-dim)">/ <a href="../" style="color:var(--ink-dim)">Science</a> / Geology</span>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="wrap">
+      <h1>🪨 Geology</h1>
+      <div class="tag">How the ground under your feet was made, moves and keeps changing. Every lesson ends with a
+        question you explain in your own words, and Claude writes back.</div>
+    </div>
+  </header>
+  <main class="lesson">
+    <div class="unit-list" id="list"></div>
+  </main>
+  <script>
+  (function () {
+    var LESSONS = [
+      { slug: "earth-layers", title: "Earth's Layers", blurb: "Drill to the center of the Earth. Why is the hottest layer solid?", ready: true },
+      { slug: "minerals", title: "Minerals", blurb: "Scratch, streak and shine: identify mystery minerals like a geologist." },
+      { slug: "rock-cycle", title: "The Rock Cycle", blurb: "Heat it, squeeze it, weather it, melt it. Follow one grain of sand for a billion years." },
+      { slug: "plate-tectonics", title: "Plate Tectonics", blurb: "Push plates together, pull them apart, slide them past each other. Build mountains and volcanoes." },
+      { slug: "earthquakes", title: "Earthquakes", blurb: "Read a seismograph and find where an earthquake started using three stations." },
+      { slug: "deep-time", title: "Fossils & Deep Time", blurb: "Put rock layers in order and tell the story of an outcrop." },
+      { slug: "field-geologist", title: "Capstone: Field Geologist", blurb: "Photograph a real rock and identify it with Claude." }
+    ];
+    var done = {};
+    try { done = JSON.parse(localStorage.getItem("geo:done")) || {}; } catch (e) {}
+    var list = document.getElementById("list");
+    LESSONS.forEach(function (l, i) {
+      var a = document.createElement("a");
+      a.className = "unit-card" + (l.ready ? "" : " soon");
+      if (l.ready) a.href = l.slug + "/";
+      var st = done[l.slug] ? '<span class="st done">Done ✓</span>' : l.ready ? '<span class="st ready">Ready</span>' : '<span class="st">Coming soon</span>';
+      a.innerHTML = '<span class="num">' + (i < 6 ? "G" + (i + 1) : "★") + '</span><div><h3></h3><p></p></div>' + st;
+      a.querySelector("h3").textContent = l.title;
+      a.querySelector("p").textContent = l.blurb;
+      list.appendChild(a);
+    });
+  })();
+  </script>
+</body>
+</html>
