@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G1 · Earth's Layers — Geology · Fofa Learning Lab</title>
+  <meta name="description" content="Geology lesson 1: drill from the surface to the center of the Earth and find out why the hottest layer is solid." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23c8a27a%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/geo.css" />
+  <style>
+    .drill-wrap { display: grid; grid-template-columns: 1fr 250px; gap: 18px; align-items: start; }
+    @media (max-width: 720px) { .drill-wrap { grid-template-columns: 1fr; } }
+    svg.earth { width: 100%; height: auto; display: block; }
+    .readout { display: grid; gap: 8px; }
+    .readout .r { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 10px; padding: 8px 11px; }
+    .readout .r .k { font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-mute); }
+    .readout .r .v { font-family: var(--mono); font-size: 1.15rem; }
+    .readout .r .s { font-size: .82rem; color: var(--ink-soft); line-height: 1.4; }
+    .layer-name { font-size: 1.25rem !important; font-family: var(--font-display) !important; }
+    .jump { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 2px; }
+    .jump button { font-size: .82rem; padding: 5px 10px; }
+    .meter { display: grid; grid-template-columns: 120px 1fr 74px; gap: 10px; align-items: center; margin: 10px 0; font-size: .9rem; }
+    .meter .bar { height: 22px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+    .meter .fill { height: 100%; transition: width .12s; }
+    .meter .num { font-family: var(--mono); text-align: right; }
+    .state { font-size: 1.15rem; font-weight: 700; margin-top: 8px; }
+    .state.liquid { color: var(--magma); } .state.solid { color: var(--accent-2); }
+    .atoms { display: block; margin: 8px auto 0; }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">🌍 G1 · Earth's Layers</span>
+      <a href="../">Geology</a>
+      <span class="geo-dots" id="geoDots"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../">Science</a> · <a href="../">Geology</a> · Lesson 1 of 6</div>
+      <h1>Earth's Layers</h1>
+      <div class="tag">Drill all the way to the center of the Earth, and find out why the hottest place down there is solid.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+
+    <!-- 1 · Learn -->
+    <section class="step" id="s-intro">
+      <h2><span class="n">1</span> Nobody has ever been there</h2>
+      <p class="say">The deepest hole people have ever dug is the <b>Kola Superdeep Borehole</b> in Russia. It took about
+        20 years to drill, and it goes down about <b>12 kilometers</b>. That sounds deep, but the center of the Earth
+        is about <b>6,371 kilometers</b> down.</p>
+      <p class="say">So how do we know what's inside? Mostly from <span class="term">earthquake waves</span>. When a big
+        earthquake happens, its waves travel through the whole planet. They speed up, slow down and bend when they hit
+        different materials, and one kind of wave can't get through liquid at all. By listening to the waves on the
+        other side of the world, scientists mapped the inside of the Earth in <b>layers</b>.</p>
+      <p class="say">Next, you'll take a pretend drill all the way down.</p>
+    </section>
+
+    <!-- 2 · Explore: the drill -->
+    <section class="step" id="s-drill" data-gate="Drill all the way to the center to go on.">
+      <h2><span class="n">2</span> Drill to the center</h2>
+      <p class="say">Drag the slider to drill down. Watch the <b>temperature</b> and the <b>pressure</b> (how hard
+        everything above is squeezing down on you).</p>
+      <div class="viz">
+        <div class="drill-wrap">
+          <div>
+            <svg class="earth" id="earth" viewBox="0 0 620 330" role="img" aria-label="Half of the Earth cut open, with a drill going down from the surface to the center"></svg>
+            <input type="range" id="depth" min="0" max="1000" value="0" aria-label="Drill depth" />
+            <div class="jump" id="jump"></div>
+          </div>
+          <div class="readout">
+            <div class="r"><div class="k">You are in the</div><div class="v layer-name" id="rLayer">Crust</div><div class="s" id="rWhat"></div></div>
+            <div class="r"><div class="k">Depth</div><div class="v" id="rDepth">0 km</div><div class="s" id="rDepthNote"></div></div>
+            <div class="r"><div class="k">Temperature</div><div class="v" id="rTemp">15 °C</div><div class="s" id="rTempNote"></div></div>
+            <div class="r"><div class="k">Pressure</div><div class="v" id="rPress">1×</div><div class="s">times the air pressure where you live</div></div>
+          </div>
+        </div>
+        <div class="cap">The picture is to scale. The crust is so thin compared with the rest that it's just the brown line
+          on the outside, like the skin on an apple. Temperatures and pressures are scientists' best estimates.</div>
+      </div>
+      <div class="try">Try: stop at the Kola hole, then keep going. Visit every layer on the way to the center.</div>
+    </section>
+
+    <!-- 3 · Learn: heat, squeeze, flow -->
+    <section class="step" id="s-squeeze">
+      <h2><span class="n">3</span> Hotter and more squeezed</h2>
+      <p class="say">Two things kept going up the whole way down. It got <b>hotter</b>, because the Earth still holds
+        heat left over from when it formed, plus heat from radioactive rock. And the <b>pressure</b> went up, because
+        every kilometer you go down adds more rock on top of you pressing down.</p>
+      <p class="say">The <span class="term">mantle</span> is solid rock, but it's so hot that over millions of years it
+        slowly flows, like very thick putty. That slow flow is what moves the continents (that's lesson 4).</p>
+      <div class="big-note">Here's the weird part: the <b>outer core</b> is liquid metal, but the <b>inner core</b>,
+        which is even hotter, is <b>solid</b>. Keep that puzzle in your head.</div>
+      <div id="c1"></div>
+      <div id="c2"></div>
+    </section>
+
+    <!-- 4 · Explore: the melt-o-meter -->
+    <section class="step" id="s-melt" data-gate="Move through the outer core and into the inner core to go on.">
+      <h2><span class="n">4</span> The Melt-o-meter</h2>
+      <p class="say">Something melts when it's hotter than its <span class="term">melting point</span>. Ice melts above
+        0 °C. Iron at the surface melts at about 1,538 °C. But squeezing changes the melting point: when atoms are
+        pressed tight together, they need <b>more</b> heat to break loose and flow.</p>
+      <p class="say">This meter shows the core's iron. The orange bar is how hot it is. The teal bar is the melting point
+        of iron at that pressure.</p>
+      <div class="viz">
+        <input type="range" id="coreDepth" min="2890" max="6371" value="2890" aria-label="Depth in the core" />
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.8rem;color:var(--ink-mute)"><span>2,890 km (top of core)</span><span id="cdNow">2,890 km</span><span>6,371 km (center)</span></div>
+        <div class="meter"><span>Temperature</span><div class="bar"><div class="fill" id="mTemp" style="background:var(--magma)"></div></div><span class="num" id="mTempN"></span></div>
+        <div class="meter"><span>Melting point</span><div class="bar"><div class="fill" id="mMelt" style="background:var(--accent-2)"></div></div><span class="num" id="mMeltN"></span></div>
+        <div class="meter"><span>Pressure</span><div class="bar"><div class="fill" id="mPress" style="background:var(--accent)"></div></div><span class="num" id="mPressN"></span></div>
+        <div style="text-align:center">
+          <div class="state" id="mState"></div>
+          <svg class="atoms" id="atoms" width="180" height="90" viewBox="0 0 180 90" aria-hidden="true"></svg>
+        </div>
+        <div class="cap">Numbers are rounded estimates. Scientists still argue about the exact ones, but the pattern is the same.</div>
+      </div>
+      <div class="try">Try: slide slowly from the top of the core to the center. Find the exact spot where the iron turns solid. Which bar wins on each side of that spot?</div>
+    </section>
+
+    <!-- 5 · Check -->
+    <section class="step" id="s-check">
+      <h2><span class="n">5</span> Quick check</h2>
+      <div id="c3"></div>
+      <div id="c4"></div>
+    </section>
+
+    <!-- 6 · Claude -->
+    <section class="step" id="s-claude">
+      <h2><span class="n">6</span> Explain it to Claude</h2>
+      <p class="say">Now solve the puzzle in your own words. Claude will read your answer and write back. If it's not
+        all there yet, Claude will give you a hint and you can try again.</p>
+      <div id="task"></div>
+    </section>
+
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../assets/claude-channel.js"></script>
+  <script src="../assets/geo.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    Geo.init({ lesson: "earth-layers", title: "Earth's layers", module: "geo-earth-layers" });
+    var R = 6371;
+    // Rounded textbook estimates, by depth (km). Pressure in GPa.
+    var LAYERS = [
+      { id: "crust",      name: "Crust",      top: 0,    bottom: 35,   color: "#9b7653", what: "Solid rock: granite under the continents, basalt under the oceans. This is where we live." },
+      { id: "mantle",     name: "Mantle",     top: 35,   bottom: 2890, color: "#c0562f", what: "Hot solid rock (lots of a green mineral called olivine). Over millions of years it slowly flows." },
+      { id: "outer-core", name: "Outer core", top: 2890, bottom: 5150, color: "#f2a33a", what: "LIQUID iron and nickel. Its swirling makes Earth's magnetic field, the one your compass feels." },
+      { id: "inner-core", name: "Inner core", top: 5150, bottom: R,    color: "#ffe08a", what: "A SOLID ball of iron and nickel, about the size of the Moon (a bit smaller)." }
+    ];
+    var TEMP  = [[0, 15], [12, 180], [35, 500], [100, 1300], [660, 1700], [2890, 3800], [5150, 5300], [6371, 5400]];
+    var PRESS = [[0, 0.0001], [12, 0.33], [35, 1], [100, 3.3], [660, 24], [2890, 136], [5150, 330], [6371, 364]];
+    var MELT  = [[2890, 3600], [5150, 5300], [6371, 5800]];   // melting point of core iron at that pressure
+
+    function lerp(tab, d) {
+      for (var i = 1; i < tab.length; i++) if (d <= tab[i][0]) {
+        var a = tab[i - 1], b = tab[i], t = (d - a[0]) / (b[0] - a[0] || 1);
+        return a[1] + t * (b[1] - a[1]);
+      }
+      return tab[tab.length - 1][1];
+    }
+    function layerAt(d) { for (var i = 0; i < LAYERS.length; i++) if (d < LAYERS[i].bottom || i === LAYERS.length - 1) return LAYERS[i]; }
+    function fmt(n) { return Math.round(n).toLocaleString("en-US"); }
+    function pressX(gpa) { var x = gpa * 9869; return x < 10 ? x.toFixed(x < 2 ? 1 : 0) : fmt(x); }
+    function tempNote(t) {
+      if (t < 40) return "About like a warm day.";
+      if (t < 120) return "Hotter than boiling water.";
+      if (t < 300) return "Hotter than a pizza oven.";
+      if (t < 1250) return "Hot enough to melt some rock into lava.";
+      if (t < 1600) return "Hot enough to melt iron at the surface.";
+      if (t < 5000) return "Way hotter than any oven on Earth.";
+      return "About as hot as the surface of the Sun!";
+    }
+
+    /* ---------- the drill ---------- */
+    var svg = document.getElementById("earth"), NS = "http://www.w3.org/2000/svg";
+    var CX = 310, CY = 320, PX = 300 / R;   // px per km
+    function mk(tag, a) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); return svg.appendChild(e); }
+    function halfDisc(r, fill) { return mk("path", { d: "M" + (CX - r) + " " + CY + " A " + r + " " + r + " 0 0 1 " + (CX + r) + " " + CY + " Z", fill: fill }); }
+    mk("rect", { x: 0, y: 0, width: 620, height: 330, fill: "transparent" });
+    halfDisc(R * PX, "#9b7653");
+    halfDisc((R - 35) * PX, "#c0562f");
+    halfDisc((R - 2890) * PX, "#f2a33a");
+    halfDisc((R - 5150) * PX, "#ffe08a");
+    var labels = [["Mantle", 2890 / 2 + 300, "#fff"], ["Outer core", 4020, "#3b1d00"], ["Inner core", 5900, "#3b1d00"]];
+    labels.forEach(function (l) {
+      var y = CY - (R - l[1]) * PX;
+      var t = mk("text", { x: CX - 150 + (l[0] === "Inner core" ? 100 : l[0] === "Outer core" ? 40 : 0), y: y, fill: l[2], "font-size": 13, "font-family": "ui-sans-serif, system-ui", "font-weight": 700 });
+      t.textContent = l[0];
+    });
+    var crustLbl = mk("text", { x: CX + 150, y: 22, fill: "#e8d3b8", "font-size": 12, "font-family": "ui-sans-serif, system-ui" });
+    crustLbl.textContent = "↙ crust: just this thin line!";
+    var shaft = mk("line", { x1: CX, y1: CY - R * PX - 14, x2: CX, y2: CY - R * PX, stroke: "#e8ecff", "stroke-width": 3, "stroke-dasharray": "5 3" });
+    var rig = mk("path", { d: "M" + (CX - 12) + " " + (CY - R * PX - 14) + " L" + (CX + 12) + " " + (CY - R * PX - 14) + " L" + CX + " " + (CY - R * PX - 26) + " Z", fill: "#e8ecff" });
+    var bit = mk("circle", { cx: CX, cy: CY - R * PX, r: 6, fill: "#fff", stroke: "#0f1220", "stroke-width": 2 });
+
+    var slider = document.getElementById("depth");
+    var visited = {}, sawKola = false, reachedCenter = false;
+    function depthFromSlider(v) { return R * Math.pow(v / 1000, 2); }
+    function sliderFromDepth(d) { return Math.round(1000 * Math.sqrt(d / R)); }
+
+    function drawDrill() {
+      var d = depthFromSlider(+slider.value);
+      var y = CY - (R - d) * PX;
+      shaft.setAttribute("y2", y); bit.setAttribute("cy", y);
+      var L = layerAt(d), t = lerp(TEMP, d), p = lerp(PRESS, d);
+      document.getElementById("rLayer").textContent = L.name;
+      document.getElementById("rLayer").style.color = L.color;
+      document.getElementById("rWhat").textContent = L.what;
+      document.getElementById("rDepth").textContent = fmt(d) + " km";
+      document.getElementById("rDepthNote").textContent =
+        d < 0.5 ? "At the surface." :
+        Math.abs(d - 12.3) < 2 ? "This is as deep as the Kola hole, the deepest hole ever dug." :
+        d < 12.3 ? "Humans have dug this deep." :
+        d > 6340 ? "The very center of the Earth!" :
+        "Deeper than anyone has ever dug. " + Math.round(d / R * 100) + "% of the way to the center.";
+      document.getElementById("rTemp").textContent = fmt(t) + " °C";
+      document.getElementById("rTempNote").textContent = tempNote(t);
+      document.getElementById("rPress").textContent = pressX(p) + "×";
+
+      visited[L.id] = true;
+      if (Math.abs(d - 12.3) < 2 && !sawKola) { sawKola = true; Geo.track("stopped at the Kola hole depth"); }
+      if (d > 6340) { reachedCenter = true; Geo.track("drilled to the center"); }
+      LAYERS.forEach(function (l) { if (visited[l.id]) Geo.track("visited the " + l.name.toLowerCase()); });
+      if (reachedCenter && LAYERS.every(function (l) { return visited[l.id]; })) Geo.unlock("s-drill");
+    }
+    slider.addEventListener("input", drawDrill);
+    [["Surface", 0], ["Kola hole", 12.3], ["Bottom of crust", 34], ["Mantle", 1400], ["Outer core", 4000], ["Inner core", 5800], ["Center", R]].forEach(function (j) {
+      var b = document.createElement("button");
+      b.textContent = j[0];
+      b.onclick = function () { slider.value = sliderFromDepth(j[1]); drawDrill(); };
+      document.getElementById("jump").appendChild(b);
+    });
+    drawDrill();
+
+    /* ---------- the melt-o-meter ---------- */
+    var cs = document.getElementById("coreDepth"), seenLiquid = false, seenSolid = false;
+    var atoms = document.getElementById("atoms");
+    function drawAtoms(solid, squeeze) {
+      atoms.innerHTML = "";
+      var gap = 22 - squeeze * 6, n = 0;
+      for (var r = 0; r < 3; r++) for (var c = 0; c < 6; c++) {
+        var x = 90 + (c - 2.5) * gap, y = 45 + (r - 1) * gap;
+        if (!solid) { x += Math.sin(n * 2.3 + Date.now() / 300) * 7; y += Math.cos(n * 1.7 + Date.now() / 260) * 7; }
+        var e = document.createElementNS(NS, "circle");
+        e.setAttribute("cx", x); e.setAttribute("cy", y); e.setAttribute("r", 7);
+        e.setAttribute("fill", solid ? "#4fd6c9" : "#ff8a4c");
+        atoms.appendChild(e); n++;
+      }
+    }
+    var liquidNow = true, sq = 0;
+    function drawMelt() {
+      var d = +cs.value, t = lerp(TEMP, d), m = lerp(MELT, d), p = lerp(PRESS, d);
+      document.getElementById("cdNow").textContent = fmt(d) + " km";
+      document.getElementById("mTemp").style.width = (t / 6500 * 100) + "%";
+      document.getElementById("mMelt").style.width = (m / 6500 * 100) + "%";
+      document.getElementById("mPress").style.width = (p / 380 * 100) + "%";
+      document.getElementById("mTempN").textContent = fmt(t) + " °C";
+      document.getElementById("mMeltN").textContent = fmt(m) + " °C";
+      document.getElementById("mPressN").textContent = pressX(p).replace(/,\d{3}$/, "k").replace(/,\d{3}k$/, "M") + "×";
+      liquidNow = t > m; sq = (p - 136) / (364 - 136);
+      var s = document.getElementById("mState");
+      s.className = "state " + (liquidNow ? "liquid" : "solid");
+      s.textContent = liquidNow ? "Hotter than its melting point → LIQUID" : "Melting point is higher than the temperature → SOLID";
+      if (liquidNow && d > 3200) { seenLiquid = true; Geo.track("saw liquid iron in the outer core on the melt-o-meter"); }
+      if (!liquidNow && d > 5200) { seenSolid = true; Geo.track("saw solid iron in the inner core on the melt-o-meter"); }
+      if (seenLiquid && seenSolid) Geo.unlock("s-melt");
+      drawAtoms(!liquidNow, sq);
+    }
+    cs.addEventListener("input", drawMelt);
+    drawMelt();
+    setInterval(function () { if (liquidNow && !document.getElementById("s-melt").hidden) drawAtoms(false, sq); }, 120);
+
+
+    Geo.check(document.getElementById("c1"), {
+      id: "liquid-layer", q: "Which layer is liquid?",
+      choices: ["The crust", "The mantle", "The outer core", "The inner core"], answer: 2,
+      explain: "The outer core is liquid iron and nickel. The mantle is solid rock that flows very slowly, and the inner core is solid."
+    });
+    Geo.check(document.getElementById("c2"), {
+      id: "pressure-trend", q: "As you drill deeper, the pressure…",
+      choices: ["goes up, because there's more and more rock on top of you",
+                "goes down, because you're closer to the center",
+                "stays about the same"], answer: 0,
+      explain: "Every kilometer down adds more rock pressing on you. At the center it's about 3.6 million times the air pressure at the surface."
+    });
+    Geo.check(document.getElementById("c3"), {
+      id: "kola-fraction", q: "The Kola hole is about 12 km deep. The center is about 6,371 km down. How far toward the center did the Kola hole get?",
+      choices: ["About halfway", "About one tenth of the way", "Less than 1% of the way"], answer: 2,
+      explain: "12 ÷ 6,371 ≈ 0.002, which is 0.2%. One tenth of the way would be about 637 km, and 1% would be about 64 km."
+    });
+    Geo.check(document.getElementById("c4"), {
+      id: "how-we-know", q: "Nobody has ever been to the core. How do scientists know the outer core is liquid?",
+      choices: ["From earthquake waves: one kind of wave can't pass through liquid",
+                "Lava from volcanoes comes from the core",
+                "Astronauts took pictures from space"], answer: 0,
+      explain: "Earthquake waves travel through the planet. One kind (S-waves) can't go through liquid, and they disappear when they hit the outer core. Lava comes from the top of the mantle, not the core."
+    });
+
+    Geo.claudeTask(document.getElementById("task"), {
+      task: "inner-core",
+      prompt: "The inner core is hotter than the outer core. So why is the inner core solid while the outer core is liquid? Use what you saw on the Melt-o-meter.",
+      rubric: "5th grader. GOT IT if he explains, in his own words, that (1) pressure is much higher in the inner core, AND (2) high pressure raises the melting point (atoms squeezed so tight they can't break loose and flow), so (3) in the inner core the melting point is higher than the temperature, while in the outer core the temperature is higher than the melting point. Ideas 1+2 with a clear link to solid/liquid is enough. Watch for misconceptions: 'the inner core is colder', 'it's a different material', 'metal is always solid', 'gravity makes it solid' (half credit: gravity causes the pressure; ask what the pressure does). Ask one guiding question rather than giving the answer.",
+      context: function () { return { lesson_tools: "drill slider (layers, temperature, pressure) and Melt-o-meter (core temperature vs iron melting point vs pressure)" }; }
+    });
+  })();
+  </script>
+</body>
+</html>
