@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G3 · The Rock Cycle — Geology · Fofa Learning Lab</title>
+  <meta name="description" content="Geology lesson 3: weather, bury, squeeze, melt and erupt a rock, and follow it around the rock cycle." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23c8a27a%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2718%27 text-anchor=%27middle%27%3E%F0%9F%94%84%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/geo.css" />
+  <style>
+    .machine { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; }
+    @media (max-width: 680px) { .machine { grid-template-columns: 1fr; } }
+    .rockcard { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
+    .rockcard svg { width: 100%; max-width: 230px; height: auto; border-radius: 10px; display: block; margin: 0 auto 8px; }
+    .rockcard .nm { font-family: var(--font-display); font-size: 1.35rem; }
+    .rockcard .ty { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
+    .rockcard .ds { color: var(--ink-soft); font-size: .86rem; line-height: 1.45; margin-top: 6px; }
+    .rockcard .where { font-size: .8rem; color: var(--ink-mute); margin-top: 6px; }
+    .procs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .procs button { text-align: left; padding: 8px 10px; font-size: .9rem; line-height: 1.3; }
+    .procs button small { display: block; color: var(--ink-mute); font-size: .74rem; }
+    .msg { margin: 10px 0; min-height: 44px; color: var(--ink-soft); font-size: .93rem; line-height: 1.5; }
+    .journey { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: .82rem; margin-top: 8px; }
+    .journey .r { background: var(--panel-2); border-radius: 6px; padding: 2px 7px; }
+    .journey .p { color: var(--accent-warm); font-size: .74rem; }
+    .goals { display: grid; gap: 6px; margin: 10px 0 0; font-size: .9rem; }
+    .goals div::before { content: "☐ "; color: var(--ink-mute); }
+    .goals div.met { color: var(--good); }
+    .goals div.met::before { content: "☑ "; color: var(--good); }
+    .clock { font-family: var(--mono); color: var(--accent-2); font-size: .85rem; }
+    svg.cycle { width: 100%; height: auto; display: block; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="lesson-topbar">
+    <div class="row">
+      <span class="lt-title">🔄 G3 · The Rock Cycle</span>
+      <a href="../">Geology</a>
+      <span class="geo-dots" id="geoDots"></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="../../">Science</a> · <a href="../">Geology</a> · Lesson 3 of 6</div>
+      <h1>The Rock Cycle</h1>
+      <div class="tag">Rocks aren't forever. Over millions of years every rock gets turned into a different one, again and again.</div>
+    </div>
+  </header>
+
+  <main class="lesson">
+
+    <section class="step" id="s-intro">
+      <h2><span class="n">1</span> Three families of rock</h2>
+      <p class="say">Every rock belongs to one of three families, named for <b>how it was made</b>:</p>
+      <p class="say"><span class="term">Igneous</span> rocks form when melted rock (magma or lava) cools and hardens.
+        Cool it slowly underground and the crystals have time to grow big (granite). Cool it fast at the surface and the
+        crystals stay tiny (basalt).</p>
+      <p class="say"><span class="term">Sedimentary</span> rocks form when bits of other rocks (sand, mud, shells) pile
+        up in layers, get buried, and get glued together. That's where most fossils are found.</p>
+      <p class="say"><span class="term">Metamorphic</span> rocks are rocks that got changed by heat and squeezing deep
+        underground, <b>without melting</b>. Limestone becomes marble; shale becomes slate.</p>
+      <p class="say">The <b>rock cycle</b> is how one turns into another. Next you get to run the machine.</p>
+    </section>
+
+    <section class="step" id="s-machine" data-gate="Finish all 4 missions to go on.">
+      <h2><span class="n">2</span> The rock machine</h2>
+      <p class="say">Your rock starts as granite on top of a mountain. Press a process to see what happens. Some processes
+        only work in the right place: you can't melt a rock at the surface, and rain can't weather a rock buried deep.</p>
+      <div class="viz">
+        <div class="machine">
+          <div class="rockcard">
+            <svg id="rockPic" viewBox="0 0 230 150"></svg>
+            <div class="ty" id="rType"></div>
+            <div class="nm" id="rName"></div>
+            <div class="ds" id="rDesc"></div>
+            <div class="where" id="rWhere"></div>
+          </div>
+          <div>
+            <div class="procs" id="procs"></div>
+            <div class="msg" id="msg"></div>
+            <div><span class="clock" id="clock"></span> <button id="restart" style="font-size:.8rem;padding:4px 10px;margin-left:8px">⛰ New granite mountain</button> <button id="shells" style="font-size:.8rem;padding:4px 10px">🐚 New pile of seashells</button></div>
+            <div class="journey" id="journey"></div>
+          </div>
+        </div>
+        <svg class="cycle" id="cycle" viewBox="0 0 600 170" aria-label="Rock cycle map: igneous, sediment, sedimentary, metamorphic, magma"></svg>
+        <strong style="display:block;margin-top:12px">Missions</strong>
+        <div class="goals" id="goals"></div>
+      </div>
+    </section>
+
+    <section class="step" id="s-check">
+      <h2><span class="n">3</span> Quick check</h2>
+      <div id="c1"></div><div id="c2"></div><div id="c3"></div>
+    </section>
+
+    <section class="step" id="s-claude">
+      <h2><span class="n">4</span> Tell the story to Claude</h2>
+      <p class="say">Claude can see the journey your rock took in the machine. You can use it, or invent a new trip.</p>
+      <div id="task"></div>
+    </section>
+  </main>
+
+  <script src="../../../assets/js/fofa-account.js"></script>
+  <script src="../../../assets/js/fofa-measure.js"></script>
+  <script src="../assets/claude-channel.js"></script>
+  <script src="../assets/geo.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    Geo.init({ lesson: "rock-cycle", title: "The rock cycle", module: "geo-rock-cycle" });
+
+    var ROCKS = {
+      granite:   { fam: "igneous",     name: "Granite",   look: "speckled", c: ["#d9c7b8", "#2b2b2b", "#e8a9a0", "#f5f5f5"], desc: "Big crystals you can see, because the magma cooled slowly underground." },
+      basalt:    { fam: "igneous",     name: "Basalt",    look: "fine",     c: ["#3a3a3f", "#4a4a50"], desc: "Dark, with crystals too tiny to see, because lava cooled fast at the surface." },
+      sand:      { fam: "sediment",    name: "Sand",      look: "grains",   c: ["#e0c58f", "#c9a86a"], desc: "Loose grains, mostly quartz, the toughest bits left after weathering." },
+      mud:       { fam: "sediment",    name: "Mud",       look: "grains",   c: ["#7a6a58", "#8c7b66"], desc: "Super fine bits of clay from weathered rock." },
+      limemud:   { fam: "sediment",    name: "Shells & lime mud", look: "shells", c: ["#efe6d2", "#d8ccb0"], desc: "Shells and skeletons of sea creatures, plus lime from dissolved rock." },
+      sandstone: { fam: "sedimentary", name: "Sandstone", look: "layers",   c: ["#d7b27a", "#c49a5e", "#e2c38f"], desc: "Sand grains glued together. You can often see the layers." },
+      shale:     { fam: "sedimentary", name: "Shale",     look: "layers",   c: ["#5e5a55", "#6e6a63", "#54504b"], desc: "Mud pressed into thin layers. It splits into flat pieces." },
+      limestone: { fam: "sedimentary", name: "Limestone", look: "layers",   c: ["#e6dcc6", "#d6cab0", "#efe7d6"], desc: "Made from shells. Sometimes you can see fossils in it. It fizzes in vinegar." },
+      quartzite: { fam: "metamorphic", name: "Quartzite", look: "glassy",   c: ["#e9dcd2", "#d8c6bb"], desc: "Sandstone baked so hard the grains fused together." },
+      slate:     { fam: "metamorphic", name: "Slate",     look: "flat",     c: ["#43474f", "#4f545d"], desc: "Squeezed shale. Splits into thin, flat sheets (old school chalkboards!)." },
+      schist:    { fam: "metamorphic", name: "Schist",    look: "sparkly",  c: ["#6b6f78", "#9aa0a9", "#c7ccd3"], desc: "Squeezed even more. New shiny mica flakes grew in it, so it sparkles." },
+      gneiss:    { fam: "metamorphic", name: "Gneiss",    look: "bands",    c: ["#2f2f33", "#e6e1da", "#b9a99c"], desc: "Said \"nice\". Squeezed so hard the minerals sorted into stripes." },
+      marble:    { fam: "metamorphic", name: "Marble",    look: "glassy",   c: ["#f3f1ee", "#dcd8d2"], desc: "Baked limestone. Sculptors love it." },
+      magma:     { fam: "magma",       name: "Magma",     look: "magma",    c: ["#ff8a4c", "#ffd166", "#c23b22"], desc: "Melted rock, deep underground. About 700 to 1,200 °C." }
+    };
+    var FAMCOLOR = { igneous: "#ff8a4c", sediment: "#e0c58f", sedimentary: "#7c9cff", metamorphic: "#c792ea", magma: "#ff5d6c" };
+    var WEATHER = { granite: "sand", basalt: "mud", sandstone: "sand", shale: "mud", limestone: "limemud", quartzite: "sand", slate: "mud", schist: "mud", gneiss: "sand", marble: "limemud" };
+    var CEMENT = { sand: "sandstone", mud: "shale", limemud: "limestone" };
+    var MORPH = { sandstone: "quartzite", shale: "slate", slate: "schist", schist: "gneiss", limestone: "marble", granite: "gneiss", basalt: "schist" };
+
+    var PROCS = [
+      { id: "weather", label: "🌧 Weather & erode", sub: "rain, ice, wind, rivers",  yrs: 5e6 },
+      { id: "cement",  label: "🏖 Deposit & bury",   sub: "layers pile up and get glued", yrs: 10e6 },
+      { id: "squeeze", label: "🔥 Heat & squeeze",   sub: "deep down, no melting",   yrs: 20e6 },
+      { id: "melt",    label: "🌋 Melt",            sub: "even deeper and hotter",   yrs: 5e6 },
+      { id: "cool",    label: "🧊 Cool slowly",      sub: "magma stays underground", yrs: 1e6 },
+      { id: "erupt",   label: "💥 Erupt",           sub: "lava cools fast on top",   yrs: 1e3 },
+      { id: "uplift",  label: "⛰ Uplift",           sub: "push it up to the surface", yrs: 30e6 }
+    ];
+
+    var SKEY = "geo:rock-cycle:machine";
+    var S; try { S = JSON.parse(localStorage.getItem(SKEY)) || null; } catch (e) { S = null; }
+    S = S || { rock: "granite", deep: false, years: 0, path: [{ r: "granite" }], goals: {}, everPath: [] };
+    function save() { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {} }
+
+    var GOALS = [
+      { id: "sandstone", text: "Turn the granite mountain into sandstone." },
+      { id: "metamorphic", text: "Make any metamorphic rock." },
+      { id: "both-igneous", text: "Make both kinds of igneous rock: one with big crystals and one with tiny ones." },
+      { id: "marble", text: "Make marble. (Hint: marble starts as limestone, and limestone is made from shells.)" }
+    ];
+
+    function apply(pid) {
+      var r = S.rock, R = ROCKS[r], msg = "", to = null, deep = S.deep;
+      switch (pid) {
+        case "weather":
+          if (R.fam === "magma") msg = "Magma is deep underground. Rain can't reach it.";
+          else if (R.fam === "sediment") msg = "It's already loose bits. Try burying it.";
+          else if (S.deep) msg = "It's buried deep. Rain and ice can't reach it. Uplift it first.";
+          else { to = WEATHER[r]; msg = "Rain, frost and rivers broke the " + R.name.toLowerCase() + " into " + ROCKS[to].name.toLowerCase() + " and carried it to the sea."; }
+          break;
+        case "cement":
+          if (R.fam !== "sediment") msg = "Only loose sediment (sand, mud, shells) can be piled up and glued into new rock. Weather it first.";
+          else { to = CEMENT[r]; deep = true; msg = "Layer after layer piled on top. The weight squeezed out the water and minerals glued the bits into " + ROCKS[to].name.toLowerCase() + "."; }
+          break;
+        case "squeeze":
+          if (!S.deep) msg = "At the surface it's not hot enough and there's nothing heavy on top. It has to be deep underground.";
+          else if (R.fam === "magma") msg = "It's already melted. Metamorphic rocks change while staying solid.";
+          else if (R.fam === "sediment") msg = "Loose sediment needs to become rock first.";
+          else if (!MORPH[r]) msg = R.name + " is about as changed as it can get. Any hotter and it would melt.";
+          else { to = MORPH[r]; msg = "Heat and pressure changed the minerals inside without melting them. It's now " + ROCKS[to].name.toLowerCase() + "."; }
+          break;
+        case "melt":
+          if (!S.deep) msg = "Rocks at the surface don't melt. It has to be pushed down deep where it's hot.";
+          else if (R.fam === "magma") msg = "It's already magma!";
+          else if (R.fam === "sediment") msg = "Bury it and turn it into rock first.";
+          else { to = "magma"; msg = "Deep down it got hot enough to melt into magma."; }
+          break;
+        case "cool":
+          if (r !== "magma") msg = "Only magma can cool into igneous rock.";
+          else { to = "granite"; deep = true; msg = "The magma cooled slowly underground over thousands of years, so the crystals grew big: granite."; }
+          break;
+        case "erupt":
+          if (r !== "magma") msg = "Only magma can erupt.";
+          else { to = "basalt"; deep = false; msg = "The magma erupted as lava and cooled in days, so the crystals stayed tiny: basalt."; }
+          break;
+        case "uplift":
+          if (!S.deep) msg = "It's already at the surface.";
+          else if (R.fam === "magma") msg = "Magma doesn't get pushed up as a rock. Cool it or erupt it first.";
+          else { to = r; deep = false; msg = "Moving plates pushed the land up into mountains and erosion stripped the rock above. The " + R.name.toLowerCase() + " is at the surface now."; }
+          break;
+      }
+      if (to) {
+        var p = PROCS.filter(function (x) { return x.id === pid; })[0];
+        S.years += p.yrs; S.rock = to; S.deep = deep;
+        S.path.push({ p: pid, r: to });
+        Geo.track(R.name + " --" + pid + "--> " + ROCKS[to].name);
+        checkGoals();
+      }
+      document.getElementById("msg").textContent = msg;
+      save(); paint();
+    }
+
+    function checkGoals() {
+      var rs = S.path.map(function (x) { return x.r; });
+      if (rs.indexOf("sandstone") >= 0) S.goals.sandstone = 1;
+      if (rs.some(function (r) { return ROCKS[r].fam === "metamorphic"; })) S.goals.metamorphic = 1;
+      var ps = S.path;
+      var cooled = ps.some(function (x) { return x.p === "cool"; }), erupted = ps.some(function (x) { return x.p === "erupt"; });
+      if (cooled && erupted) S.goals["both-igneous"] = 1;
+      if (rs.indexOf("marble") >= 0) S.goals.marble = 1;
+      if (GOALS.every(function (g) { return S.goals[g.id]; })) { Geo.unlock("s-machine"); Geo.track("finished all 4 rock machine missions"); }
+    }
+
+    function rnd(seed) { return function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }; }
+    function drawRock(id) {
+      var R = ROCKS[id], svg = document.getElementById("rockPic"), r = rnd(id.length * 97 + 13), h = "";
+      h += '<rect width="230" height="150" fill="' + R.c[0] + '"/>';
+      if (R.look === "speckled") for (var i = 0; i < 90; i++) h += '<rect x="' + r() * 225 + '" y="' + r() * 145 + '" width="' + (5 + r() * 12) + '" height="' + (4 + r() * 9) + '" fill="' + R.c[1 + Math.floor(r() * 3)] + '" transform="rotate(' + (r() * 60 - 30) + ' 115 75)"/>';
+      if (R.look === "fine") for (i = 0; i < 400; i++) h += '<circle cx="' + r() * 230 + '" cy="' + r() * 150 + '" r=".9" fill="' + (r() > .5 ? "#55555c" : "#2c2c30") + '"/>';
+      if (R.look === "grains" || R.look === "glassy") for (i = 0; i < (R.look === "grains" ? 260 : 80); i++) h += '<circle cx="' + r() * 230 + '" cy="' + r() * 150 + '" r="' + (R.look === "grains" ? 1.5 + r() * 2.5 : 4 + r() * 6) + '" fill="' + R.c[1] + '" opacity="' + (R.look === "glassy" ? .45 : .9) + '"/>';
+      if (R.look === "shells") for (i = 0; i < 22; i++) { var x = r() * 220, y = r() * 140; h += '<path d="M' + x + ' ' + y + ' q 8 -12 16 0 z" fill="#fff8e8" stroke="#bfae8a"/>'; }
+      if (R.look === "layers") for (i = 0; i < 9; i++) h += '<rect x="0" y="' + i * 17 + '" width="230" height="' + (8 + r() * 8) + '" fill="' + R.c[1 + (i % 2)] + '" opacity=".8"/>';
+      if (R.look === "flat") for (i = 0; i < 12; i++) h += '<line x1="0" y1="' + (i * 13 + 4) + '" x2="230" y2="' + (i * 13 + 2) + '" stroke="' + R.c[1] + '" stroke-width="2"/>';
+      if (R.look === "sparkly") { for (i = 0; i < 10; i++) h += '<path d="M0 ' + (i * 15) + ' Q 60 ' + (i * 15 + 8) + ' 115 ' + (i * 15) + ' T 230 ' + (i * 15) + '" stroke="' + R.c[1] + '" stroke-width="3" fill="none"/>'; for (i = 0; i < 60; i++) h += '<circle cx="' + r() * 230 + '" cy="' + r() * 150 + '" r="1.6" fill="#fff" opacity="' + r() + '"/>'; }
+      if (R.look === "bands") for (i = 0; i < 8; i++) h += '<path d="M0 ' + (i * 20 + 6) + ' C 60 ' + (i * 20 - 6) + ' 150 ' + (i * 20 + 20) + ' 230 ' + (i * 20 + 4) + '" stroke="' + R.c[1 + (i % 2)] + '" stroke-width="' + (5 + (i % 3) * 3) + '" fill="none"/>';
+      if (R.look === "magma") { h += '<rect width="230" height="150" fill="url(#mg)"/><defs><radialGradient id="mg"><stop offset="0" stop-color="#ffd166"/><stop offset=".6" stop-color="#ff8a4c"/><stop offset="1" stop-color="#c23b22"/></radialGradient></defs>'; }
+      svg.innerHTML = h;
+    }
+
+    function drawCycle() {
+      var svg = document.getElementById("cycle"), fam = ROCKS[S.rock].fam;
+      var N = { igneous: [80, 40], sediment: [300, 30], sedimentary: [520, 40], metamorphic: [420, 135], magma: [180, 135] };
+      var L = { igneous: "Igneous", sediment: "Sediment", sedimentary: "Sedimentary", metamorphic: "Metamorphic", magma: "Magma" };
+      var E = [["igneous", "sediment", "weather"], ["sediment", "sedimentary", "bury"], ["sedimentary", "metamorphic", "heat & squeeze"], ["metamorphic", "magma", "melt"], ["magma", "igneous", "cool / erupt"], ["sedimentary", "sediment", ""], ["igneous", "metamorphic", ""], ["metamorphic", "sediment", ""]];
+      var h = '<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8891b4"/></marker></defs>';
+      E.forEach(function (e) {
+        var a = N[e[0]], b = N[e[1]], dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d;
+        h += '<line x1="' + (a[0] + ux * 48) + '" y1="' + (a[1] + uy * 20) + '" x2="' + (b[0] - ux * 50) + '" y2="' + (b[1] - uy * 22) + '" stroke="#8891b4" stroke-width="1.5" marker-end="url(#ah)" opacity="' + (e[2] ? .9 : .35) + '"/>';
+        if (e[2]) h += '<text x="' + (a[0] + b[0]) / 2 + '" y="' + ((a[1] + b[1]) / 2 - 5) + '" fill="#b7bede" font-size="11" text-anchor="middle" font-family="ui-sans-serif,system-ui">' + e[2] + '</text>';
+      });
+      Object.keys(N).forEach(function (k) {
+        var on = k === fam, p = N[k];
+        h += '<rect x="' + (p[0] - 48) + '" y="' + (p[1] - 16) + '" width="96" height="32" rx="16" fill="' + (on ? FAMCOLOR[k] : "#262c47") + '" stroke="' + FAMCOLOR[k] + '" stroke-width="2"/>';
+        h += '<text x="' + p[0] + '" y="' + (p[1] + 5) + '" fill="' + (on ? "#0b0f1f" : "#eef1ff") + '" font-size="13" font-weight="700" text-anchor="middle" font-family="ui-sans-serif,system-ui">' + L[k] + '</text>';
+      });
+      svg.innerHTML = h;
+    }
+
+    function paint() {
+      var R = ROCKS[S.rock];
+      drawRock(S.rock); drawCycle();
+      document.getElementById("rType").textContent = R.fam === "sediment" ? "sediment (not rock yet)" : R.fam === "magma" ? "melted rock" : R.fam + " rock";
+      document.getElementById("rType").style.color = FAMCOLOR[R.fam];
+      document.getElementById("rName").textContent = R.name;
+      document.getElementById("rDesc").textContent = R.desc;
+      document.getElementById("rWhere").textContent = R.fam === "sediment" ? "📍 On the sea floor" : S.deep ? "📍 Deep underground" : "📍 At the surface";
+      var y = S.years;
+      document.getElementById("clock").textContent = "⏳ " + (y >= 1e6 ? (y / 1e6).toLocaleString("en-US", { maximumFractionDigits: 1 }) + " million years" : y.toLocaleString("en-US") + " years") + " so far";
+      var j = document.getElementById("journey"); j.innerHTML = "";
+      S.path.slice(-12).forEach(function (x, i) {
+        if (x.p) { var pp = document.createElement("span"); pp.className = "p"; pp.textContent = "→ " + x.p + " →"; j.appendChild(pp); }
+        var rr = document.createElement("span"); rr.className = "r"; rr.textContent = ROCKS[x.r].name; j.appendChild(rr);
+      });
+      var g = document.getElementById("goals"); g.innerHTML = "";
+      GOALS.forEach(function (x) { var d = document.createElement("div"); d.textContent = x.text; if (S.goals[x.id]) d.className = "met"; g.appendChild(d); });
+    }
+
+    PROCS.forEach(function (p) {
+      var b = document.createElement("button");
+      b.innerHTML = p.label + "<small>" + p.sub + "</small>";
+      b.onclick = function () { apply(p.id); };
+      document.getElementById("procs").appendChild(b);
+    });
+    document.getElementById("restart").onclick = function () {
+      S.rock = "granite"; S.deep = false; S.path.push({ p: "restart", r: "granite" });
+      document.getElementById("msg").textContent = "Back to a granite mountain. (Your missions are saved.)";
+      save(); paint();
+    };
+    document.getElementById("shells").onclick = function () {
+      S.rock = "limemud"; S.deep = false; S.path.push({ p: "restart", r: "limemud" });
+      document.getElementById("msg").textContent = "A pile of seashells on the sea floor. (Your missions are saved.)";
+      save(); paint();
+    };
+    checkGoals(); paint();
+
+    Geo.check(document.getElementById("c1"), {
+      id: "igneous", q: "Which family of rock forms when magma or lava cools down?",
+      choices: ["Igneous", "Sedimentary", "Metamorphic"], answer: 0,
+      explain: "Igneous comes from the Latin word for fire. Granite and basalt are igneous."
+    });
+    Geo.check(document.getElementById("c2"), {
+      id: "crystals", q: "Granite has big crystals and basalt has tiny ones. Why?",
+      choices: ["Granite cooled slowly underground, so its crystals had time to grow", "Granite is older", "Basalt was squeezed harder"], answer: 0,
+      explain: "Slow cooling gives crystals time to grow. Lava at the surface cools in days, so basalt's crystals stay tiny."
+    });
+    Geo.check(document.getElementById("c3"), {
+      id: "fossils", q: "Where are you most likely to find a fossil?",
+      choices: ["In granite", "In sedimentary rock like limestone or shale", "In magma"], answer: 1,
+      explain: "Living things get buried gently in layers of sediment. Melting or heavy squeezing would destroy them."
+    });
+
+    Geo.claudeTask(document.getElementById("task"), {
+      task: "sand-story",
+      prompt: "Write the life story of one tiny grain, starting in a granite mountain. Take it through at least 3 stops in the rock cycle, and use the real names of the processes (like weathering, burying, heat and squeezing, melting, cooling). Say what kind of rock it is at each stop.",
+      rubric: "5th grader, creative writing + science. GOT IT if the story (1) starts in granite, (2) has at least 3 transformations, (3) each step uses a process that really makes that change (e.g. weathering → sand, burial/cementing → sandstone, heat and pressure → quartzite or a metamorphic rock, melting → magma, cooling → igneous), (4) names the rock or family at each stop correctly, and (5) respects where things happen (melting/metamorphism deep underground, weathering at the surface). Praise creativity. Point out at most one science mistake per reply, with a question that helps him fix it. context.machine_path is what he actually did in the rock machine.",
+      context: function () { return { machine_path: S.path.map(function (x) { return (x.p ? x.p + " -> " : "") + ROCKS[x.r].name; }).join(" | "), missions_done: Object.keys(S.goals) }; }
+    });
+  })();
+  </script>
+</body>
+</html>
